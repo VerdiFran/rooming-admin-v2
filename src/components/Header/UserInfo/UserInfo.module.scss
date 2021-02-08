@@ -1,0 +1,33 @@
+
+.userInfo {
+    max-width: 340px;
+    max-height: 100%;
+    margin: 0 14px 0 auto;
+    display: grid;
+    grid-template-columns: 50px minmax(auto, max-content);
+    grid-template-rows: min-content min-content;
+    grid-template-areas:
+            "icon who"
+            "icon from";
+    align-items: center;
+    justify-items: left;
+    font-size: 10pt;
+}
+
+.userIcon {
+    margin: 0;
+    grid-area: icon;
+}
+
+.who {
+    grid-area: who;
+}
+
+.from {
+    grid-area: from;
+}
+
+.logoutIcon {
+    margin-right: 10px;
+    font-size: 10pt;
+}

@@ -1,0 +1,41 @@
+@import '../../../../scss/colors';
+
+.authForm {
+    width: 90%;
+    height: auto;
+    //min-height: 164px;
+
+    & > div {
+        min-width: 100%;
+        margin: 0;
+    }
+}
+
+.errorIcon {
+    width: 12px;
+    height: 12px;
+    margin: 0 0 0 8px;
+    color: $warning-icon-color;
+}
+
+.validatedField {
+    margin-bottom: 10px;
+
+    & > div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: auto;
+    }
+}
+
+@media screen and (min-width: 600px) and (max-width: 800px) {
+    .authForm {
+        /*width: 100%;
+        min-height: 200px;
+
+        & > div {
+            min-width: 100%;
+        }*/
+    }
+}

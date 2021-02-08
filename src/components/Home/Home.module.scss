@@ -1,0 +1,53 @@
+@import './../../scss/fonts';
+@import './../../scss/colors';
+
+.homeContainer {
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+
+
+/*.greeting {
+    font-family: $main-font;
+    font-size: 30pt;
+}
+
+.settingsContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    justify-content: space-evenly;
+}
+
+.settingsSection {
+    min-width: 400px;
+    max-width: 600px;
+    height: min-content;
+    margin: 20px;
+
+}
+
+@media screen and (max-width: 580px) {
+    .greeting {
+        font-size: 20pt;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .greeting {
+        font-size: 16pt;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .greeting {
+        font-size: 12pt;
+    }
+}*/
