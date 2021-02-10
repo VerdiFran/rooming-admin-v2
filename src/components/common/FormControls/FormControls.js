@@ -2,7 +2,6 @@ import React from 'react'
 import styles from '../../Login/LoginCard/AuthForm/AuthForm.module.scss'
 import {Select, Form, Cascader, DatePicker, Tooltip, Checkbox, Input, Upload, message} from 'antd'
 import {WarningFilled, InboxOutlined} from '@ant-design/icons'
-import {change} from 'redux-form'
 
 const hasError = (valid, touched) => !valid && touched
 
