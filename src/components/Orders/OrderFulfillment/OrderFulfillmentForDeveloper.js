@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import {Space, Descriptions, Button, Drawer, Upload, message, Typography} from 'antd'
 import {InboxOutlined} from '@ant-design/icons'
+import {Formik} from 'formik'
 
 const OrderFulfillmentForDeveloper = ({visible, currentOrder, currentLayout, setVisible, handleSubmit}) => {
     const {Dragger} = Upload
@@ -28,55 +29,75 @@ const OrderFulfillmentForDeveloper = ({visible, currentOrder, currentLayout, set
     }
 
     return (
-        <Drawer
-            title="Выполнение заказа"
-            width={600}
-            onClose={() => setVisible(false)}
-            visible={visible}
-            bodyStyle={{paddingBottom: 80}}
-            footer={
-                <div style={{textAlign: 'right'}}>
-                    <Button onClick={() => setVisible(false)} style={{marginRight: 8}}>
-                        Отмена
-                    </Button>
-                    <Button onClick={() => {
-                        files.length > 0 && handleSubmit(currentLayout.id, files)
-                        setVisible(false)
-                    }} type="primary">
-                        Подтвердить
-                    </Button>
-                </div>
-            }
+        <Formik
+            initialValues={{}}
+            onSubmit={handleSubmit}
         >
-            <Space size="small" direction="vertical">
-                <Title level={5}>Планировка</Title>
-                <Descriptions
-                    bordered
-                    size="small"
-                    layout="vertical"
-                >
-                    <Descriptions.Item label="Город">{currentLayout.city}</Descriptions.Item>
-                    <Descriptions.Item label="Адрес" span="2">{currentLayout.shortAddress}</Descriptions.Item>
-                    <Descriptions.Item label="Компания">{currentOrder.companyName}</Descriptions.Item>
-                    <Descriptions.Item label="Создан">{currentOrder.createdAt}</Descriptions.Item>
-                    <Descriptions.Item label="Крайний срок">{currentOrder.deadline}</Descriptions.Item>
-                    <Descriptions.Item label="Описание планировки"
-                                       span="3">{currentLayout.description}</Descriptions.Item>
-                    <Descriptions.Item label="Описание заказа">{currentOrder.description}</Descriptions.Item>
-                </Descriptions>
-                <br/>
-                <Title level={5}>Файлы готовых моделей</Title>
-                <Dragger {...props}>
-                    <p className="ant-upload-drag-icon">
-                        <InboxOutlined/>
-                    </p>
-                    <p className="ant-upload-text">Щелкните или перетащите архив в эту область, чтобы загрузить</p>
-                    <p className="ant-upload-hint">
-                        Поддерживаются архивы в формате .rar, .zip. Можно загрузить только один архив.
-                    </p>
-                </Dragger>
-            </Space>
-        </Drawer>
+            {
+                ({
+                     handleChange,
+                     handleBlur,
+                     setFieldValue,
+                     handleSubmit,
+                     values
+                 }) => (
+                    <Drawer
+                        title="Выполнение заказа"
+                        width={600}
+                        onClose={() => setVisible(false)}
+                        visible={visible}
+                        bodyStyle={{paddingBottom: 80}}
+                        footer={
+                            <div style={{textAlign: 'right'}}>
+                                <Button onClick={() => setVisible(false)} style={{marginRight: 8}}>
+                                    Отмена
+                                </Button>
+                                <Button onClick={() => {
+                                    if (files.length > 0) {
+                                        handleSubmit(currentLayout.id, files)
+                                        setVisible(false)
+                                    }
+                                }} type="primary">
+                                    Подтвердить
+                                </Button>
+                            </div>
+                        }
+                    >
+                        <Space size="small" direction="vertical">
+                            <Title level={5}>Планировка</Title>
+                            <Descriptions
+                                bordered
+                                size="small"
+                                layout="vertical"
+                            >
+                                <Descriptions.Item label="Город">{currentLayout.city}</Descriptions.Item>
+                                <Descriptions.Item label="Адрес"
+                                                   span="2">{currentLayout.shortAddress}</Descriptions.Item>
+                                <Descriptions.Item label="Компания">{currentOrder.companyName}</Descriptions.Item>
+                                <Descriptions.Item label="Создан">{currentOrder.createdAt}</Descriptions.Item>
+                                <Descriptions.Item label="Крайний срок">{currentOrder.deadline}</Descriptions.Item>
+                                <Descriptions.Item label="Описание планировки"
+                                                   span="3">{currentLayout.description}</Descriptions.Item>
+                                <Descriptions.Item
+                                    label="Описание заказа">{currentOrder.description}</Descriptions.Item>
+                            </Descriptions>
+                            <br/>
+                            <Title level={5}>Файлы готовых моделей</Title>
+                            <Dragger  {...props}>
+                                <p className="ant-upload-drag-icon">
+                                    <InboxOutlined/>
+                                </p>
+                                <p className="ant-upload-text">Щелкните или перетащите архив в эту область, чтобы
+                                                               загрузить</p>
+                                <p className="ant-upload-hint">
+                                    Поддерживаются архивы в формате .rar, .zip. Можно загрузить только один архив.
+                                </p>
+                            </Dragger>
+                        </Space>
+                    </Drawer>
+                )
+            }
+        </Formik>
     )
 }
 

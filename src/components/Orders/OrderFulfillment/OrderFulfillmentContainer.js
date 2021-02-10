@@ -1,7 +1,6 @@
 import {connect} from 'react-redux'
 import OrderFulfillmentForDeveloper from './OrderFulfillmentForDeveloper'
 import React from 'react'
-import handleSubmit from 'redux-form/lib/handleSubmit'
 import {ordersAPI} from '../../../api/ordersAPI'
 import {getAllOrders} from '../../../redux/reducers/ordersReducer'
 
