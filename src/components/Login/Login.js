@@ -3,7 +3,6 @@ import LoginCard from './LoginCard/LoginCard'
 import styles from './Login.module.scss'
 import {connect} from 'react-redux'
 import {login, toggleIsAuth} from '../../redux/reducers/authReducer'
-import {stopSubmit, SubmissionError} from 'redux-form'
 import {Redirect} from 'react-router-dom'
 import {getIsAuth} from '../../utils/selectors/selectors'
 
@@ -15,12 +14,11 @@ import {getIsAuth} from '../../utils/selectors/selectors'
 
 class Login extends React.Component {
     onSubmit = (formData) => {
-        const {email, password, rememberMe} = formData
+        const {login, password, rememberMe} = formData
 
-        this.props.login(email, password, rememberMe)
+        this.props.login(login, password, rememberMe)
             .catch(error => {
-                stopSubmit('loginForm', {_error: 'Email or password is incorrect.'})
-                return new SubmissionError({_error: 'Auth error'})
+
             })
     }
 

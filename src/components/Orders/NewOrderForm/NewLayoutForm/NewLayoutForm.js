@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {UserOutlined} from '@ant-design/icons'
+import {InboxOutlined, UserOutlined} from '@ant-design/icons'
 import {
     renderDatepicker,
     renderFileUploader, renderGroupAddressInput,
@@ -7,71 +7,92 @@ import {
     renderTextarea
 } from '../../../common/FormControls/FormControls'
 import {required} from '../../../../utils/validators/validators'
-import {Card, Button, Drawer, Space} from 'antd'
+import {Card, Button, Drawer, Space, Upload, message, Input, Descriptions, Form} from 'antd'
 import {IdGenerator} from '../../../../utils/generators/generators'
 import NewBuildingFormContainer from './NewBuildingForm/NewBuildingFormContainer'
+import {Formik} from 'formik'
 
 const NewLayoutForm = ({lId, buildingOptions, cities, handleSubmit}) => {
     const buildingOptionsIdIterator = IdGenerator()
+
+    const draggerProps = {
+        name: 'file',
+        multiple: true,
+        action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+        listType: 'picture-card',
+        onChange(info) {
+            const {status} = info.file
+            if (status !== 'uploading') {
+                console.log(info.file, info.fileList)
+            }
+            if (status === 'done') {
+                message.success(`${info.file.name} file uploaded successfully.`)
+            } else if (status === 'error') {
+                message.error(`${info.file.name} file upload failed.`)
+            }
+        }
+    }
 
     return (
         <Card
             hoverable
             title={`Планировка ${lId + 1}`}
             size="small"
-            /*
-                        extra={<Button style={{margin: 0, padding: 0, border: 'none', fontSize: '20px'}}><CloseSquareOutlined/></Button>}
-            */
         >
-            {/*<Space direction="vertical">
-                <Field
-                    component={renderFileUploader}
-                    name={`layouts.${lId}.files`}
-                    validate={[required]}
-                />
-                <Space direction="horizontal" style={{marginRight: '10px'}} align="start">
-                    <Field
-                        component={renderInput}
-                        name={`layouts.${lId}.buildingCity`}
-                        label="Город"
-                        validate={[required]}
-                        id={lId}
-                        key={lId}
-                    />
-                    <Field
-                        component="select"
-                        name={`layouts.${lId}.buildingCity`}
-                    >
-                        <option/>
-                        {
-                            cities.map(city => <option value={city}>{city}</option>)
-                        }
-                    </Field>
-                    <Field
-                        component="select"
-                        name={`layouts.${lId}.buildingAddress`}
-                    >
-                        <option/>
-                        {
-                            buildingOptions.map(option =>
-                                option.children.map(child => <option value={child.value}>{`${option.label} / ${child.label}`}</option>)
-                            )
-                        }
-                    </Field>
-                </Space>
-                <Space direction="horizontal">
-                    <NewBuildingFormContainer lId={lId}/>
-                </Space>
-                <Field
-                    component={renderTextarea}
-                    label="Описание планировки"
-                    name={`${lId}.layoutDescription`}
-                />
-            </Space>*/}
+            <Formik
+                initialValues={{}}
+                onSubmit={{}}
+            >
+                {({
+                      handleChange,
+                      handleBlur,
+                      setFieldValue,
+                      handleSubmit,
+                      values
+                  }) => (
+                    <Form>
+                        <Space direction="vertical">
+                            <Upload.Dragger
+                                name={`layouts.${lId}.files`}
+                                style={{width: '100%'}}
+                                {...draggerProps}
+                            >
+                                <p className="ant-upload-drag-icon">
+                                    <InboxOutlined/>
+                                </p>
+                                <p className="ant-upload-text">Щелкните или перетащите файл в эту область, чтобы
+                                                               загрузить</p>
+                                <p className="ant-upload-hint">
+                                    Поддерживаются изображения планировок в формате jpeg, jpg или png. Можно загрузить
+                                    одно или
+                                    несколько изображений.
+                                </p>
+                            </Upload.Dragger>
+                            <Space direction="horizontal" style={{marginRight: '10px'}} align="start">
+                                <Form.Item label="">
+                                    <Input
+                                        name={`layouts.${lId}.buildingCity`}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="">
+                                    <Input
+                                        name={`layouts.${lId}.buildingAddress`}
+                                    />
+                                </Form.Item>
+                                <span>или</span>
+                                <NewBuildingFormContainer/>
+                                <Form.Item label="Описание планировки">
+                                    <Input
+                                        name={`layouts.${lId}.layoutDescription`}
+                                    />
+                                </Form.Item>
+                            </Space>
+                        </Space>
+                    </Form>
+                )}
+            </Formik>
         </Card>
     )
 }
-
-//const NewLayoutReduxForm = reduxForm({form: 'newLayoutForm'})(NewLayoutForm)
 
 export default NewLayoutForm

@@ -3,7 +3,7 @@
 .authForm {
     width: 90%;
     height: auto;
-    //min-height: 164px;
+    min-height: 170px;
 
     & > div {
         min-width: 100%;
@@ -27,6 +27,11 @@
         align-items: center;
         height: auto;
     }
+}
+
+.signInButton {
+    width: 100%;
+    margin-top: 12px;
 }
 
 @media screen and (min-width: 600px) and (max-width: 800px) {
