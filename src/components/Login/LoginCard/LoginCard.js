@@ -1,7 +1,7 @@
 import React from 'react'
-import AuthReduxForm from './AuthForm/AuthForm'
 import styles from './LoginCard.module.scss'
 import logo from './../../../assets/images/building.png'
+import AuthForm from './AuthForm/AuthForm'
 
 /**
  * Card with an authentication form
@@ -14,7 +14,7 @@ const LoginCard = ({onSubmit}) => {
         <div className={styles.loginCard}>
             <div className={styles.greeting}>Добро пожаловать!</div>
             <img className={styles.logo} src={logo} alt='logo' width='40px' height='40px'/>
-            <AuthReduxForm onSubmit={onSubmit}/>
+            <AuthForm onSubmit={onSubmit}/>
         </div>
     )
 }
