@@ -7,19 +7,32 @@ import {Input, Button, Divider, Space, Drawer, Typography, Descriptions, Form} f
 import NewLayoutReduxForm from './NewLayoutForm/NewLayoutForm'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
 import {IdGenerator} from '../../../utils/generators/generators'
-import {useFormik, useFormikContext, FormikProvider, Formik} from 'formik'
+import {Formik, useFormik} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
 
 const NewOrderForm = ({formValues, visible, showDrawer, onClose, handleSubmit, handleChange}) => {
     const [layoutsCount, setLayoutsCount] = useState(1)
 
-    const {setFieldValue} = useFormikContext
+    const formik = useFormik({
+        initialValues: {
+            description: '',
+            deadline: new Date(),
+            cityId: '',
+            addressId: '',
+            layoutDescription: '',
+            cityName: ''
+        },
+        onSubmit: values => {alert(JSON.stringify(values, null, 2))}
+    })
 
     const getLayoutForms = (count) => {
         const layouts = []
 
         for (let index = 0; index < count; index++) {
-            layouts[index] = <NewLayoutFormContainer/>
+            layouts[index] = <NewLayoutFormContainer
+                values={{}}
+                setFieldValue={{}}
+            />
         }
 
         return layouts
@@ -30,7 +43,11 @@ const NewOrderForm = ({formValues, visible, showDrawer, onClose, handleSubmit, h
             onSubmit={values => alert(JSON.stringify(values, null, 2))}
             initialValues={{
                 description: '',
-                deadline: new Date()
+                deadline: new Date(),
+                cityId: '',
+                addressId: '',
+                layoutDescription: '',
+                cityName: ''
             }}
         >
             {

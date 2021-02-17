@@ -29,84 +29,18 @@ export const getOrdersData = (state) => {
     const orderIdIterator = IdGenerator()
     const userRoles = getUserRole(state)
 
-    const separateComplexes = (complexes) => {
-        let layouts = []
-        const layoutsIdIterator = IdGenerator()
-
-        complexes.forEach(complex => {
-            complex.buildings.forEach(building => {
-                building.layouts.forEach((layout, idx) =>
-                    layouts.push(building.layouts.length > 1
-                        ? {
-                            city: complex.address.city,
-                            complexName: complex.name,
-                            shortAddress: building.address.streetAndHouse,
-                            index: idx + 1,
-                            key: layoutsIdIterator.next().value,
-                            description: layout.description,
-                            id: layout.id,
-                            isCompleted: layout.isCompleted
-                        }
-                        : {
-                            city: complex.address.city,
-                            complexName: complex.name,
-                            shortAddress: building.address.streetAndHouse,
-                            key: layoutsIdIterator.next().value,
-                            description: layout.description,
-                            id: layout.id,
-                            isCompleted: layout.isCompleted
-                        }
-                    )
-                )
-            })
-        })
-
-        return layouts
-    }
-
-    const separateBuildings = (buildings) => {
-        let layouts = []
-        const layoutsIdIterator = IdGenerator()
-
-        buildings.forEach(building => {
-            building.layouts.forEach((layout, idx) =>
-                layouts.push(building.layouts.length > 1
-                    ? {
-                        city: building.address.city,
-                        shortAddress: building.address.streetAndHouse,
-                        index: idx + 1,
-                        key: layoutsIdIterator.next().value,
-                        description: layout.description,
-                        id: layout.id,
-                        isCompleted: layout.isCompleted
-                    }
-                    : {
-                        city: building.address.city,
-                        shortAddress: building.address.streetAndHouse,
-                        key: layoutsIdIterator.next().value,
-                        description: layout.description,
-                        id: layout.id,
-                        isCompleted: layout.isCompleted
-                    }
-                )
-            )
-        })
-
-        return layouts
-    }
 
     return state.orders.orders.map(order => ({
         key: orderIdIterator.next().value,
-        description: order.order.description,
+        description: order.order.orderDescription,
         deadline: order.order.deadline,
-        companyName: order.companyName,
-        createdAt: order.createdAt,
+        companyName: order.companyName || 'company name',
+        createdAt: order.createdAt || 'created at',
         addresses:
             order.order.ordersForBuilding.map(building => `${building.address.city}, ${building.address.streetAndHouse}`)
                 .concat(order.order.ordersForComplex
                     .map(complex => `${complex.address.city}, ${complex.name}: ${complex.buildings.map(building => `${building.address.streetAndHouse}`)
                         .join(', ')}`)),
-        layouts: separateBuildings(order.order.ordersForBuilding).concat(separateComplexes(order.order.ordersForComplex)),
         actions: userRoles.includes(EMPLOYEE)
             ? ['Посмотреть', 'Изменить', 'Отменить']
             : userRoles.includes(DEVELOPER)
@@ -149,23 +83,74 @@ export const getBuildingOptions = (state) => {
     return buildingOptions
 }
 
-export const getComplexOptions = (state) => {
-    return state.orders.addresses ? state.orders.addresses.complexes.map(complex => ({
-        value: complex.id,
-        label: complex.name
-    })) : []
-}
-
 export const getBuildings = (state) => state.orders.addresses ? state.orders.addresses.buildings : []
 
-export const getComplexes = (state) => state.orders.addresses ? state.orders.addresses.complexes.map(complex => ({
-    id: complex.id,
-    name: complex.name,
-    description: complex.description,
-    city: complex.city,
-})) : []
+export const getCities = (state) => {
+    return state.orders.cities.length > 0 ? state.orders.cities : []
+}
 
-export const getCities = (state) => state.orders.addresses ? state.orders.addresses.cities : []
+export const getCitiesByPrefix = (state) => {
+    return state.orders.citiesByNamePrefix.length > 0 ? state.orders.citiesByNamePrefix : []
+}
+
+export const getAddresses = (state) => {
+    return state.orders.addresses.length > 0
+        ? state.orders.addresses.reduce((groupedAddresses, currAddr) => {
+            const currComplex = groupedAddresses.find((addr) => addr.value === currAddr.complexId)
+            if (currComplex) {
+                const currStreet = currComplex.children.find((street) => street.value === currAddr.street)
+                if (currStreet) {
+                    currStreet.children.push({
+                        value: currAddr.buildingId,
+                        label: currAddr.house
+                    })
+                    return groupedAddresses
+                } else {
+                    currComplex.children.push({
+                        value: currAddr.street,
+                        label: currAddr.street,
+                        children: [{
+                            value: currAddr.buildingId,
+                            label: currAddr.house
+                        }]
+                    })
+                    return groupedAddresses
+                }
+            } else {
+                return [...groupedAddresses, {
+                    value: currAddr.complexId,
+                    label: currAddr.complexName,
+                    children: [{
+                        value: currAddr.street,
+                        label: currAddr.street,
+                        children: [{
+                            value: currAddr.buildingId,
+                            label: currAddr.house
+                        }]
+                    }]
+                }]
+            }
+        }, [])
+        : []
+}
+
+export const getComplexes = (state) => {
+    return state.orders.addresses.reduce((acc, currAddr) => {
+        return acc.some(complex => complex.value === currAddr.complexId)
+            ? acc
+            : [...acc, {
+                value: currAddr.complexId,
+                label: currAddr.complexName
+            }]
+    }, [])
+}
+
+export const getStreets = (state) => {
+    return state.orders.addresses.map(addr => ({
+        streetName: addr.street,
+        complexId: addr.complexId
+    }))
+}
 
 export const getFinishedBuildings = (state) => {
     const complexesKeyIterator = IdGenerator()

@@ -96,10 +96,6 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
 
     return (
         <div className={styles.contentContainer}>
-            {/*<Space style={{ marginBottom: 16 }}>
-                <Button onClick={clearFilters}>Clear filters</Button>
-                <Button onClick={clearAll}>Clear filters and sorters</Button>
-            </Space>*/}
             <Table
                 columns={columns}
                 dataSource={ordersData}

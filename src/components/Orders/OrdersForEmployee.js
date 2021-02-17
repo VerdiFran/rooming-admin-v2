@@ -5,7 +5,7 @@ import styles from './Orders.module.scss'
 import NewOrderReduxForm from './NewOrderForm/NewOrderForm'
 import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
 
-const OrdersForEmployee = ({ordersData, filteredInfo, sortedInfo, clearFilters, clearAll, handleChange, getCompanyAddresses}) => {
+const OrdersForEmployee = ({ordersData, handleChange, getCities}) => {
     const [visible, setVisible] = useState(false)
 
     const {Option} = Select
@@ -60,9 +60,7 @@ const OrdersForEmployee = ({ordersData, filteredInfo, sortedInfo, clearFilters, 
     return (
         <div className={styles.contentContainer}>
             <Space style={{marginBottom: 16}}>
-                <Button type="primary" onClick={() => {showDrawer(); getCompanyAddresses()}}>Добавить заказ</Button>
-                {/*<Button onClick={clearFilters}>Очистить фильтры</Button>*/}
-                {/*<Button onClick={clearAll}>Clear filters and sorters</Button>*/}
+                <Button type="primary" onClick={() => {showDrawer(); getCities()}}>Добавить заказ</Button>
             </Space>
             <Table
                 columns={columns}

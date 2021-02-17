@@ -2,7 +2,6 @@ import {connect} from 'react-redux'
 import OrderFulfillmentForDeveloper from './OrderFulfillmentForDeveloper'
 import React from 'react'
 import {ordersAPI} from '../../../api/ordersAPI'
-import {getAllOrders} from '../../../redux/reducers/ordersReducer'
 
 const mapStateToProps = (state) => ({})
 
@@ -32,4 +31,4 @@ const OrderFulfillmentContainer = (props) => {
     />
 }
 
-export default connect(mapStateToProps, {getAllOrders})(OrderFulfillmentContainer)
+export default connect(mapStateToProps, {/*getAllOrders*/})(OrderFulfillmentContainer)

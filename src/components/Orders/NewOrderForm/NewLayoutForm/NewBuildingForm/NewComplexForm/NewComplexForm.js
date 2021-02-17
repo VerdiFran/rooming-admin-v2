@@ -7,23 +7,33 @@ import {
     renderTextarea
 } from '../../../../../common/FormControls/FormControls'
 import {required} from '../../../../../../utils/validators/validators'
-import {Button, Drawer, Form, Space, Input} from 'antd'
+import {Button, Drawer, Form, Space, Input, AutoComplete} from 'antd'
 import {renderCascader} from '../../../../../common/FormControls/FormControls'
 import styles from './NewComplexForm.module.scss'
 import NewComplexFormContainer from './NewComplexFormContainer'
 import {Formik} from 'formik'
+import {getCitiesByNamePrefix} from '../../../../../../redux/reducers/ordersReducer'
 
-const NewComplexForm = ({lId, handleSubmit}) => {
+const NewComplexForm = ({lId, cities, handleSubmit, getCitiesByNamePrefix}) => {
     const [visible, setVisible] = useState(false)
 
     return (
         <Formik
-            initialValues={{}}
+            initialValues={{
+                cityName: '',
+                complexName: ''
+            }}
             onSubmit={() => {
             }}
         >
             {
-                ({}) => (
+                ({
+                     handleChange,
+                     handleBlur,
+                     setFieldValue,
+                     handleSubmit,
+                     values
+                 }) => (
                     <Form>
                         <Button type="link" onClick={() => setVisible(true)}>новый комплекс</Button>
                         <Drawer
@@ -46,11 +56,11 @@ const NewComplexForm = ({lId, handleSubmit}) => {
                                 </div>
                             }
                         >
-                            <Form.Item label="Город">
-                                <Input/>
-                            </Form.Item>
                             <Form.Item label="Название комплекса">
-                                <Input/>
+                                <Input
+                                    value={values.complexName}
+                                    onChange={handleChange}
+                                />
                             </Form.Item>
                         </Drawer>
                     </Form>
@@ -59,7 +69,5 @@ const NewComplexForm = ({lId, handleSubmit}) => {
         </Formik>
     )
 }
-
-// const NewComplexReduxForm = reduxForm({form: 'newComplexForm'})(NewComplexForm)
 
 export default NewComplexForm

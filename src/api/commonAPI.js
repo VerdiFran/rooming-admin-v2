@@ -15,3 +15,11 @@ export const instanceForDownloadFile = axios.create({
     }),
     responseType: 'blob'
 })
+
+export const instanceForCitiesDB = axios.create({
+    baseURL: 'https://wft-geo-db.p.rapidapi.com/v1/geo',
+    headers: {
+        'x-rapidapi-key': '7653ff45ebmsh20cbf8fe3083e55p1e93e6jsnf72b29966f77',
+        'x-rapidapi-host': 'wft-geo-db.p.rapidapi.com'
+    }
+})

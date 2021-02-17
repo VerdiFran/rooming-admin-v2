@@ -1,19 +1,17 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {InboxOutlined, UserOutlined} from '@ant-design/icons'
-import {
-    renderDatepicker,
-    renderFileUploader, renderGroupAddressInput,
-    renderInput,
-    renderTextarea
-} from '../../../common/FormControls/FormControls'
 import {required} from '../../../../utils/validators/validators'
-import {Card, Button, Drawer, Space, Upload, message, Input, Descriptions, Form} from 'antd'
+import {Card, Input, Button, Drawer, Space, Upload, message, Descriptions, Form, AutoComplete, Cascader} from 'antd'
 import {IdGenerator} from '../../../../utils/generators/generators'
 import NewBuildingFormContainer from './NewBuildingForm/NewBuildingFormContainer'
 import {Formik} from 'formik'
 
-const NewLayoutForm = ({lId, buildingOptions, cities, handleSubmit}) => {
-    const buildingOptionsIdIterator = IdGenerator()
+const NewLayoutForm = ({lId, cities, addresses, getAddresses, getCitiesByNamePrefix}) => {
+    const [options, setOptions] = useState([])
+
+    useEffect(() => {
+        setOptions(Array.from(new Set(cities)).map(city => ({value: city})))
+    }, [cities])
 
     const draggerProps = {
         name: 'file',
@@ -36,24 +34,25 @@ const NewLayoutForm = ({lId, buildingOptions, cities, handleSubmit}) => {
     return (
         <Card
             hoverable
-            title={`Планировка ${lId + 1}`}
+            title={`Планировка ${lId}`}
             size="small"
         >
             <Formik
-                initialValues={{}}
-                onSubmit={{}}
+                initialValues={{
+                    cityId: '',
+                    addressId: '',
+                    layoutDescription: '',
+                    cityName: ''
+                }}
+                onSubmit={() => {}}
             >
                 {({
-                      handleChange,
-                      handleBlur,
                       setFieldValue,
-                      handleSubmit,
                       values
                   }) => (
                     <Form>
                         <Space direction="vertical">
                             <Upload.Dragger
-                                name={`layouts.${lId}.files`}
                                 style={{width: '100%'}}
                                 {...draggerProps}
                             >
@@ -69,21 +68,33 @@ const NewLayoutForm = ({lId, buildingOptions, cities, handleSubmit}) => {
                                 </p>
                             </Upload.Dragger>
                             <Space direction="horizontal" style={{marginRight: '10px'}} align="start">
-                                <Form.Item label="">
-                                    <Input
-                                        name={`layouts.${lId}.buildingCity`}
+                                <Form.Item label="Город">
+                                    <AutoComplete
+                                        style={{width: '300px'}}
+                                        options={options}
+                                        onChange={(value => {
+                                            setFieldValue('cityName', value)
+                                            getCitiesByNamePrefix(value)
+                                        })}
+                                        onSelect={(value) => getAddresses(value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="">
-                                    <Input
+                                <Form.Item label="Адрес">
+                                    <Cascader
                                         name={`layouts.${lId}.buildingAddress`}
+                                        options={addresses}
+                                        value={values.addressId}
+                                        onChange={(value => setFieldValue('addressId', value))}
                                     />
                                 </Form.Item>
                                 <span>или</span>
                                 <NewBuildingFormContainer/>
                                 <Form.Item label="Описание планировки">
-                                    <Input
+                                    <Input.TextArea
                                         name={`layouts.${lId}.layoutDescription`}
+                                        value={values.layoutDescription}
+                                        onChange={(value) =>
+                                            setFieldValue('layoutDescription', value.currentTarget.value)}
                                     />
                                 </Form.Item>
                             </Space>

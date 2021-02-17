@@ -1,9 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import NewComplexReduxForm from './NewComplexForm'
-import {addBuildingOption, addComplexOption} from '../../../../../../redux/reducers/ordersReducer'
 import {IdGenerator} from '../../../../../../utils/generators/generators'
 import NewComplexForm from './NewComplexForm'
+import {getCitiesByNamePrefix} from '../../../../../../redux/reducers/ordersReducer'
+import {getCitiesByPrefix} from '../../../../../../utils/selectors/selectors'
 
 const complexesIdIterator = IdGenerator()
 
@@ -27,8 +28,12 @@ class NewComplexFormContainer extends React.Component {
     }
 
     render() {
-        return <NewComplexForm handleSubmit={this.handleSubmit} lId={this.props.lId}/>
+        return <NewComplexForm
+            lId={this.props.lId}
+            cities={this.props.citiesByNamePrefix}
+            handleSubmit={this.handleSubmit}
+        />
     }
 }
 
-export default connect(mapStateToProps, {addBuildingOption, addComplexOption})(NewComplexFormContainer)
+export default connect(mapStateToProps, {getCitiesByNamePrefix})(NewComplexFormContainer)

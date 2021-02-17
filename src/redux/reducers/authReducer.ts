@@ -12,7 +12,7 @@ const initialState = {
     },
     firstName: 'FirstName',
     lastName: 'LastName',
-    roles: [DEVELOPER]
+    roles: [EMPLOYEE]
 }
 
 const authReducer = (state = initialState, action: any) => {

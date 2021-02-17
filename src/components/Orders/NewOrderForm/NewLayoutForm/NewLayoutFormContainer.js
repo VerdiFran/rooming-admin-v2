@@ -1,30 +1,19 @@
 import React from 'react'
-import {getBuildingOptions, getCities, getComplexOptions} from '../../../../utils/selectors/selectors'
+import {getAddresses, getCities, getCitiesByPrefix} from '../../../../utils/selectors/selectors'
 import {connect} from 'react-redux'
-import NewLayoutReduxForm from './NewLayoutForm'
+import throttle from 'lodash.throttle'
 import NewLayoutForm from './NewLayoutForm'
-import {Typography} from 'antd'
 import {IdGenerator} from '../../../../utils/generators/generators'
+import {getAddressesByCityName, getCitiesByNamePrefix} from '../../../../redux/reducers/ordersReducer'
+import NewComplexForm from './NewBuildingForm/NewComplexForm/NewComplexForm'
 
 const layoutIdIterator = IdGenerator()
 
 const mapStateToProps = (state) => ({
-    buildingOptions: getBuildingOptions(state),
-    cities: getCities(state)
+    cities: getCities(state),
+    addresses: getAddresses(state),
+    citiesByNamePrefix: getCitiesByPrefix(state)
 })
-
-const handleSubmit = (formData) => {
-    // console.log(formData)
-
-    //const {complexName, complexAddress, complexDescription} = formData
-
-    /*addComplexOption({
-        value: complexName,
-        label: complexName,
-        address: complexAddress,
-        description: complexDescription
-    })*/
-}
 
 class NewLayoutFormContainer extends React.PureComponent {
     lId = layoutIdIterator.next().value
@@ -32,11 +21,12 @@ class NewLayoutFormContainer extends React.PureComponent {
     render() {
         return <NewLayoutForm
             lId={this.lId}
-            buildingOptions={this.props.buildingOptions}
-            handleSubmit={handleSubmit}
-            cities={this.props.cities}
+            cities={this.props.citiesByNamePrefix}
+            addresses = {this.props.addresses}
+            getAddresses={this.props.getAddressesByCityName}
+            getCitiesByNamePrefix={throttle(this.props.getCitiesByNamePrefix, 1000)}
         />
     }
 }
 
-export default connect(mapStateToProps)(NewLayoutFormContainer)
+export default connect(mapStateToProps, {getAddressesByCityName, getCitiesByNamePrefix})(NewLayoutFormContainer)

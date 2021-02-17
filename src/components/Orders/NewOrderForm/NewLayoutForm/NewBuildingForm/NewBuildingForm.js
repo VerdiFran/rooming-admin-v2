@@ -7,19 +7,37 @@ import {
     renderTextarea
 } from '../../../../common/FormControls/FormControls'
 import {required} from '../../../../../utils/validators/validators'
-import {Button, Drawer, Form, Select, Space, Input} from 'antd'
+import {Button, Drawer, Form, Select, Space, Input, AutoComplete} from 'antd'
 import {renderCascader} from '../../../../common/FormControls/FormControls'
 import NewComplexFormContainer from './NewComplexForm/NewComplexFormContainer'
 import {Formik} from 'formik'
 
-const NewBuildingForm = ({complexOptions, lId, handleSubmit, setComplexSelectChanges}) => {
+const NewBuildingForm = ({lId, cities, complexes, streets, getAddresses}) => {
     const [visible, setVisible] = useState(false)
-    const [complexId, setComplexId] = useState(null)
+    const [streetsByComplex, setStreetsByComplex] = useState([])
+
+    const {Option} = Select
+
+    const handleSearch = () => {
+
+    }
+
+    const getStreetsByComplex = (complexId) =>
+        setStreetsByComplex(streets.filter(street => street.complexId === complexId)
+            .map(street => ({value: street.streetName}))
+            .reduce((acc, currStreet) => {
+                return acc.some(street => street.value === currStreet.value) ? acc : [...acc, currStreet]
+            }, []))
 
     return (
         <Formik
-            initialValues={{}}
-            onSubmit={() => {
+            initialValues={{
+                complexId: null,
+                complexName: '',
+                street: ''
+            }}
+            onSubmit={(values) => {
+                alert(JSON.stringify(values))
             }}
         >
             {
@@ -56,16 +74,29 @@ const NewBuildingForm = ({complexOptions, lId, handleSubmit, setComplexSelectCha
                             }
                         >
                             <Space direction="vertical">
-                                <Form.Item label="Город">
-                                    <Input/>
-                                </Form.Item>
                                 <Form.Item label="Комплекс">
-                                    <Input/>
+                                    <Select
+                                        style={{width: '200px'}}
+                                        onChange={(value, option) => {
+                                            setFieldValue('complexId', value)
+                                            setFieldValue('complexName', option.children)
+                                        }}
+                                        onSelect={(value) => getStreetsByComplex(value)}
+                                    >
+                                        {
+                                            complexes && complexes.map(complex =>
+                                                <Option value={complex.value}>{complex.label}</Option>)
+                                        }
+                                    </Select>
                                 </Form.Item>
                                 <span>или</span>
                                 <NewComplexFormContainer/>
                                 <Form.Item label="Улица">
-                                    <Input/>
+                                    <AutoComplete
+                                        style={{width: '200px'}}
+                                        options={streetsByComplex}
+                                        onChange={(value => setFieldValue('street', value))}
+                                    />
                                 </Form.Item>
                                 <Form.Item label="Дом">
                                     <Input/>

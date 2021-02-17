@@ -7,22 +7,22 @@ import {DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {Redirect} from 'react-router-dom'
 import OrdersForEmployee from './OrdersForEmployee'
 import {withAuthRedirect} from '../../hoc/withAuthRedirect'
-import {getAllOrders, getCompanyAddresses, getCompanyOrders} from '../../redux/reducers/ordersReducer'
+import {getAllCities} from '../../redux/reducers/ordersReducer'
 
 const mapStateToProps = (state) => ({
-    ordersData: getOrdersData(state),
+    /*ordersData: getOrdersData(state),*/
+    ordersData: [],
     userRole: getUserRole(state)
 })
-
 
 class OrdersContainer extends React.PureComponent {
 
     componentWillMount() {
-        if (this.props.userRole.includes(DEVELOPER)) {
+        /*if (this.props.userRole.includes(DEVELOPER)) {
             this.props.getAllOrders()
         } else {
             this.props.getCompanyOrders()
-        }
+        }*/
     }
 
     render() {
@@ -35,38 +35,15 @@ class OrdersContainer extends React.PureComponent {
             return <OrdersForEmployee
                 ordersData={this.props.ordersData}
                 handleChange={() => {}}
-                getCompanyAddresses={this.props.getCompanyAddresses}
+                getCities={this.props.getAllCities}
             />
         } else {
             return <Redirect to="/login"/>
         }
     }
-
-    /*switch (props.userRole) {
-        case DEVELOPER:
-            return <OrdersForDeveloper
-                ordersData={props.ordersData}
-                filteredInfo={filteredInfo}
-                sortedInfo={sortedInfo}
-                clearAll={clearAll}
-                clearFilters={clearFilters}
-                handleChange={handleChange}
-            />
-        case EMPLOYEE:
-            return <OrdersForEmployee
-                ordersData={props.ordersData}
-                filteredInfo={filteredInfo}
-                sortedInfo={sortedInfo}
-                clearAll={clearAll}
-                clearFilters={clearFilters}
-                handleChange={handleChange}
-            />
-        default:
-            return <Redirect to="/login"/>
-    }*/
 }
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, {getCompanyAddresses, getCompanyOrders, getAllOrders})
+    connect(mapStateToProps, {getAllCities})
 )(OrdersContainer)
