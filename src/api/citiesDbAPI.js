@@ -1,4 +1,4 @@
-import {instanceForCitiesDB} from './commonAPI'
+import {instanceForCitiesDB} from './instances'
 
 export const citiesDbAPI = {
     getCitiesByNamePrefix(prefix) {

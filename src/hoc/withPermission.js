@@ -1,10 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {getUserRole} from '../utils/selectors/selectors'
+import {getUserRoles} from '../utils/selectors/selectors'
 import {Redirect} from 'react-router-dom'
 
 const mapStateToPropsForPermission = (state) => ({
-    userRole: getUserRole(state)
+    userRole: getUserRoles(state)
 })
 
 export const withPermission = (Component) => {

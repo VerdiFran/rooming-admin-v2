@@ -2,14 +2,14 @@ import * as axios from 'axios'
 import {Agent} from "https"
 
 export const instance = axios.create({
-    baseURL: 'https://192.168.0.2:5001/api',
+    baseURL: 'http://176.119.158.143:8080/api',
     httpsAgent: new Agent({
         rejectUnauthorized: false
     })
 })
 
 export const instanceForDownloadFile = axios.create({
-    baseURL: 'https://192.168.0.2:5001/api',
+    baseURL: 'http://176.119.158.143:8080/api',
     httpsAgent: new Agent({
         rejectUnauthorized: false
     }),

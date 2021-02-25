@@ -2,7 +2,7 @@ import {compose} from 'redux'
 import {ADMIN, DEVELOPER, EMPLOYEE, USER} from '../../redux/userRoles'
 import SideMenuPanelForAdmin from './SideMenuPanelForAdmin'
 import {connect} from 'react-redux'
-import {getUserRole} from '../../utils/selectors/selectors'
+import {getUserRoles} from '../../utils/selectors/selectors'
 import React from 'react'
 import SideMenuPanelForDeveloper from './SideMenuPanelForDeveloper'
 import SideMenuPanelForEmployee from './SideMenuPanelForEmployee'
@@ -12,7 +12,7 @@ import OrdersForDeveloper from '../Orders/OrdersForDeveloper'
 import OrdersForEmployee from '../Orders/OrdersForEmployee'
 
 const mapStateToProps = (state) => ({
-    userRole: getUserRole(state)
+    userRole: getUserRoles(state)
 })
 
 const SideMenuPanelContainer = ({userRole}) => {

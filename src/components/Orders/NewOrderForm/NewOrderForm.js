@@ -1,114 +1,137 @@
 import React, {useState} from 'react'
-import {UserOutlined} from '@ant-design/icons'
-import {renderDatepicker, renderFileUploader, renderInput, renderTextarea} from '../../common/FormControls/FormControls'
-import {required} from '../../../utils/validators/validators'
 import {DatePicker} from 'formik-antd'
-import {Input, Button, Divider, Space, Drawer, Typography, Descriptions, Form} from 'antd'
-import NewLayoutReduxForm from './NewLayoutForm/NewLayoutForm'
+import {Input, Button, Divider, Space, Drawer, Form, TimePicker} from 'antd'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
-import {IdGenerator} from '../../../utils/generators/generators'
-import {Formik, useFormik} from 'formik'
+import {FieldArray, Formik, FormikProvider, useFormik} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
+import {IdGenerator} from '../../../utils/generators/generators'
 
-const NewOrderForm = ({formValues, visible, showDrawer, onClose, handleSubmit, handleChange}) => {
-    const [layoutsCount, setLayoutsCount] = useState(1)
-
+const NewOrderForm = ({visible, onClose, addNewOrder}) => {
     const formik = useFormik({
         initialValues: {
-            description: '',
-            deadline: new Date(),
-            cityId: '',
-            addressId: '',
-            layoutDescription: '',
-            cityName: ''
+            orderDescription: '',
+            deadline: null,
+            layouts: [
+                {
+                    description: '',
+                    buildingId: null,
+                    building: {
+                        description: '',
+                        address: {
+                            city: '',
+                            street: '',
+                            house: ''
+                        },
+                        complexId: null,
+                        complex: {
+                            name: '',
+                            description: ''
+                        }
+                    }
+                }
+            ]
         },
-        onSubmit: values => {alert(JSON.stringify(values, null, 2))}
+        onSubmit: values => {
+            addNewOrder({
+                order: {
+                    orderDescription: values.orderDescription,
+                    deadline: values.deadline.toISOString(),
+                    layouts: values.layouts.map(layout =>
+                        layout.building.complexId && /new/.test(layout.building.complexId.toString()) && {
+                            ...layout,
+                            building: {
+                                ...layout.building,
+                                complexId: null
+                            }
+                        })
+                }
+            })
+        }
     })
 
-    const getLayoutForms = (count) => {
-        const layouts = []
-
-        for (let index = 0; index < count; index++) {
-            layouts[index] = <NewLayoutFormContainer
-                values={{}}
-                setFieldValue={{}}
-            />
-        }
-
-        return layouts
-    }
-
     return (
-        <Formik
-            onSubmit={values => alert(JSON.stringify(values, null, 2))}
-            initialValues={{
-                description: '',
-                deadline: new Date(),
-                cityId: '',
-                addressId: '',
-                layoutDescription: '',
-                cityName: ''
-            }}
-        >
-            {
-                ({
-                     handleChange,
-                     handleBlur,
-                     setFieldValue,
-                     handleSubmit,
-                     values
-                 }) => (
-                    <Form>
-                        <Drawer
-                            title="Создание нового заказа"
-                            width={820}
-                            onClose={onClose}
-                            visible={visible}
-                            bodyStyle={{paddingBottom: 80}}
-                            footer={
-                                <div style={{textAlign: 'right'}}>
-                                    <Button onClick={onClose} style={{marginRight: 8}}>
-                                        Отмена
-                                    </Button>
-                                    <Button onClick={() => {
-                                        handleSubmit()
-                                        onClose()
-                                    }} type="primary">
-                                        Подтвердить
-                                    </Button>
+        <FormikProvider value={formik}>
+            <Form>
+                <Drawer
+                    title="Создание нового заказа"
+                    width={820}
+                    onClose={onClose}
+                    visible={visible}
+                    bodyStyle={{paddingBottom: 80}}
+                    footer={
+                        <div style={{textAlign: 'right'}}>
+                            <Button onClick={onClose} style={{marginRight: 8}}>
+                                Отмена
+                            </Button>
+                            <Button htmlType="submit" onClick={() => {
+                                formik.handleSubmit()
+                                onClose()
+                            }} type="primary">
+                                Подтвердить
+                            </Button>
+                        </div>
+                    }
+                >
+                    <Space direction="vertical" size="small" style={{width: '100%'}}>
+                        <Form.Item label="Описание заказа">
+                            <Input.TextArea
+                                value={formik.values.orderDescription}
+                                onChange={(e => formik.setFieldValue('orderDescription', e.currentTarget.value))}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Крайний срок">
+                            <DatePicker
+                                name="deadline"
+                                id="order-deadline"
+                                value={formik.values.deadline}
+                                format="DD.MM.YYYY HH:mm"
+                                placeholder="дд.мм.гггг чч:мм"
+                                showTime
+                                onChange={(date) => formik.setFieldValue('deadline', date)}
+                            />
+                        </Form.Item>
+                        <Divider/>
+                        <FieldArray name="layouts">
+                            {({insert, remove, push}) => (
+                                <div>
+                                    <Space direction="vertical" size="small">
+                                        {formik.values.layouts.length > 0 &&
+                                        formik.values.layouts.map((layout, index) => (
+                                            <NewLayoutFormContainer
+                                                layoutIndex={index}
+                                                setFieldValue={formik.setFieldValue}
+                                            />
+                                        ))}
+                                    </Space>
+                                    <Button
+                                        style={{marginTop: '10px'}}
+                                        icon={<PlusSquareOutlined/>}
+                                        onClick={() => push({
+                                            description: '',
+                                            buildingId: null,
+                                            building: {
+                                                description: '',
+                                                address: {
+                                                    city: '',
+                                                    street: '',
+                                                    house: ''
+                                                },
+                                                complexId: null,
+                                                complex: {
+                                                    name: '',
+                                                    description: ''
+                                                }
+                                            }
+                                        })
+                                        }
+                                    >Добавить модель</Button>
                                 </div>
-                            }
-                        >
-                            <Space direction="vertical" size="small" style={{width: '100%'}}>
-                                <Form.Item label="Описание заказа">
-                                    <Input.TextArea
-                                        name="description"
-                                        id="order-description"
-                                        value={values.description}
-                                        onChange={handleChange}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Крайний срок">
-                                    <DatePicker
-                                        name="deadline"
-                                        id="order-deadline"
-                                        value={values.date}
-                                        format="DD.MM.YYYY"
-                                        placeholder="дд.мм.гггг"
-                                        onChange={(date, dateString) => setFieldValue('deadline', dateString)}
-                                    />
-                                </Form.Item>
-                                <Divider/>
-                                {getLayoutForms(layoutsCount)}
-                                <Button
-                                    icon={<PlusSquareOutlined/>}
-                                    onClick={() => setLayoutsCount(layoutsCount + 1)}
-                                >Добавить модель</Button>
-                            </Space>
-                        </Drawer>
-                    </Form>
-                )}
-        </Formik>
+                            )}
+                        </FieldArray>
+                    </Space>
+                </Drawer>
+            </Form>
+        </FormikProvider>
     )
 }
 

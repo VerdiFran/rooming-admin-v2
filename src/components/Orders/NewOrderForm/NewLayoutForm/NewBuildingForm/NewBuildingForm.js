@@ -1,26 +1,15 @@
 import React, {useState} from 'react'
-import {UserOutlined} from '@ant-design/icons'
-import {
-    renderDatepicker,
-    renderFileUploader,
-    renderInput, renderSelector,
-    renderTextarea
-} from '../../../../common/FormControls/FormControls'
-import {required} from '../../../../../utils/validators/validators'
 import {Button, Drawer, Form, Select, Space, Input, AutoComplete} from 'antd'
-import {renderCascader} from '../../../../common/FormControls/FormControls'
 import NewComplexFormContainer from './NewComplexForm/NewComplexFormContainer'
 import {Formik} from 'formik'
 
-const NewBuildingForm = ({lId, cities, complexes, streets, getAddresses}) => {
+const NewBuildingForm = (props) => {
+    const {layoutIndex, complexes, streets, formik, handleSubmit} = props
+
     const [visible, setVisible] = useState(false)
     const [streetsByComplex, setStreetsByComplex] = useState([])
 
     const {Option} = Select
-
-    const handleSearch = () => {
-
-    }
 
     const getStreetsByComplex = (complexId) =>
         setStreetsByComplex(streets.filter(street => street.complexId === complexId)
@@ -30,83 +19,74 @@ const NewBuildingForm = ({lId, cities, complexes, streets, getAddresses}) => {
             }, []))
 
     return (
-        <Formik
-            initialValues={{
-                complexId: null,
-                complexName: '',
-                street: ''
-            }}
-            onSubmit={(values) => {
-                alert(JSON.stringify(values))
-            }}
-        >
-            {
-                ({
-                     handleChange,
-                     handleBlur,
-                     setFieldValue,
-                     handleSubmit,
-                     values
-                 }) => (
-                    <Form>
-                        <Button
-                            type="link"
-                            onClick={() => setVisible(true)}
-                        >новое здание</Button>
-                        <Drawer
-                            title="Добавление нового здания"
-                            width={500}
-                            onClose={() => setVisible(false)}
-                            visible={visible}
-                            bodyStyle={{paddingBottom: 80}}
-                            footer={
-                                <div style={{textAlign: 'right'}}>
-                                    <Button onClick={() => setVisible(false)} style={{marginRight: 8}}>
-                                        Отмена
-                                    </Button>
-                                    <Button onClick={() => {
-                                        handleSubmit()
-                                        setVisible(false)
-                                    }} type="primary">
-                                        Подтвердить
-                                    </Button>
-                                </div>
-                            }
+        <Form>
+            <Button
+                type="link"
+                onClick={() => setVisible(true)}
+            >новое здание</Button>
+            <Drawer
+                title="Добавление нового здания"
+                width={500}
+                onClose={() => setVisible(false)}
+                visible={visible}
+                bodyStyle={{paddingBottom: 80}}
+                footer={
+                    <div style={{textAlign: 'right'}}>
+                        <Button onClick={() => setVisible(false)} style={{marginRight: 8}}>
+                            Отмена
+                        </Button>
+                        <Button onClick={() => {
+                            handleSubmit({
+                                city: formik.values.layouts[layoutIndex].building.address.city,
+                                street: formik.values.layouts[layoutIndex].building.address.street,
+                                house: formik.values.layouts[layoutIndex].building.address.house,
+                                buildingId: formik.values.layouts[layoutIndex].buildingId,
+                                complexId: formik.values.layouts[layoutIndex].building.complexId,
+                                complexName: formik.values.layouts[layoutIndex].building.complex.name
+                            })
+                            setVisible(false)
+                        }} type="primary">
+                            Подтвердить
+                        </Button>
+                    </div>
+                }
+            >
+                <Space direction="vertical">
+                    <Form.Item label="Комплекс">
+                        <Select
+                            style={{width: '200px'}}
+                            onChange={(value, option) => {
+                                formik.setFieldValue(`layouts.${layoutIndex}.building.complexId`, value)
+                                formik.setFieldValue(`layouts.${layoutIndex}.building.complex.name`, option.children)
+                            }}
+                            onSelect={(value) => getStreetsByComplex(value)}
                         >
-                            <Space direction="vertical">
-                                <Form.Item label="Комплекс">
-                                    <Select
-                                        style={{width: '200px'}}
-                                        onChange={(value, option) => {
-                                            setFieldValue('complexId', value)
-                                            setFieldValue('complexName', option.children)
-                                        }}
-                                        onSelect={(value) => getStreetsByComplex(value)}
-                                    >
-                                        {
-                                            complexes && complexes.map(complex =>
-                                                <Option value={complex.value}>{complex.label}</Option>)
-                                        }
-                                    </Select>
-                                </Form.Item>
-                                <span>или</span>
-                                <NewComplexFormContainer/>
-                                <Form.Item label="Улица">
-                                    <AutoComplete
-                                        style={{width: '200px'}}
-                                        options={streetsByComplex}
-                                        onChange={(value => setFieldValue('street', value))}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Дом">
-                                    <Input/>
-                                </Form.Item>
-                            </Space>
-                        </Drawer>
-                    </Form>
-                )
-            }
-        </Formik>
+                            {
+                                complexes && complexes.map(complex =>
+                                    <Option value={complex.value}>{complex.label}</Option>)
+                            }
+                        </Select>
+                    </Form.Item>
+                    <Space direction="horizontal" size="small">
+                        <span>или</span>
+                        <NewComplexFormContainer layoutIndex={layoutIndex}/>
+                    </Space>
+                    <Form.Item label="Улица">
+                        <AutoComplete
+                            style={{width: '200px'}}
+                            options={streetsByComplex}
+                            onChange={(value => formik.setFieldValue(`layouts.${layoutIndex}.building.address.street`, value))}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Дом">
+                        <Input
+                            onChange={(e) =>
+                                formik.setFieldValue(`layouts.${layoutIndex}.building.address.house`, e.currentTarget.value)}
+                        />
+                    </Form.Item>
+                </Space>
+            </Drawer>
+        </Form>
     )
 }
 

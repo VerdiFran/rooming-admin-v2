@@ -1,17 +1,38 @@
 import React, {useEffect, useState} from 'react'
-import {InboxOutlined, UserOutlined} from '@ant-design/icons'
-import {required} from '../../../../utils/validators/validators'
-import {Card, Input, Button, Drawer, Space, Upload, message, Descriptions, Form, AutoComplete, Cascader} from 'antd'
-import {IdGenerator} from '../../../../utils/generators/generators'
+import {InboxOutlined} from '@ant-design/icons'
+import {Card, Input, Space, Upload, message, Form, AutoComplete, Cascader} from 'antd'
+import {LoadingOutlined} from '@ant-design/icons'
 import NewBuildingFormContainer from './NewBuildingForm/NewBuildingFormContainer'
-import {Formik} from 'formik'
+import useDebounce from '../../../../hooks/useDebounce'
 
-const NewLayoutForm = ({lId, cities, addresses, getAddresses, getCitiesByNamePrefix}) => {
-    const [options, setOptions] = useState([])
+const NewLayoutForm = (props) => {
+    const {
+        layoutIndex,
+        formik,
+        cities,
+        addresses,
+        setFieldValue,
+        getAddresses,
+        getCitiesByNamePrefix
+    } = props
+
+    const [citiesOptions, setCitiesOptions] = useState([])
+    const [searchTerm, setSearchTerm] = useState('')
+    const [isSearching, setIsSearching] = useState(false)
+
+    const debouncedSearchTerm = useDebounce(searchTerm, 1000)
 
     useEffect(() => {
-        setOptions(Array.from(new Set(cities)).map(city => ({value: city})))
-    }, [cities])
+        if (cities !== citiesOptions) {
+            setCitiesOptions(Array.from(new Set(cities)).map(city => ({value: city})))
+            setIsSearching(false)
+        }
+
+        if (debouncedSearchTerm) {
+            setIsSearching(true)
+            getCitiesByNamePrefix(searchTerm)
+        }
+    }, [cities, debouncedSearchTerm])
 
     const draggerProps = {
         name: 'file',
@@ -34,74 +55,69 @@ const NewLayoutForm = ({lId, cities, addresses, getAddresses, getCitiesByNamePre
     return (
         <Card
             hoverable
-            title={`Планировка ${lId}`}
+            title={`Планировка ${layoutIndex + 1}`}
             size="small"
         >
-            <Formik
-                initialValues={{
-                    cityId: '',
-                    addressId: '',
-                    layoutDescription: '',
-                    cityName: ''
-                }}
-                onSubmit={() => {}}
-            >
-                {({
-                      setFieldValue,
-                      values
-                  }) => (
-                    <Form>
-                        <Space direction="vertical">
-                            <Upload.Dragger
-                                style={{width: '100%'}}
-                                {...draggerProps}
-                            >
-                                <p className="ant-upload-drag-icon">
-                                    <InboxOutlined/>
-                                </p>
-                                <p className="ant-upload-text">Щелкните или перетащите файл в эту область, чтобы
-                                                               загрузить</p>
-                                <p className="ant-upload-hint">
-                                    Поддерживаются изображения планировок в формате jpeg, jpg или png. Можно загрузить
-                                    одно или
-                                    несколько изображений.
-                                </p>
-                            </Upload.Dragger>
-                            <Space direction="horizontal" style={{marginRight: '10px'}} align="start">
-                                <Form.Item label="Город">
-                                    <AutoComplete
-                                        style={{width: '300px'}}
-                                        options={options}
-                                        onChange={(value => {
-                                            setFieldValue('cityName', value)
-                                            getCitiesByNamePrefix(value)
-                                        })}
-                                        onSelect={(value) => getAddresses(value)}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Адрес">
-                                    <Cascader
-                                        name={`layouts.${lId}.buildingAddress`}
-                                        options={addresses}
-                                        value={values.addressId}
-                                        onChange={(value => setFieldValue('addressId', value))}
-                                    />
-                                </Form.Item>
-                                <span>или</span>
-                                <NewBuildingFormContainer/>
-                                <Form.Item label="Описание планировки">
-                                    <Input.TextArea
-                                        name={`layouts.${lId}.layoutDescription`}
-                                        value={values.layoutDescription}
-                                        onChange={(value) =>
-                                            setFieldValue('layoutDescription', value.currentTarget.value)}
-                                    />
-                                </Form.Item>
-                            </Space>
+            <Form>
+                <Space direction="vertical">
+                    <Upload.Dragger
+                        style={{width: '100%'}}
+                        {...draggerProps}
+                    >
+                        <p className="ant-upload-drag-icon">
+                            <InboxOutlined/>
+                        </p>
+                        <p className="ant-upload-text">Щелкните или перетащите файл в эту область, чтобы
+                                                       загрузить</p>
+                        <p className="ant-upload-hint">
+                            Поддерживаются изображения планировок в формате jpeg, jpg или png. Можно загрузить
+                            одно или
+                            несколько изображений.
+                        </p>
+                    </Upload.Dragger>
+                    <Space direction="vertical" style={{marginRight: '10px'}} align="start">
+                        <Form.Item label="Город">
+                            <AutoComplete
+                                name={`layouts.${layoutIndex}.city`}
+                                style={{width: '300px'}}
+                                options={citiesOptions}
+                                onChange={(value => {
+                                    setFieldValue(`layouts.${layoutIndex}.building.address.city`, value)
+                                    setSearchTerm(value)
+                                })}
+                                onSelect={(value) => getAddresses(value)}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Адрес">
+                            <Cascader
+                                options={addresses}
+                                /*value={[
+                                    formik.values.layouts[layoutIndex].building.complexId,
+                                    formik.values.layouts[layoutIndex].building.complex.name,
+                                    formik.values.layouts[layoutIndex].buildingId
+                                ]}*/
+                                onChange={(value => {
+                                    setFieldValue(`layouts.${layoutIndex}.buildingId`, value[2])
+                                })}
+                            />
+                        </Form.Item>
+                        <Space direction="horizontal" size="small">
+                            <span>или</span>
+                            <NewBuildingFormContainer
+                                layoutIndex={layoutIndex}
+                                setFieldValue={setFieldValue}
+                            />
                         </Space>
-                    </Form>
-                )}
-            </Formik>
+                        <Form.Item label="Описание планировки">
+                            <Input.TextArea
+                                name={`layouts.${layoutIndex}.description`}
+                                onChange={(value) =>
+                                    setFieldValue(`layouts.${layoutIndex}.description`, value.currentTarget.value)}
+                            />
+                        </Form.Item>
+                    </Space>
+                </Space>
+            </Form>
         </Card>
     )
 }

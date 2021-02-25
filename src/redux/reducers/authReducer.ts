@@ -6,7 +6,7 @@ const SET_USER_DATA = 'SET-USER-DATA'
 const LOGOUT = 'LOGOUT'
 
 const initialState = {
-    isAuth: true,
+    isAuth: false,
     company: {
         name: 'CompanyName'
     },

@@ -1,10 +1,43 @@
 import {ordersAPI} from '../../api/ordersAPI'
 import {Dispatch} from 'redux'
 import {citiesDbAPI} from '../../api/citiesDbAPI'
+import {IdGenerator} from '../../utils/generators/generators'
 
 const SET_CITIES = 'SET-CITIES'
 const SET_ADDRESSES = 'SET-ADDRESSES'
-const SET_CITIES_BY_PREFIX = 'SET-CITIES-BY-PREFIX'
+const ADD_ADDRESS = 'ADD-ADDRESS'
+const ADD_COMPLEX = 'ADD-COMPLEX'
+const SET_ORDERS = 'SET-ORDERS'
+
+const complexIdIterator = IdGenerator()
+
+/*
+* {
+    "order": {
+        "orderDescription": "string",
+        "deadline": "2021-02-16T10:17:49.522Z",
+        "layouts": [
+            {
+                "description": "string",
+                "buildingId": 3,
+                "building": {
+                    "description": "string",
+                    "address": {
+                        "city": "stringwe2211",
+                        "street": "stingqqq",
+                        "house": "12"
+                    },
+                    "complexId": 6,
+                    "complex": {
+                        "name": "strin",
+                        "description": "string"
+                    }
+                }
+            }
+        ]
+    }
+}
+* */
 
 type ResponseCityType = {
     id: number
@@ -21,114 +54,86 @@ type ResponseCityType = {
 }
 
 type LayoutType = {
-    id: number,
-    description: string,
-    buildingId?: number | null,
-    buildingOrder?: {
-        id: number,
-        city: string,
-        street: string,
-        house: string
-    } | null,
-    complexId?: number | null,
-    complexOrder?: {
-        id: number,
-        name: string,
+    description: string
+    id?: number
+    buildingId?: number | null
+    building?: {
         description: string
+        address: {
+            city: string
+            street: string
+            house: string
+        }
+        complexId?: number | null
+        complex?: {
+            name: string
+            description: string
+            createdAt?: string
+            createdBy?: {
+                id: number
+                lastName: string
+                firstName: string
+            }
+        } | null
+        createdAt?: string
+        createdBy?: {
+            id: number
+            lastName: string
+            firstName: string
+        }
     } | null
+    layoutOrderStatus?: string
+    resources?: Array<any>
 }
 
 type BuildingType = {
-    city: string,
-    street: string,
-    house: string,
-    buildingId: number,
-    complexId: number,
+    city: string
+    street: string
+    house: string
+    buildingId: number
+    complexId: number
     complexName: string
 }
 
+type ComplexType = {
+    complexName: string
+    complexDescription: string
+    complexId?: string
+}
+
 type OrderType = {
-    id: number,
-    orderDescription: string,
-    deadline: string,
+    orderDescription: string
+    deadline: string
     layouts: Array<LayoutType>
+    id?: number
+    createdAt?: string
+    createdBy?: {
+        id: number
+        lastName: string
+        firstName: string
+        company: {
+            contactPhone: string
+            email: string
+            id: number
+            name: string
+        }
+    }
 }
 
 export type InitialStateType = {
-    orders: Array<OrderType> | [] | null
-    addresses: Array<BuildingType> | [] | null
-    newAddresses: Array<BuildingType> | [] | null
-    cities: Array<string> | [] | null,
-    citiesByNamePrefix: Array<string> | [] | null
+    orders: Array<OrderType>
+    addresses: Array<BuildingType>
+    newAddresses: Array<BuildingType>
+    cities: Array<string>
+    newComplexes: Array<ComplexType>
 }
 
 const initialState: InitialStateType = {
-    orders: [
-        {
-            id: 0,
-            orderDescription: '',
-            deadline: '',
-            layouts: [
-                {
-                    id: 0,
-                    description: '',
-                    buildingId: 3,
-                    complexId: 7
-                },
-                {
-                    id: 1,
-                    description: '',
-                    buildingId: 3,
-                    complexId: 7
-                }
-            ]
-        }
-    ],
-    addresses: [
-        /*{
-            city: 'Красноярск',
-            street: 'Алексеева',
-            house: '33',
-            buildingId: 6,
-            complexId: 12,
-            complexName: 'Престиж'
-        },
-        {
-            city: 'Красноярск',
-            street: 'Алексеева',
-            house: '35',
-            buildingId: 45,
-            complexId: 12,
-            complexName: 'Престиж'
-        },
-        {
-            city: 'Красноярск',
-            street: 'Мерная',
-            house: '4',
-            buildingId: 23,
-            complexId: 12,
-            complexName: 'Престиж'
-        },
-        {
-            city: 'Красноярск',
-            street: 'Борисова',
-            house: '83',
-            buildingId: 9,
-            complexId: 3,
-            complexName: 'Голубое небо'
-        },
-        {
-            city: 'Красноярск',
-            street: 'Борисова',
-            house: '80',
-            buildingId: 7,
-            complexId: 3,
-            complexName: 'Голубое небо'
-        },*/
-    ],
+    orders: [],
+    addresses: [],
     cities: [],
     newAddresses: [],
-    citiesByNamePrefix: []
+    newComplexes: []
 }
 
 const ordersReducer = (state = initialState, action: any) => {
@@ -143,10 +148,23 @@ const ordersReducer = (state = initialState, action: any) => {
                 ...state,
                 addresses: action.addresses
             }
-        case SET_CITIES_BY_PREFIX:
+        case ADD_ADDRESS:
             return {
                 ...state,
-                citiesByNamePrefix: action.cities
+                newAddresses: [...state.addresses, action.address]
+            }
+        case ADD_COMPLEX:
+            return {
+                ...state,
+                newComplexes: [...state.newComplexes, {
+                    ...action.complex,
+                    complexId: `new_${complexIdIterator.next().value}`
+                }]
+            }
+        case SET_ORDERS:
+            return {
+                ...state,
+                orders: action.orders
             }
         default:
             return state
@@ -155,12 +173,10 @@ const ordersReducer = (state = initialState, action: any) => {
 
 const setCities = (cities: Array<string>) => ({type: SET_CITIES, cities})
 const setAddresses = (addresses: Array<BuildingType>) => ({type: SET_ADDRESSES, addresses})
-const setCitiesByPrefix = (cities: Array<string>) => ({type: SET_CITIES_BY_PREFIX, cities})
+const setOrders = (orders: Array<OrderType>) => ({type: SET_ORDERS, orders})
 
-export const getAllCities = () => async (dispatch: Dispatch) => {
-    const response = await ordersAPI.getAllCities()
-    dispatch(setCities(response))
-}
+export const addAddress = (address: BuildingType) => ({type: ADD_ADDRESS, address})
+export const addComplex = (complex: ComplexType) => ({type: ADD_COMPLEX, complex})
 
 export const getAddressesByCityName = (city: string) => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getAddresses(city)
@@ -169,7 +185,25 @@ export const getAddressesByCityName = (city: string) => async (dispatch: Dispatc
 
 export const getCitiesByNamePrefix = (prefix: string) => async (dispatch: Dispatch) => {
     const response = await citiesDbAPI.getCitiesByNamePrefix(prefix)
-    dispatch(setCitiesByPrefix(response.data.data.map((item: ResponseCityType) => item.city)))
+    dispatch(setCities(response.data.data.map((item: ResponseCityType) => item.city)))
+}
+
+export const getCompanyOrders = () => async (dispatch: Dispatch) => {
+    const response = await ordersAPI.getOrders()
+    console.log(response.data)
+    dispatch(setOrders(response.data))
+}
+
+export const getAllOrders = () => async (dispatch: Dispatch) => {
+    const response = await ordersAPI.getAllOrders()
+    console.log(response.data)
+    dispatch(setOrders(response.data))
+}
+
+export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
+    alert(JSON.stringify(order))
+    await ordersAPI.sendNewOrder(order)
+    getCompanyOrders()
 }
 
 export default ordersReducer

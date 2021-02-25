@@ -1,4 +1,4 @@
-import {instance, instanceForDownloadFile} from './commonAPI'
+import {instance, instanceForDownloadFile} from './instances'
 import download from 'js-file-download'
 
 export const buildingsAPI = {

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {getOrdersData, getUserRole} from '../../utils/selectors/selectors'
+import React from 'react'
+import {getOrdersData, getUserRoles} from '../../utils/selectors/selectors'
 import {compose} from 'redux'
 import {connect} from 'react-redux'
 import OrdersForDeveloper from './OrdersForDeveloper'
@@ -7,35 +7,33 @@ import {DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {Redirect} from 'react-router-dom'
 import OrdersForEmployee from './OrdersForEmployee'
 import {withAuthRedirect} from '../../hoc/withAuthRedirect'
-import {getAllCities} from '../../redux/reducers/ordersReducer'
+import {getAllOrders, getCompanyOrders} from '../../redux/reducers/ordersReducer'
 
 const mapStateToProps = (state) => ({
-    /*ordersData: getOrdersData(state),*/
-    ordersData: [],
-    userRole: getUserRole(state)
+    ordersData: getOrdersData(state),
+    userRoles: getUserRoles(state)
 })
 
 class OrdersContainer extends React.PureComponent {
 
     componentWillMount() {
-        /*if (this.props.userRole.includes(DEVELOPER)) {
+        if (this.props.userRoles.includes(DEVELOPER)) {
             this.props.getAllOrders()
         } else {
             this.props.getCompanyOrders()
-        }*/
+        }
     }
 
     render() {
-        if (this.props.userRole.includes(DEVELOPER)) {
+        if (this.props.userRoles.includes(DEVELOPER)) {
             return <OrdersForDeveloper
                 ordersData={this.props.ordersData}
                 handleChange={() => {}}
             />
-        } else if (this.props.userRole.includes(EMPLOYEE)) {
+        } else if (this.props.userRoles.includes(EMPLOYEE)) {
             return <OrdersForEmployee
                 ordersData={this.props.ordersData}
                 handleChange={() => {}}
-                getCities={this.props.getAllCities}
             />
         } else {
             return <Redirect to="/login"/>
@@ -45,5 +43,5 @@ class OrdersContainer extends React.PureComponent {
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, {getAllCities})
+    connect(mapStateToProps, {getCompanyOrders, getAllOrders})
 )(OrdersContainer)
