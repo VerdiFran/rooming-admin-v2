@@ -8,36 +8,9 @@ const SET_ADDRESSES = 'SET-ADDRESSES'
 const ADD_ADDRESS = 'ADD-ADDRESS'
 const ADD_COMPLEX = 'ADD-COMPLEX'
 const SET_ORDERS = 'SET-ORDERS'
+const SET_CURRENT_LAYOUTS_ID = 'SET_CURRENT_LAYOUTS_ID'
 
 const complexIdIterator = IdGenerator()
-
-/*
-* {
-    "order": {
-        "orderDescription": "string",
-        "deadline": "2021-02-16T10:17:49.522Z",
-        "layouts": [
-            {
-                "description": "string",
-                "buildingId": 3,
-                "building": {
-                    "description": "string",
-                    "address": {
-                        "city": "stringwe2211",
-                        "street": "stingqqq",
-                        "house": "12"
-                    },
-                    "complexId": 6,
-                    "complex": {
-                        "name": "strin",
-                        "description": "string"
-                    }
-                }
-            }
-        ]
-    }
-}
-* */
 
 type ResponseCityType = {
     id: number
@@ -126,6 +99,7 @@ export type InitialStateType = {
     newAddresses: Array<BuildingType>
     cities: Array<string>
     newComplexes: Array<ComplexType>
+    currentLayoutIds: Array<number>
 }
 
 const initialState: InitialStateType = {
@@ -133,7 +107,8 @@ const initialState: InitialStateType = {
     addresses: [],
     cities: [],
     newAddresses: [],
-    newComplexes: []
+    newComplexes: [],
+    currentLayoutIds: []
 }
 
 const ordersReducer = (state = initialState, action: any) => {
@@ -166,6 +141,11 @@ const ordersReducer = (state = initialState, action: any) => {
                 ...state,
                 orders: action.orders
             }
+        case SET_CURRENT_LAYOUTS_ID:
+            return {
+                ...state,
+                currentLayoutIds: action.currentLayoutIds
+            }
         default:
             return state
     }
@@ -177,6 +157,7 @@ const setOrders = (orders: Array<OrderType>) => ({type: SET_ORDERS, orders})
 
 export const addAddress = (address: BuildingType) => ({type: ADD_ADDRESS, address})
 export const addComplex = (complex: ComplexType) => ({type: ADD_COMPLEX, complex})
+export const setCurrentLayoutIds = (currentLayoutIds: Array<number>) => ({type: SET_CURRENT_LAYOUTS_ID, currentLayoutIds})
 
 export const getAddressesByCityName = (city: string) => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getAddresses(city)

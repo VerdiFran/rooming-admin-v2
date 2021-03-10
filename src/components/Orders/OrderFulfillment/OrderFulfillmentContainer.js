@@ -2,8 +2,11 @@ import {connect} from 'react-redux'
 import OrderFulfillmentForDeveloper from './OrderFulfillmentForDeveloper'
 import React from 'react'
 import {ordersAPI} from '../../../api/ordersAPI'
+import {getLayoutsInfo} from '../../../utils/selectors/selectors'
 
-const mapStateToProps = (state) => ({})
+const mapStateToProps = (state) => ({
+    layoutsInfo: getLayoutsInfo(state)
+})
 
 const OrderFulfillmentContainer = (props) => {
 

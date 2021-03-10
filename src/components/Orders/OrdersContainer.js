@@ -7,7 +7,7 @@ import {DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {Redirect} from 'react-router-dom'
 import OrdersForEmployee from './OrdersForEmployee'
 import {withAuthRedirect} from '../../hoc/withAuthRedirect'
-import {getAllOrders, getCompanyOrders} from '../../redux/reducers/ordersReducer'
+import {getAllOrders, getCompanyOrders, setCurrentLayoutIds} from '../../redux/reducers/ordersReducer'
 
 const mapStateToProps = (state) => ({
     ordersData: getOrdersData(state),
@@ -29,6 +29,7 @@ class OrdersContainer extends React.PureComponent {
             return <OrdersForDeveloper
                 ordersData={this.props.ordersData}
                 handleChange={() => {}}
+                setCurrentLayoutIds={this.props.setCurrentLayoutIds}
             />
         } else if (this.props.userRoles.includes(EMPLOYEE)) {
             return <OrdersForEmployee
@@ -43,5 +44,5 @@ class OrdersContainer extends React.PureComponent {
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, {getCompanyOrders, getAllOrders})
+    connect(mapStateToProps, {getCompanyOrders, getAllOrders, setCurrentLayoutIds})
 )(OrdersContainer)

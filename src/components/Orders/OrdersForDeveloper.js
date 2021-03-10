@@ -4,10 +4,11 @@ import styles from './Orders.module.scss'
 import OrderFulfillmentForDeveloper from './OrderFulfillment/OrderFulfillmentForDeveloper'
 import OrderFulfillmentContainer from './OrderFulfillment/OrderFulfillmentContainer'
 import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
+import {setCurrentLayoutIds} from '../../redux/reducers/ordersReducer'
 
-const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters, clearAll, handleChange}) => {
-    const [currentOrder, setCurrentOrder] = useState(null)
-    const [currentLayout, setCurrentLayout] = useState(null)
+const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters, clearAll, handleChange, setCurrentLayoutIds}) => {
+    /*const [currentOrder, setCurrentOrder] = useState(null)
+    const [currentLayout, setCurrentLayout] = useState(null)*/
     const [visible, setVisible] = useState(false)
 
     const columns = [
@@ -73,9 +74,10 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
                 key: 'actions',
                 render: ((text, layoutRecord, index) => layoutRecord.actions.map(act => <div>
                     <Button type="link" onClick={() => {
+                        setCurrentLayoutIds([layoutRecord.id])
                         setVisible(true)
-                        setCurrentOrder(record)
-                        setCurrentLayout(layoutRecord.layout)
+                        /*setCurrentOrder(record)
+                        setCurrentLayout(layoutRecord.layout)*/
                     }}>{act}</Button>
                 </div>))
             }
@@ -85,7 +87,8 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
             layout: layout.address,
             actions: layout.actions,
             key: layout.key,
-            status: layout.status
+            status: layout.status,
+            id: layout.id
         }))
 
         return <Table columns={columns} dataSource={data} pagination={false}/>
@@ -105,14 +108,18 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
                 }}
                 scroll={{x: 900}}
             />
-            {
+            <OrderFulfillmentContainer
+                visible={visible}
+                setVisible={setVisible}
+            />
+            {/*{
                 currentOrder && currentLayout && <OrderFulfillmentContainer
                     visible={visible}
                     currentOrder={currentOrder}
                     currentLayout={currentLayout}
                     setVisible={setVisible}
                 />
-            }
+            }*/}
         </div>
     )
 }

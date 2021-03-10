@@ -61,40 +61,6 @@ export const getOrdersData = (state) => {
     }))
 }
 
-export const getBuildingOptions = (state) => {
-    const buildingAddresses = state.orders.addresses ? state.orders.addresses.buildings : []
-    const addressesCount = buildingAddresses.length
-
-    if (addressesCount === 0) return []
-
-    let groupedBuildingsCount = 0
-    const buildingOptions = []
-
-    do {
-        const buildingsInComplex = buildingAddresses.filter((el, index) =>
-            buildingAddresses[groupedBuildingsCount].complexId === el.complexId)
-        if (buildingsInComplex.every(el => el.complexId && +el.complexId !== -1)) {
-            buildingOptions.push({
-                value: buildingsInComplex[0].complexId,
-                label: state.orders.addresses.complexes.filter(complex => +complex.id === +buildingsInComplex[0].complexId)[0].name,
-                children: buildingsInComplex.map(building => ({
-                    value: building.id,
-                    label: building.address.shortName
-                }))
-            })
-        } else {
-            buildingOptions.push({
-                value: -1,
-                label: 'Отдельные здания',
-                children: [...buildingsInComplex]
-            })
-        }
-        groupedBuildingsCount += buildingsInComplex.length
-    } while (groupedBuildingsCount < addressesCount)
-
-    return buildingOptions
-}
-
 export const getBuildings = (state) => state.orders.addresses ? state.orders.addresses.buildings : []
 
 export const getCities = (state) => {
@@ -153,6 +119,21 @@ export const getComplexes = (state) => {
     }, [])
 
     return reduceAddressesToComplexes(state.orders.addresses.concat(state.orders.newComplexes))
+}
+
+export const getLayoutsInfo = (state) => {
+    if (state.orders.currentLayoutIds.length === 0 ) return []
+
+    const currentOrder = state.orders.orders.filter(order =>
+        order.layouts.some(layout => state.orders.currentLayoutIds.includes(layout.id)))[0]
+
+    return currentOrder.layouts.map(layout => ({
+        ...layout,
+        orderDescription: currentOrder.orderDescription,
+        deadline: currentOrder.deadline,
+        createdAt: currentOrder.createdAt,
+        createdBy: currentOrder.createdBy
+    }))
 }
 
 export const getStreets = (state) => {
