@@ -7,8 +7,8 @@ export const ordersAPI = {
     getAddresses(city) {
         return instance.get(`addresses?city=${city}`)
     },
-    sendModelFiles(layoutId, formData) {
-        return instance.post(`orders/layouts/${layoutId}`, formData, {
+    sendModelFiles(orderId, layoutId, formData) {
+        return instance.post(`orders/${orderId}/layouts/${layoutId}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

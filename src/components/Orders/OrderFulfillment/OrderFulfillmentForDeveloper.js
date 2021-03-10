@@ -31,16 +31,9 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
     return (
         <Formik
             initialValues={{}}
-            onSubmit={handleSubmit}
         >
             {
-                ({
-                     handleChange,
-                     handleBlur,
-                     setFieldValue,
-                     handleSubmit,
-                     values
-                 }) => (
+                ({}) => (
                     <Drawer
                         title="Выполнение заказа"
                         width={800}
@@ -54,7 +47,8 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                 </Button>
                                 <Button onClick={() => {
                                     if (files.length > 0) {
-                                        // handleSubmit(currentLayout.id, files)
+                                        console.log(layoutsInfo[0].orderId)
+                                        handleSubmit(layoutsInfo[0].orderId, layoutsInfo[0].id, files)
                                         setVisible(false)
                                     }
                                 }} type="primary">

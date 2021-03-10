@@ -132,7 +132,8 @@ export const getLayoutsInfo = (state) => {
         orderDescription: currentOrder.orderDescription,
         deadline: currentOrder.deadline,
         createdAt: currentOrder.createdAt,
-        createdBy: currentOrder.createdBy
+        createdBy: currentOrder.createdBy,
+        orderId: currentOrder.id
     }))
 }
 
