@@ -180,7 +180,7 @@ export const addComplex = (complex: ComplexType) => ({type: ADD_COMPLEX, complex
 
 export const getAddressesByCityName = (city: string) => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getAddresses(city)
-    dispatch(setAddresses(response))
+    dispatch(setAddresses(response.data))
 }
 
 export const getCitiesByNamePrefix = (prefix: string) => async (dispatch: Dispatch) => {
@@ -190,20 +190,17 @@ export const getCitiesByNamePrefix = (prefix: string) => async (dispatch: Dispat
 
 export const getCompanyOrders = () => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getOrders()
-    console.log(response.data)
     dispatch(setOrders(response.data))
 }
 
 export const getAllOrders = () => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getAllOrders()
-    console.log(response.data)
     dispatch(setOrders(response.data))
 }
 
 export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
-    alert(JSON.stringify(order))
     await ordersAPI.sendNewOrder(order)
-    getCompanyOrders()
+    await getCompanyOrders()
 }
 
 export default ordersReducer

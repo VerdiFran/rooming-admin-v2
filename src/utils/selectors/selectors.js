@@ -26,16 +26,38 @@ export const getOrdersData = (state) => {
     if (!state.orders.orders || state.orders.orders.length === 0) return []
 
     const orderIdIterator = IdGenerator()
+    const layoutIdIterator = IdGenerator()
     const userRoles = getUserRoles(state)
 
     return state.orders.orders.map(order => ({
-        id: orderIdIterator.next().value,
+        key: orderIdIterator.next().value,
         description: order.orderDescription,
         deadline: order.deadline,
-        addresses: order.layouts.map(addr => `${addr.building.address.city}, ${addr.building.address.street}, ${addr.building.address.house}`),
-        actions: userRoles.includes(EMPLOYEE) ? ['посмотреть', 'изменить', 'отменить'] :
-            userRoles.includes(DEVELOPER) ? [] :
-                userRoles.includes(ADMIN) ? [] : []
+        addresses: order.layouts.map(addr =>
+            `${addr.building.address.city}, ${addr.building.address.street}, ${addr.building.address.house}`),
+        layouts: order.layouts.map(layout => ({
+            id: layout.id,
+            key: layoutIdIterator.next().value,
+            description: layout.description,
+            address: {
+                city: layout.building.address.city,
+                complexName: layout.building.complex.name,
+                street: layout.building.address.street,
+                house: layout.building.address.house
+            },
+            status: layout.layoutOrderStatus,
+            createdAt: layout.createdAt,
+            actions: userRoles.includes(EMPLOYEE) ? ['посмотреть', 'изменить', 'удалить']
+                : userRoles.includes(DEVELOPER) ? ['посмотреть', 'выполнить']
+                    : userRoles.includes(ADMIN) ? ['посмотреть', 'выполнить'] : ['посмотреть']
+        })),
+        createdAt: order.createdAt,
+        createdBy: order.createdBy.company
+            ? `${order.createdBy.company.name} (${order.createdBy.firstName} ${order.createdBy.lastName})`
+            : `${order.createdBy.firstName} ${order.createdBy.lastName}`,
+        actions: userRoles.includes(EMPLOYEE) ? ['посмотреть', 'изменить', 'отменить']
+            : userRoles.includes(DEVELOPER) ? ['посмотреть', 'выполнить']
+                : userRoles.includes(ADMIN) ? ['посмотреть', 'выполнить'] : ['посмотреть']
     }))
 }
 
@@ -80,7 +102,7 @@ export const getCities = (state) => {
 }
 
 export const getAddresses = (state) => {
-    return state.orders.addresses.length > 0
+    return state.orders.addresses.length > 0 || state.orders.newAddresses.length > 0
         ? state.orders.addresses.concat(state.orders.newAddresses).reduce((groupedAddresses, currAddr) => {
             const currComplex = groupedAddresses.find((addr) => addr.value === currAddr.complexId)
             if (currComplex) {
@@ -121,7 +143,7 @@ export const getAddresses = (state) => {
 }
 
 export const getComplexes = (state) => {
-    return state.orders.addresses.concat(state.orders.newComplexes).reduce((acc, currAddr) => {
+    const reduceAddressesToComplexes = (addresses) => addresses.reduce((acc, currAddr) => {
         return acc.some(complex => complex.value === currAddr.complexId)
             ? acc
             : [...acc, {
@@ -129,6 +151,8 @@ export const getComplexes = (state) => {
                 label: currAddr.complexName
             }]
     }, [])
+
+    return reduceAddressesToComplexes(state.orders.addresses.concat(state.orders.newComplexes))
 }
 
 export const getStreets = (state) => {

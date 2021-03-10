@@ -43,7 +43,7 @@ const OrderFulfillmentForDeveloper = ({visible, currentOrder, currentLayout, set
                  }) => (
                     <Drawer
                         title="Выполнение заказа"
-                        width={600}
+                        width={800}
                         onClose={() => setVisible(false)}
                         visible={visible}
                         bodyStyle={{paddingBottom: 80}}
@@ -71,13 +71,15 @@ const OrderFulfillmentForDeveloper = ({visible, currentOrder, currentLayout, set
                                 layout="vertical"
                             >
                                 <Descriptions.Item label="Город">{currentLayout.city}</Descriptions.Item>
-                                <Descriptions.Item label="Адрес"
-                                                   span="2">{currentLayout.shortAddress}</Descriptions.Item>
-                                <Descriptions.Item label="Компания">{currentOrder.companyName}</Descriptions.Item>
+                                <Descriptions.Item label="Адрес" span="2">
+                                    {`Ул. ${currentLayout.street}, д. ${currentLayout.house}`}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="Компания">{currentOrder.createdBy}</Descriptions.Item>
                                 <Descriptions.Item label="Создан">{currentOrder.createdAt}</Descriptions.Item>
                                 <Descriptions.Item label="Крайний срок">{currentOrder.deadline}</Descriptions.Item>
-                                <Descriptions.Item label="Описание планировки"
-                                                   span="3">{currentLayout.description}</Descriptions.Item>
+                                <Descriptions.Item label="Описание планировки" span="3">
+                                    {currentLayout.description}
+                                </Descriptions.Item>
                                 <Descriptions.Item
                                     label="Описание заказа">{currentOrder.description}</Descriptions.Item>
                             </Descriptions>

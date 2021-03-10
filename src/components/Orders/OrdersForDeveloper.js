@@ -3,6 +3,7 @@ import {Badge, Table, Button, Space, List, Popover} from 'antd'
 import styles from './Orders.module.scss'
 import OrderFulfillmentForDeveloper from './OrderFulfillment/OrderFulfillmentForDeveloper'
 import OrderFulfillmentContainer from './OrderFulfillment/OrderFulfillmentContainer'
+import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
 
 const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters, clearAll, handleChange}) => {
     const [currentOrder, setCurrentOrder] = useState(null)
@@ -54,21 +55,17 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
                 title: 'Планировки',
                 dataIndex: 'layout',
                 key: 'layout',
-                render: (layout) => layout.complex
-                    ? layout.index
-                        ? `${layout.city}, ${layout.complex}: ${layout.shortAddress} (${layout.index})`
-                        : `${layout.city}, ${layout.complex}: ${layout.shortAddress}`
-                    : layout.index
-                        ? `${layout.city}: ${layout.shortAddress} (${layout.index})`
-                        : `${layout.city}: ${layout.shortAddress}`
+                render: (layout) => `г. ${layout.city}, комплекс ${layout.complexName}: ул. ${layout.street}, д. ${layout.house}`
             },
             {
                 title: 'Статус',
-                dataIndex: 'isCompleted',
-                key: 'isCompleted',
-                render: (value) => value
-                    ? <Badge status="success" text="Выполнен" />
-                    : <Badge status="processing" text="В процессе" color="yellow"/>
+                dataIndex: 'status',
+                key: 'status',
+                render: (value) => value === READY_FOR_DEVELOPMENT
+                    ? <Badge status="default" text="Создан"/>
+                    : value === IN_PROGRESS
+                        ? <Badge status="processing" text="В процессе" color="yellow"/>
+                        : <Badge status="success" text="Выполнен" />
             },
             {
                 title: 'Действия',
@@ -84,11 +81,11 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
             }
         ]
 
-        const data = record.layouts.map(addr => ({
-            layout: addr,
-            actions: ['Выполнить'],
-            key: addr.key,
-            isCompleted: addr.isCompleted
+        const data = record.layouts.map(layout => ({
+            layout: layout.address,
+            actions: layout.actions,
+            key: layout.key,
+            status: layout.status
         }))
 
         return <Table columns={columns} dataSource={data} pagination={false}/>
@@ -102,7 +99,10 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
                 size="small"
                 tableLayout="auto"
                 onChange={handleChange}
-                expandable={{expandedRowRender, expandRowByClick: true}}
+                expandable={{
+                    expandedRowRender,
+                    expandRowByClick: true
+                }}
                 scroll={{x: 900}}
             />
             {
