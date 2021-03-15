@@ -5,8 +5,10 @@ import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
 import {FieldArray, Formik, FormikProvider, useFormik} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import {IdGenerator} from '../../../utils/generators/generators'
+import {login} from '../../../redux/reducers/authReducer'
 
-const NewOrderForm = ({visible, onClose, addNewOrder}) => {
+const NewOrderForm = ({visible, onClose, addNewOrder, sendOrderFiles}) => {
+
     const formik = useFormik({
         initialValues: {
             orderDescription: '',
@@ -27,25 +29,37 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                             name: '',
                             description: ''
                         }
-                    }
+                    },
+                    files: [],
+                    resources: []
                 }
             ]
         },
         onSubmit: values => {
+            /*values.layouts.forEach((layout, index) => {
+                const resources = sendOrderFiles(layout.files)
+                console.log(resources)
+                formik.setFieldValue(`layouts.${index}.resources`, resources)
+                delete layout.files
+            })
             addNewOrder({
                 order: {
                     orderDescription: values.orderDescription,
                     deadline: values.deadline.toISOString(),
                     layouts: values.layouts.map(layout =>
-                        layout.building.complexId && /new/.test(layout.building.complexId.toString()) && {
-                            ...layout,
-                            building: {
-                                ...layout.building,
-                                complexId: null
+                        layout.building.complexId && /new/.test(layout.building.complexId.toString()) ? {
+                                ...layout,
+                                building: {
+                                    ...layout.building,
+                                    complexId: null
+                                }
                             }
-                        })
+                            : {...layout})
                 }
-            })
+            })*/
+        },
+        onChange: e => {
+            console.log(e.currentTarget.value)
         }
     })
 
@@ -64,8 +78,40 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                                 Отмена
                             </Button>
                             <Button htmlType="submit" onClick={() => {
-                                formik.handleSubmit()
+                                const {values, setFieldValue} = formik
+
+                                values.layouts.forEach((layout, index) => {
+                                    const resources = sendOrderFiles(layout.files)
+                                    setFieldValue(`layouts.${index}.resources`, resources)
+
+                                    delete layout.files
+                                })
+
+                                addNewOrder({
+                                    order: {
+                                        orderDescription: values.orderDescription,
+                                        deadline: values.deadline.toISOString(),
+                                        layouts: values.layouts.map(layout => {
+                                            if (/new/.test(layout.buildingId.toString())) {
+                                                if (/new/.test(layout.building.complexId.toString())) {
+                                                    delete layout.building.complexId
+                                                    delete layout.buildingId
+                                                    return layout
+                                                } else {
+                                                    delete layout.buildingId
+                                                    delete layout.building.complex
+                                                    return layout
+                                                }
+                                            } else {
+                                                delete layout.building
+                                                return layout
+                                            }
+                                        })
+                                    }
+                                })
+
                                 onClose()
+                                formik.resetForm()
                             }} type="primary">
                                 Подтвердить
                             </Button>
@@ -121,7 +167,9 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                                                     name: '',
                                                     description: ''
                                                 }
-                                            }
+                                            },
+                                            files: [],
+                                            resources: []
                                         })
                                         }
                                     >Добавить модель</Button>

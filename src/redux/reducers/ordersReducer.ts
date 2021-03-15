@@ -11,6 +11,7 @@ const SET_ORDERS = 'SET-ORDERS'
 const SET_CURRENT_LAYOUTS_ID = 'SET_CURRENT_LAYOUTS_ID'
 
 const complexIdIterator = IdGenerator()
+const buildingIdIterator = IdGenerator()
 
 type ResponseCityType = {
     id: number
@@ -126,7 +127,10 @@ const ordersReducer = (state = initialState, action: any) => {
         case ADD_ADDRESS:
             return {
                 ...state,
-                newAddresses: [...state.addresses, action.address]
+                newAddresses: [...state.newAddresses, {
+                    ...action.address,
+                    buildingId: `new_${buildingIdIterator.next().value}`
+                }]
             }
         case ADD_COMPLEX:
             return {

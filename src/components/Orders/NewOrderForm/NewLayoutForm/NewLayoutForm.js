@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {InboxOutlined} from '@ant-design/icons'
-import {Card, Input, Space, Upload, message, Form, AutoComplete, Cascader} from 'antd'
+import {Card, Input, Space, Upload, message, Form, AutoComplete, Cascader, Modal} from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 import NewBuildingFormContainer from './NewBuildingForm/NewBuildingFormContainer'
 import useDebounce from '../../../../hooks/useDebounce'
+import {FieldArray} from 'formik'
 
 const NewLayoutForm = (props) => {
     const {
@@ -19,6 +20,11 @@ const NewLayoutForm = (props) => {
     const [citiesOptions, setCitiesOptions] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
     const [isSearching, setIsSearching] = useState(false)
+    const [previewVisible, setPreviewVisible] = useState(false)
+    const [previewImage, setPreviewImage] = useState('')
+    const [previewTitle, setPreviewTitle] = useState('')
+
+    const [files, setFiles] = useState([])
 
     const debouncedSearchTerm = useDebounce(searchTerm, 1000)
 
@@ -34,11 +40,33 @@ const NewLayoutForm = (props) => {
         }
     }, [cities, debouncedSearchTerm])
 
+    const handlePreview = async file => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj)
+        }
+
+        setPreviewImage(file.url || file.preview)
+        setPreviewVisible(true)
+        setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1))
+    }
+
+    const handleCancel = () => setPreviewVisible(false)
+
     const draggerProps = {
         name: 'file',
         multiple: true,
-        action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
         listType: 'picture-card',
+        accept: 'image/png',
+        customRequest: ({onSuccess, onError, file}) => {
+            try {
+                const files = formik.values.layouts[layoutIndex].files
+                setFieldValue(`layouts.${layoutIndex}.files`, [...files, file])
+            } catch (e) {
+                onError(e)
+            }
+
+            onSuccess(null, file)
+        },
         onChange(info) {
             const {status} = info.file
             if (status !== 'uploading') {
@@ -49,7 +77,17 @@ const NewLayoutForm = (props) => {
             } else if (status === 'error') {
                 message.error(`${info.file.name} file upload failed.`)
             }
-        }
+        },
+        onPreview: handlePreview
+    }
+
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.onload = () => resolve(reader.result)
+            reader.onerror = error => reject(error)
+        })
     }
 
     return (
@@ -62,7 +100,38 @@ const NewLayoutForm = (props) => {
                 <Space direction="vertical">
                     <Upload.Dragger
                         style={{width: '100%'}}
-                        {...draggerProps}
+                        // name={`layouts.${layoutIndex}.files`}
+                        multiple="true"
+                        listType='picture-card'
+                        accept='image/png'
+                        beforeUpload={(file, fileList) => {
+                            setFiles([...fileList])
+                        }}
+                        customRequest={(reqOption) => {
+                            const {onSuccess, onError, file} = reqOption
+                            // const files = [...formik.values.layouts[layoutIndex].files]
+
+                            try {
+                                // setFiles([...files, file])
+                            } catch (e) {
+                                onError(e)
+                            }
+
+                            onSuccess(null, file)
+                        }}
+                        onChange={(info) => {
+                            const {status} = info.file
+                            if (status !== 'uploading') {
+                                console.log(info.file, info.fileList)
+                            }
+                            if (status === 'done') {
+                                message.success(`${info.file.name} file uploaded successfully.`)
+                                formik.setFieldValue(`layouts.${layoutIndex}.files`, [...files])
+                            } else if (status === 'error') {
+                                message.error(`${info.file.name} file upload failed.`)
+                            }
+                        }}
+                        onPreview={handlePreview}
                     >
                         <p className="ant-upload-drag-icon">
                             <InboxOutlined/>
@@ -75,6 +144,14 @@ const NewLayoutForm = (props) => {
                             несколько изображений.
                         </p>
                     </Upload.Dragger>
+                    <Modal
+                        visible={previewVisible}
+                        title={previewTitle}
+                        footer={null}
+                        onCancel={handleCancel}
+                    >
+                        <img alt="example" style={{width: '100%'}} src={previewImage}/>
+                    </Modal>
                     <Space direction="vertical" style={{marginRight: '10px'}} align="start">
                         <Form.Item label="Город">
                             <AutoComplete
@@ -98,6 +175,7 @@ const NewLayoutForm = (props) => {
                                 ]}*/
                                 onChange={(value => {
                                     setFieldValue(`layouts.${layoutIndex}.buildingId`, value[2])
+                                    setFieldValue(`layouts.${layoutIndex}.building.complexId`, value[0])
                                 })}
                             />
                         </Form.Item>

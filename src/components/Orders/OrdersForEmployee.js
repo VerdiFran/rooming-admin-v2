@@ -72,7 +72,11 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                 onChange={handleChange}
                 scroll={{x: 900}}
             />
-            <NewOrderFormContainer visible={visible} showDrawer={showDrawer} onClose={onClose}/>
+            <NewOrderFormContainer
+                visible={visible}
+                showDrawer={showDrawer}
+                onClose={onClose}
+            />
         </div>
     )
 }

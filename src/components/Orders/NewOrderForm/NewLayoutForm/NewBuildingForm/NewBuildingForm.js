@@ -40,7 +40,6 @@ const NewBuildingForm = (props) => {
                                 city: formik.values.layouts[layoutIndex].building.address.city,
                                 street: formik.values.layouts[layoutIndex].building.address.street,
                                 house: formik.values.layouts[layoutIndex].building.address.house,
-                                buildingId: formik.values.layouts[layoutIndex].buildingId,
                                 complexId: formik.values.layouts[layoutIndex].building.complexId,
                                 complexName: formik.values.layouts[layoutIndex].building.complex.name
                             })
