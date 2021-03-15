@@ -1,13 +1,11 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {DatePicker} from 'formik-antd'
-import {Input, Button, Divider, Space, Drawer, Form, TimePicker} from 'antd'
+import {Input, Button, Divider, Space, Drawer, Form} from 'antd'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
-import {FieldArray, Formik, FormikProvider, useFormik} from 'formik'
+import {FieldArray, FormikProvider, useFormik} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
-import {IdGenerator} from '../../../utils/generators/generators'
-import {login} from '../../../redux/reducers/authReducer'
 
-const NewOrderForm = ({visible, onClose, addNewOrder, sendOrderFiles}) => {
+const NewOrderForm = ({visible, onClose, addNewOrder}) => {
 
     const formik = useFormik({
         initialValues: {
@@ -57,9 +55,6 @@ const NewOrderForm = ({visible, onClose, addNewOrder, sendOrderFiles}) => {
                             : {...layout})
                 }
             })*/
-        },
-        onChange: e => {
-            console.log(e.currentTarget.value)
         }
     })
 
@@ -78,39 +73,11 @@ const NewOrderForm = ({visible, onClose, addNewOrder, sendOrderFiles}) => {
                                 Отмена
                             </Button>
                             <Button htmlType="submit" onClick={() => {
-                                const {values, setFieldValue} = formik
+                                const {values} = formik
 
-                                values.layouts.forEach((layout, index) => {
-                                    const resources = sendOrderFiles(layout.files)
-                                    setFieldValue(`layouts.${index}.resources`, resources)
-
-                                    delete layout.files
-                                })
-
-                                addNewOrder({
-                                    order: {
-                                        orderDescription: values.orderDescription,
-                                        deadline: values.deadline.toISOString(),
-                                        layouts: values.layouts.map(layout => {
-                                            if (/new/.test(layout.buildingId.toString())) {
-                                                if (/new/.test(layout.building.complexId.toString())) {
-                                                    delete layout.building.complexId
-                                                    delete layout.buildingId
-                                                    return layout
-                                                } else {
-                                                    delete layout.buildingId
-                                                    delete layout.building.complex
-                                                    return layout
-                                                }
-                                            } else {
-                                                delete layout.building
-                                                return layout
-                                            }
-                                        })
-                                    }
-                                })
-
+                                addNewOrder(values)
                                 onClose()
+
                                 formik.resetForm()
                             }} type="primary">
                                 Подтвердить

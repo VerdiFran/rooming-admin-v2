@@ -57,7 +57,8 @@ type LayoutType = {
         }
     } | null
     layoutOrderStatus?: string
-    resources?: Array<any>
+    resources?: Array<number>
+    files?: Array<File>
 }
 
 type BuildingType = {
@@ -161,7 +162,10 @@ const setOrders = (orders: Array<OrderType>) => ({type: SET_ORDERS, orders})
 
 export const addAddress = (address: BuildingType) => ({type: ADD_ADDRESS, address})
 export const addComplex = (complex: ComplexType) => ({type: ADD_COMPLEX, complex})
-export const setCurrentLayoutIds = (currentLayoutIds: Array<number>) => ({type: SET_CURRENT_LAYOUTS_ID, currentLayoutIds})
+export const setCurrentLayoutIds = (currentLayoutIds: Array<number>) => ({
+    type: SET_CURRENT_LAYOUTS_ID,
+    currentLayoutIds
+})
 
 export const getAddressesByCityName = (city: string) => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getAddresses(city)
@@ -184,8 +188,67 @@ export const getAllOrders = () => async (dispatch: Dispatch) => {
 }
 
 export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
-    await ordersAPI.sendNewOrder(order)
+    const {orderDescription, deadline, layouts} = order
+
+    for (const layout of layouts) {
+        layout.resources = await sendOrderFiles(layout.files)
+        delete layout.files
+    }
+
+    const layoutsReadyForSending = layouts.map(layout => {
+        if (layout.buildingId && layout.building && /new/.test(layout.buildingId.toString())) {
+            if (layout.building.complexId && /new/.test(layout.building.complexId.toString())) {
+                return {
+                    ...layout,
+                    buildingId: null,
+                    building: {
+                        ...layout.building,
+                        complexId: null
+                    }
+                }
+            } else {
+                return {
+                    ...layout,
+                    buildingId: null,
+                    building: {
+                        ...layout.building,
+                        complex: null
+                    }
+                }
+            }
+        } else {
+            return {
+                ...layout,
+                building: null
+            }
+        }
+    })
+
+    await ordersAPI.sendNewOrder({
+        order: {
+            orderDescription,
+            deadline,
+            layouts: layoutsReadyForSending
+        }
+    })
     await getCompanyOrders()
+}
+
+const sendOrderFiles = async (files: Array<File> | undefined) => {
+
+    if (!files) return []
+
+    const fileIds: Array<number> = []
+
+    for (const file of files) {
+        let formData = new FormData()
+        formData.append('image', file)
+
+        const response = await ordersAPI.sendNewOrderFile(formData)
+        fileIds.push(response.data.id)
+    }
+
+    return fileIds
 }
 
 export default ordersReducer

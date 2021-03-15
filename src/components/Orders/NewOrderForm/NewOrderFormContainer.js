@@ -11,29 +11,8 @@ const mapStateToProps = (state) => ({
 
 const NewOrderFormContainer = (props) => {
 
-    const sendOrderFiles = (files) => {
-        const fileIds = []
-
-        files.forEach((file, index) => {
-            const fileReader = new FileReader()
-
-            fileReader.onload = async function (event) {
-                let formData = new FormData()
-                formData.append('image', file)
-
-                const response = await ordersAPI.sendNewOrderFile(formData)
-                fileIds.push(response.data.id)
-            }
-
-            fileReader.readAsText(file, 'Windows-1251')
-        })
-
-        return fileIds
-    }
-
     return <NewOrderForm
-        addNewOrder={props.addNewOrder}
-        sendOrderFiles={sendOrderFiles}
+        addNewOrder={addNewOrder}
         {...props}
     />
 }
