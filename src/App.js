@@ -8,7 +8,7 @@ import {compose} from 'redux'
 import {Redirect, BrowserRouter, Route, withRouter, Switch} from 'react-router-dom'
 import Home from './components/Home/Home'
 import {initializeApp} from './redux/reducers/appReducer'
-import {getInitialized, getIsAuth, getUserRole} from './utils/selectors/selectors'
+import {getInitialized, getIsAuth, getUserRoles} from './utils/selectors/selectors'
 import Preloader from './components/common/Preloader/Preloader'
 import HeaderContainer from './components/Header/HeaderContainer'
 import {Layout, PageHeader} from 'antd'
@@ -70,7 +70,7 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => ({
   initialized: getInitialized(state),
-  userRole: getUserRole(state),
+  userRole: getUserRoles(state),
   isAuth: getIsAuth(state)
 })
 

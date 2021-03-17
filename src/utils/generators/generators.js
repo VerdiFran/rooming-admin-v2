@@ -1,6 +1,6 @@
 
 export function* IdGenerator() {
-    let id = 1000
+    let id = 1
     for (; ; id++) {
         yield id
     }

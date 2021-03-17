@@ -1,4 +1,4 @@
-import {DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
+import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
 import {buildingsAPI} from '../../api/buildingsAPI'
 
@@ -18,154 +18,131 @@ export const getUserData = (state) => {
     }
 }
 
-export const getUserRole = (state) => {
+export const getUserRoles = (state) => {
     return state.auth.roles
 }
 
 export const getOrdersData = (state) => {
-
     if (!state.orders.orders || state.orders.orders.length === 0) return []
 
     const orderIdIterator = IdGenerator()
-    const userRoles = getUserRole(state)
-
-    const separateComplexes = (complexes) => {
-        let layouts = []
-        const layoutsIdIterator = IdGenerator()
-
-        complexes.forEach(complex => {
-            complex.buildings.forEach(building => {
-                building.layouts.forEach((layout, idx) =>
-                    layouts.push(building.layouts.length > 1
-                        ? {
-                            city: complex.address.city,
-                            complexName: complex.name,
-                            shortAddress: building.address.streetAndHouse,
-                            index: idx + 1,
-                            key: layoutsIdIterator.next().value,
-                            description: layout.description,
-                            id: layout.id,
-                            isCompleted: layout.isCompleted
-                        }
-                        : {
-                            city: complex.address.city,
-                            complexName: complex.name,
-                            shortAddress: building.address.streetAndHouse,
-                            key: layoutsIdIterator.next().value,
-                            description: layout.description,
-                            id: layout.id,
-                            isCompleted: layout.isCompleted
-                        }
-                    )
-                )
-            })
-        })
-
-        return layouts
-    }
-
-    const separateBuildings = (buildings) => {
-        let layouts = []
-        const layoutsIdIterator = IdGenerator()
-
-        buildings.forEach(building => {
-            building.layouts.forEach((layout, idx) =>
-                layouts.push(building.layouts.length > 1
-                    ? {
-                        city: building.address.city,
-                        shortAddress: building.address.streetAndHouse,
-                        index: idx + 1,
-                        key: layoutsIdIterator.next().value,
-                        description: layout.description,
-                        id: layout.id,
-                        isCompleted: layout.isCompleted
-                    }
-                    : {
-                        city: building.address.city,
-                        shortAddress: building.address.streetAndHouse,
-                        key: layoutsIdIterator.next().value,
-                        description: layout.description,
-                        id: layout.id,
-                        isCompleted: layout.isCompleted
-                    }
-                )
-            )
-        })
-
-        return layouts
-    }
+    const layoutIdIterator = IdGenerator()
+    const userRoles = getUserRoles(state)
 
     return state.orders.orders.map(order => ({
         key: orderIdIterator.next().value,
-        description: order.order.description,
-        deadline: order.order.deadline,
-        companyName: order.companyName,
+        description: order.orderDescription,
+        deadline: order.deadline,
+        addresses: order.layouts.map(addr =>
+            `${addr.building.address.city}, ${addr.building.address.street}, ${addr.building.address.house}`),
+        layouts: order.layouts.map(layout => ({
+            id: layout.id,
+            key: layoutIdIterator.next().value,
+            description: layout.description,
+            address: {
+                city: layout.building.address.city,
+                complexName: layout.building.complex.name,
+                street: layout.building.address.street,
+                house: layout.building.address.house
+            },
+            status: layout.layoutOrderStatus,
+            createdAt: layout.createdAt,
+            actions: userRoles.includes(EMPLOYEE) ? ['посмотреть', 'изменить', 'удалить']
+                : userRoles.includes(DEVELOPER) ? ['посмотреть', 'выполнить']
+                    : userRoles.includes(ADMIN) ? ['посмотреть', 'выполнить'] : ['посмотреть']
+        })),
         createdAt: order.createdAt,
-        addresses:
-            order.order.ordersForBuilding.map(building => `${building.address.city}, ${building.address.streetAndHouse}`)
-                .concat(order.order.ordersForComplex
-                    .map(complex => `${complex.address.city}, ${complex.name}: ${complex.buildings.map(building => `${building.address.streetAndHouse}`)
-                        .join(', ')}`)),
-        layouts: separateBuildings(order.order.ordersForBuilding).concat(separateComplexes(order.order.ordersForComplex)),
-        actions: userRoles.includes(EMPLOYEE)
-            ? ['Посмотреть', 'Изменить', 'Отменить']
-            : userRoles.includes(DEVELOPER)
-                ? ['Посмотреть', 'Выполнить']
-                : ['Посмотреть']
+        createdBy: order.createdBy.company
+            ? `${order.createdBy.company.name} (${order.createdBy.firstName} ${order.createdBy.lastName})`
+            : `${order.createdBy.firstName} ${order.createdBy.lastName}`,
+        actions: userRoles.includes(EMPLOYEE) ? ['посмотреть', 'изменить', 'отменить']
+            : userRoles.includes(DEVELOPER) ? ['посмотреть', 'выполнить']
+                : userRoles.includes(ADMIN) ? ['посмотреть', 'выполнить'] : ['посмотреть']
     }))
-}
-
-export const getBuildingOptions = (state) => {
-    const buildingAddresses = state.orders.addresses ? state.orders.addresses.buildings : []
-    const addressesCount = buildingAddresses.length
-
-    if (addressesCount === 0) return []
-
-    let groupedBuildingsCount = 0
-    const buildingOptions = []
-
-    do {
-        const buildingsInComplex = buildingAddresses.filter((el, index) =>
-            buildingAddresses[groupedBuildingsCount].complexId === el.complexId)
-        if (buildingsInComplex.every(el => el.complexId && +el.complexId !== -1)) {
-            buildingOptions.push({
-                value: buildingsInComplex[0].complexId,
-                label: state.orders.addresses.complexes.filter(complex => +complex.id === +buildingsInComplex[0].complexId)[0].name,
-                children: buildingsInComplex.map(building => ({
-                    value: building.id,
-                    label: building.address.shortName
-                }))
-            })
-        } else {
-            buildingOptions.push({
-                value: -1,
-                label: 'Отдельные здания',
-                children: [...buildingsInComplex]
-            })
-        }
-        groupedBuildingsCount += buildingsInComplex.length
-    } while (groupedBuildingsCount < addressesCount)
-
-    return buildingOptions
-}
-
-export const getComplexOptions = (state) => {
-    return state.orders.addresses ? state.orders.addresses.complexes.map(complex => ({
-        value: complex.id,
-        label: complex.name
-    })) : []
 }
 
 export const getBuildings = (state) => state.orders.addresses ? state.orders.addresses.buildings : []
 
-export const getComplexes = (state) => state.orders.addresses ? state.orders.addresses.complexes.map(complex => ({
-    id: complex.id,
-    name: complex.name,
-    description: complex.description,
-    city: complex.city,
-})) : []
+export const getCities = (state) => {
+    return state.orders.cities.length > 0 ? state.orders.cities : []
+}
 
-export const getCities = (state) => state.orders.addresses ? state.orders.addresses.cities : []
+export const getAddresses = (state) => {
+    return state.orders.addresses.length > 0 || state.orders.newAddresses.length > 0
+        ? state.orders.addresses.concat(state.orders.newAddresses).reduce((groupedAddresses, currAddr) => {
+            const currComplex = groupedAddresses.find((addr) => addr.value === currAddr.complexId)
+            if (currComplex) {
+                const currStreet = currComplex.children.find((street) => street.value === currAddr.street)
+                if (currStreet) {
+                    currStreet.children.push({
+                        value: currAddr.buildingId,
+                        label: currAddr.house
+                    })
+                    return groupedAddresses
+                } else {
+                    currComplex.children.push({
+                        value: currAddr.street,
+                        label: currAddr.street,
+                        children: [{
+                            value: currAddr.buildingId,
+                            label: currAddr.house
+                        }]
+                    })
+                    return groupedAddresses
+                }
+            } else {
+                return [...groupedAddresses, {
+                    value: currAddr.complexId,
+                    label: currAddr.complexName,
+                    children: [{
+                        value: currAddr.street,
+                        label: currAddr.street,
+                        children: [{
+                            value: currAddr.buildingId,
+                            label: currAddr.house
+                        }]
+                    }]
+                }]
+            }
+        }, [])
+        : []
+}
+
+export const getComplexes = (state) => {
+    const reduceAddressesToComplexes = (addresses) => addresses.reduce((acc, currAddr) => {
+        return acc.some(complex => complex.value === currAddr.complexId)
+            ? acc
+            : [...acc, {
+                value: currAddr.complexId,
+                label: currAddr.complexName
+            }]
+    }, [])
+
+    return reduceAddressesToComplexes(state.orders.addresses.concat(state.orders.newComplexes))
+}
+
+export const getLayoutsInfo = (state) => {
+    if (state.orders.currentLayoutIds.length === 0 ) return []
+
+    const currentOrder = state.orders.orders.filter(order =>
+        order.layouts.some(layout => state.orders.currentLayoutIds.includes(layout.id)))[0]
+
+    return currentOrder.layouts.map(layout => ({
+        ...layout,
+        orderDescription: currentOrder.orderDescription,
+        deadline: currentOrder.deadline,
+        createdAt: currentOrder.createdAt,
+        createdBy: currentOrder.createdBy,
+        orderId: currentOrder.id
+    }))
+}
+
+export const getStreets = (state) => {
+    return state.orders.addresses.map(addr => ({
+        streetName: addr.street,
+        complexId: addr.complexId
+    }))
+}
 
 export const getFinishedBuildings = (state) => {
     const complexesKeyIterator = IdGenerator()

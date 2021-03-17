@@ -6,13 +6,13 @@ const SET_USER_DATA = 'SET-USER-DATA'
 const LOGOUT = 'LOGOUT'
 
 const initialState = {
-    isAuth: true,
+    isAuth: false,
     company: {
         name: 'CompanyName'
     },
     firstName: 'FirstName',
     lastName: 'LastName',
-    roles: [DEVELOPER]
+    roles: [EMPLOYEE]
 }
 
 const authReducer = (state = initialState, action: any) => {

@@ -1,42 +1,30 @@
 import React from 'react'
-import {getBuildingOptions, getCities, getComplexOptions} from '../../../../utils/selectors/selectors'
+import {getAddresses, getCities} from '../../../../utils/selectors/selectors'
 import {connect} from 'react-redux'
-import NewLayoutReduxForm from './NewLayoutForm'
+import throttle from 'lodash.throttle'
 import NewLayoutForm from './NewLayoutForm'
-import {Typography} from 'antd'
-import {IdGenerator} from '../../../../utils/generators/generators'
-
-const layoutIdIterator = IdGenerator()
+import {getAddressesByCityName, getCitiesByNamePrefix} from '../../../../redux/reducers/ordersReducer'
+import {connect as formikConnect} from 'formik'
 
 const mapStateToProps = (state) => ({
-    buildingOptions: getBuildingOptions(state),
-    cities: getCities(state)
+    cities: getCities(state),
+    addresses: getAddresses(state)
 })
 
-const handleSubmit = (formData) => {
-    // console.log(formData)
-
-    //const {complexName, complexAddress, complexDescription} = formData
-
-    /*addComplexOption({
-        value: complexName,
-        label: complexName,
-        address: complexAddress,
-        description: complexDescription
-    })*/
-}
-
 class NewLayoutFormContainer extends React.PureComponent {
-    lId = layoutIdIterator.next().value
-
     render() {
         return <NewLayoutForm
-            lId={this.lId}
-            buildingOptions={this.props.buildingOptions}
-            handleSubmit={handleSubmit}
+            layoutIndex={this.props.layoutIndex}
             cities={this.props.cities}
+            addresses={this.props.addresses}
+            getAddresses={this.props.getAddressesByCityName}
+            getCitiesByNamePrefix={this.props.getCitiesByNamePrefix}
+            {...this.props}
         />
     }
 }
 
-export default connect(mapStateToProps)(NewLayoutFormContainer)
+export default connect(
+    mapStateToProps,
+    {getAddressesByCityName, getCitiesByNamePrefix}
+)(formikConnect(NewLayoutFormContainer))
