@@ -4,7 +4,6 @@ import Buildings from './Buildings'
 import {getFinishedBuildings} from '../../utils/selectors/selectors'
 import {compose} from 'redux'
 import {withAuthRedirect} from '../../hoc/withAuthRedirect'
-import {getFinishedCompanyBuildings} from '../../redux/reducers/buildingsReducer'
 
 const mapStateToProps = (state) => ({
     buildings: getFinishedBuildings(state)
@@ -22,5 +21,5 @@ class BuildingsContainer extends React.PureComponent {
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, {getFinishedCompanyBuildings})
+    connect(mapStateToProps, {})
 )(BuildingsContainer)

@@ -1,14 +1,10 @@
 import React, {useState} from 'react'
 import {Popover, List, Table, Button, Space, Drawer, Form, Col, Row, Input, Select, DatePicker} from 'antd'
-import {PlusOutlined} from '@ant-design/icons'
 import styles from './Orders.module.scss'
-import NewOrderReduxForm from './NewOrderForm/NewOrderForm'
 import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
 
-const OrdersForEmployee = ({ordersData, filteredInfo, sortedInfo, clearFilters, clearAll, handleChange, getCompanyAddresses}) => {
+const OrdersForEmployee = ({ordersData, handleChange}) => {
     const [visible, setVisible] = useState(false)
-
-    const {Option} = Select
 
     const columns = [
         {
@@ -32,10 +28,14 @@ const OrdersForEmployee = ({ordersData, filteredInfo, sortedInfo, clearFilters, 
             ellipsis: false,
             render: (addrs => <List size="small">
                 {addrs.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
-                {addrs.length > 2 && <Popover content={<List size="small">{addrs.map(addr =>
-                    <List.Item>{addr}</List.Item>)}</List>}>
-                    <List.Item style={{fontStyle: "italic"}}>все адреса</List.Item>
-                </Popover>}
+                {
+                    addrs.length > 2 &&
+                    <Popover content={<List size="small">
+                        {addrs.map(addr => <List.Item>{addr}</List.Item>)}
+                    </List>}>
+                        <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
+                    </Popover>
+                }
             </List>)
         },
         {
@@ -60,9 +60,9 @@ const OrdersForEmployee = ({ordersData, filteredInfo, sortedInfo, clearFilters, 
     return (
         <div className={styles.contentContainer}>
             <Space style={{marginBottom: 16}}>
-                <Button type="primary" onClick={() => {showDrawer(); getCompanyAddresses()}}>Добавить заказ</Button>
-                {/*<Button onClick={clearFilters}>Очистить фильтры</Button>*/}
-                {/*<Button onClick={clearAll}>Clear filters and sorters</Button>*/}
+                <Button type="primary" onClick={() => {
+                    showDrawer()
+                }}>Добавить заказ</Button>
             </Space>
             <Table
                 columns={columns}
@@ -72,7 +72,11 @@ const OrdersForEmployee = ({ordersData, filteredInfo, sortedInfo, clearFilters, 
                 onChange={handleChange}
                 scroll={{x: 900}}
             />
-            <NewOrderFormContainer visible={visible} showDrawer={showDrawer} onClose={onClose}/>
+            <NewOrderFormContainer
+                visible={visible}
+                showDrawer={showDrawer}
+                onClose={onClose}
+            />
         </div>
     )
 }

@@ -1,24 +1,31 @@
-import {instance} from './commonAPI'
+import {instance} from './instances'
 
 export const ordersAPI = {
+    getAddresses(city) {
+        return instance.get(`addresses?city=${city}`)
+    },
+    getOrders() {
+        return instance.get(`company/orders?pageNumber=${1}&pageSize=${10}`)
+    },
+    getAllOrders() {
+        return instance.get(`orders?pageNumber=${1}&pageSize=${10}`)
+    },
     sendNewOrder(order) {
         return instance.post('company/orders', order)
     },
-    getAddresses() {
-        return instance.get('addresses')
-    },
-    sendModelFiles(layoutId, formData) {
-        return instance.post(`orders/layouts/${layoutId}`, formData, {
+    sendNewOrderFile(formData) {
+        return instance.post(`resources/images`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         })
     },
-    getOrders() {
-        return instance.get('company/orders')
+    sendModelFiles(orderId, layoutId, formData) {
+        return instance.post(`orders/${orderId}/layouts/${layoutId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
     },
-    getAllOrders() {
-        return instance.get('orders')
-    }
 }
 

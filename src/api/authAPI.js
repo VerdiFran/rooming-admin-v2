@@ -1,6 +1,6 @@
 import * as axios from 'axios'
 import {Agent} from 'https'
-import {instance} from './commonAPI'
+import {instance} from './instances'
 
 let token
 
