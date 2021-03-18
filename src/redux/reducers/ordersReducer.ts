@@ -245,7 +245,7 @@ const sendOrderFiles = async (files: Array<File> | undefined) => {
         formData.append('image', file)
 
         const response = await ordersAPI.sendNewOrderFile(formData)
-        fileIds.push(response.data.id)
+        fileIds.push(response.data)
     }
 
     return fileIds

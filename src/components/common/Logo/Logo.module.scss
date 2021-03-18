@@ -1,0 +1,13 @@
+@import '../../../scss/variables';
+
+.logoContainer {
+    height: $header-height;
+    background-color: transparent;
+    font-family: $main-font;
+    font-size: 18pt;
+}
+
+.img {
+    margin: 6px;
+    width: 42px;
+}

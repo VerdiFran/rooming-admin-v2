@@ -1,4 +1,4 @@
-@import '../../scss/colors';
+@import '../../scss/variables';
 
 .container {
     width: 100%;
@@ -6,5 +6,5 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $bcg-color;
+    background-color: $beige-color;
 }

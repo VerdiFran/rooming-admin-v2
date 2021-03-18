@@ -1,4 +1,4 @@
-@import '../../../../scss/colors';
+@import '../../../../scss/variables';
 
 .authForm {
     width: 90%;
@@ -15,7 +15,7 @@
     width: 12px;
     height: 12px;
     margin: 0 0 0 8px;
-    color: $warning-icon-color;
+    color: $bright-red-color;
 }
 
 .validatedField {

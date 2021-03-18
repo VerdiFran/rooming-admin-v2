@@ -1,9 +1,8 @@
-@import './../../scss/fonts';
-@import './../../scss/colors';
+@import '../../scss/variables';
 
 .homeContainer {
     width: 100%;
-    height: 100%;
+    height: auto;
     padding: 0 20px;
     display: flex;
     flex-direction: row;
