@@ -36,16 +36,8 @@ const SideMenuPanelForEmployee = ({userRole, subMenuStyle}) => {
             >
                 <SubMenu key="sub1" icon={<MailOutlined/>} title="Модели" style={subMenuStyle}>
                     <Menu.Item key="1"><NavLink to="/orders">Заказы</NavLink></Menu.Item>
-                    <Menu.Item key="2"><NavLink to="/buildings">Готовые модели</NavLink></Menu.Item>
-                    {/*<Menu.Item key="4">Настройки моделей</Menu.Item>*/}
+                    <Menu.Item key="2"><NavLink to="/buildings">Планировки</NavLink></Menu.Item>
                 </SubMenu>
-                {/*<SubMenu key="sub2" icon={<SettingOutlined/>} title="Профиль пользователя" style={subMenuStyle}>
-                    <Menu.Item key="5">Настройки профиля</Menu.Item>
-                </SubMenu>
-                <SubMenu key="sub4" icon={<SettingOutlined/>} title="Профиль компании" style={subMenuStyle}>
-                    <Menu.Item key="9">Добавление администратора</Menu.Item>
-                    <Menu.Item key="10">Настройки профиля</Menu.Item>
-                </SubMenu>*/}
             </Menu>
         </div>
     )

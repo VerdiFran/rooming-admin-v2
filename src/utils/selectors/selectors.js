@@ -1,6 +1,6 @@
 import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
-import {buildingsAPI} from '../../api/buildingsAPI'
+import {layoutsAPI} from '../../api/layoutsAPI'
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -145,43 +145,36 @@ export const getStreets = (state) => {
 }
 
 export const getFinishedBuildings = (state) => {
-    const complexesKeyIterator = IdGenerator()
-    const buildingsKeyIterator = IdGenerator()
-    const layoutsKeyIterator = IdGenerator()
 
-    return [
-        ...state.buildings.buildingComplexes.map(complex => ({
-            ...complex,
-            buildings: complex.buildings.map(building => ({
-                ...building,
-                layouts: building.layouts.map(layout => ({
-                    ...layout,
-                    actions: [{label: 'Скачать', handleSubmit: () => buildingsAPI.downloadFile(layout.id)}],
-                    key: layoutsKeyIterator.next().value
-                })),
-                key: buildingsKeyIterator.next().value
-            })),
-            key: complexesKeyIterator.next().value
-        })),
-        {
-            id: -1,
-            address: {
-                id: null,
-                city: '',
-                streetAndHouse: ''
-            },
-            name: 'Отдельные здания',
-            description: 'В этом разделе находятся здания, не входящие в какой-либо комплекс.',
-            buildings: state.buildings.buildings.map(building => ({
-                ...building,
-                layouts: building.layouts.map(layout => ({
-                    ...layout,
-                    actions: [{label: 'Скачать', handleSubmit: () => buildingsAPI.downloadFile(layout.id)}],
-                    key: layoutsKeyIterator.next().value
-                })),
-                key: buildingsKeyIterator.next().value
-            })),
-            key: complexesKeyIterator.next().value
+    const buildingsIdIterator = IdGenerator()
+    const layoutsIdIterator = IdGenerator()
+
+    return state.layouts.completedLayouts.reduce((prev, current) => { 
+        let buildings = [...prev]
+
+        for (const buildingOfLayout of current.buildings) {
+            const buildingFromPrev = prev.find(building => building.id == buildingOfLayout.id)
+
+            const layoutWithoutBuilding = {
+                ...current,
+                key: layoutsIdIterator.next().value,
+                buildings: [],
+                createdAt: new Date(current.createdAt)
+            }
+
+            if (buildingFromPrev) {
+                buildingFromPrev.layouts = [...buildingFromPrev.layouts, layoutWithoutBuilding] 
+                continue
+            }
+
+            const buildingWithLayouts = {
+                ...buildingOfLayout,
+                key: buildingsIdIterator.next().value,
+                layouts: [layoutWithoutBuilding]
+            }
+
+            buildings = [...buildings, buildingWithLayouts]
         }
-    ]
+        return buildings
+     }, [])
 }

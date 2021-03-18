@@ -1,7 +1,6 @@
 import React from 'react'
 import {getAddresses, getCities} from '../../../../utils/selectors/selectors'
 import {connect} from 'react-redux'
-import throttle from 'lodash.throttle'
 import NewLayoutForm from './NewLayoutForm'
 import {getAddressesByCityName, getCitiesByNamePrefix} from '../../../../redux/reducers/ordersReducer'
 import {connect as formikConnect} from 'formik'
