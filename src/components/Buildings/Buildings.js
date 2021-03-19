@@ -2,7 +2,7 @@ import React from 'react'
 import {Badge, Button, List, Popover, Table} from 'antd'
 import styles from './Buildings.module.scss'
 
-const Buildings = ({buildings}) => {
+const Buildings = ({buildings, pageSize, totalPages, getBuildingsWithCompletedLayouts}) => {
 
     const columns = [
         {
@@ -64,12 +64,16 @@ const Buildings = ({buildings}) => {
         />
     }
 
+    const changePage = (page, pageSize) => {
+        getBuildingsWithCompletedLayouts(page, pageSize)
+    }
+
     return (
         <div className={styles.contentContainer}>
             <Table
                 columns={columns}
                 dataSource={buildings}
-                pagination={{onChange: (page, pageSize) => console.log('pagination')}}
+                pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
                 size="small"
                 tableLayout="auto"
                 expandable={{expandedRowRender: expandedBuildingRowRender, expandRowByClick: true}}

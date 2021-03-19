@@ -31,11 +31,13 @@ type ComplexType = {
 }
 
 export type InitialStateType = {
-    completedLayouts: Array<LayoutType>
+    buildings: Array<BuildingType>
+    totalPages: number
 }
 
 const initialState: InitialStateType = {
-    completedLayouts: []
+    buildings: [],
+    totalPages: 0
 }
 
 
@@ -44,18 +46,23 @@ const layoutsReducer = (state = initialState, action: any) => {
         case SET_COMPLETED_LAYOUTS:
             return {
                 ...state,
-                completedLayouts: action.completedLayouts
+                buildings: action.buildings,
+                totalPages: action.totalPages
             }
         default:
             return state
     }
 }
 
-const setCompletedLayouts = (completedLayotus: Array<LayoutType>) => ({type: SET_COMPLETED_LAYOUTS, completedLayouts: completedLayotus})
+const setBuildingsWithCompletedLayouts = (buildings: Array<BuildingType>, totalPages: number) => ({
+    type: SET_COMPLETED_LAYOUTS,
+    buildings: buildings,
+    totalPages: totalPages
+})
 
-export const getCompletedCompanyBuildings = () => async (dispatch: Dispatch) => {
-    const response = await layoutsAPI.getCompletedLayouts()
-    dispatch(setCompletedLayouts(response.data))
+export const getBuildingsWithCompletedLayouts = (page: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
+    const response = await layoutsAPI.getBuildingsWithCompletedLayouts(page, pageSize)
+    dispatch(setBuildingsWithCompletedLayouts(response.data.content, response.data.total))
 }
 
 export default layoutsReducer

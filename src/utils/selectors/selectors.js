@@ -149,32 +149,14 @@ export const getFinishedBuildings = (state) => {
     const buildingsIdIterator = IdGenerator()
     const layoutsIdIterator = IdGenerator()
 
-    return state.layouts.completedLayouts.reduce((prev, current) => { 
-        let buildings = [...prev]
-
-        for (const buildingOfLayout of current.buildings) {
-            const buildingFromPrev = prev.find(building => building.id == buildingOfLayout.id)
-
-            const layoutWithoutBuilding = {
-                ...current,
-                key: layoutsIdIterator.next().value,
-                buildings: [],
-                createdAt: new Date(current.createdAt)
-            }
-
-            if (buildingFromPrev) {
-                buildingFromPrev.layouts = [...buildingFromPrev.layouts, layoutWithoutBuilding] 
-                continue
-            }
-
-            const buildingWithLayouts = {
-                ...buildingOfLayout,
-                key: buildingsIdIterator.next().value,
-                layouts: [layoutWithoutBuilding]
-            }
-
-            buildings = [...buildings, buildingWithLayouts]
-        }
-        return buildings
-     }, [])
+    return state.layouts.buildings.map(building => ({
+        ...building,
+        layouts: building.layouts.map(layout => ({
+            ...layout,
+            key: layoutsIdIterator.next().value
+        })),
+        key: buildingsIdIterator.next().value
+    }))
 }
+
+export const getTotalPages = (state) => state.layouts.totalPages
