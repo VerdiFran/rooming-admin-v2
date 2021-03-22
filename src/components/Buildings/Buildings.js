@@ -33,7 +33,9 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
                 title: 'Дата и время создания',
                 dataIndex: 'createdAt',
                 key: 'createdAt',
-                render: (date) => date.toLocaleString()
+                render: (date) => { 
+                    return new Date(date).toLocaleString()
+                }
             },
             {
                 title: 'Описание планировки',
