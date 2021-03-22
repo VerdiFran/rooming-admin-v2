@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
 import {Button, Drawer, Form, Select, Space, Input, AutoComplete} from 'antd'
+import {PlusOutlined, PlusSquareOutlined} from '@ant-design/icons'
 import NewComplexFormContainer from './NewComplexForm/NewComplexFormContainer'
-import {Formik} from 'formik'
+import styles from './NewBuildingForm.module.scss'
 
 const NewBuildingForm = (props) => {
     const {layoutIndex, complexes, streets, formik, handleSubmit} = props
@@ -21,9 +22,10 @@ const NewBuildingForm = (props) => {
     return (
         <Form>
             <Button
-                type="link"
+                type="dashed"
+                className={styles.newBuildingButton}
                 onClick={() => setVisible(true)}
-            >новое здание</Button>
+            ><PlusSquareOutlined/>новое здание</Button>
             <Drawer
                 title="Добавление нового здания"
                 width={500}
@@ -32,9 +34,10 @@ const NewBuildingForm = (props) => {
                 bodyStyle={{paddingBottom: 80}}
                 footer={
                     <div style={{textAlign: 'right'}}>
-                        <Button onClick={() => setVisible(false)} style={{marginRight: 8}}>
-                            Отмена
-                        </Button>
+                        <Button
+                            onClick={() => setVisible(false)}
+                            style={{marginRight: 8}}
+                        >Отмена</Button>
                         <Button onClick={() => {
                             handleSubmit({
                                 city: formik.values.layouts[layoutIndex].building.address.city,

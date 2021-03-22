@@ -18,6 +18,7 @@ class NewLayoutFormContainer extends React.PureComponent {
             addresses={this.props.addresses}
             getAddresses={this.props.getAddressesByCityName}
             getCitiesByNamePrefix={this.props.getCitiesByNamePrefix}
+            remove={this.props.remove}
             {...this.props}
         />
     }
