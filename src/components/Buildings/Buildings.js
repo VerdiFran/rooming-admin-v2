@@ -2,7 +2,7 @@ import React from 'react'
 import {Badge, Button, List, Popover, Table} from 'antd'
 import styles from './Buildings.module.scss'
 
-const Buildings = ({buildings, pageSize, totalPages, getBuildingsWithCompletedLayouts}) => {
+const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
 
     const columns = [
         {
@@ -65,7 +65,7 @@ const Buildings = ({buildings, pageSize, totalPages, getBuildingsWithCompletedLa
     }
 
     const changePage = (page, pageSize) => {
-        getBuildingsWithCompletedLayouts(page, pageSize)
+        setCurrentPage(page)
     }
 
     return (
