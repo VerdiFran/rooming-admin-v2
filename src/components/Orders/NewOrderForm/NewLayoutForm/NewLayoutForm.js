@@ -147,10 +147,7 @@ const NewLayoutForm = (props) => {
                     <Form.Item>
                         <div className={styles.orNewBuildingContainer}>
                             <span>или</span>
-                            <NewBuildingFormContainer
-                                layoutIndex={layoutIndex}
-                                setFieldValue={setFieldValue}
-                            />
+                            <NewBuildingFormContainer layoutIndex={layoutIndex}/>
                         </div>
                     </Form.Item>
                 </Space>

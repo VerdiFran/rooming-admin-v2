@@ -1,12 +1,18 @@
 import React, {useState} from 'react'
 import {Button, Drawer, Form, Space, Input, AutoComplete} from 'antd'
+import styles from './NewComplexForm.module.scss'
+import {PlusSquareOutlined} from '@ant-design/icons'
 
 const NewComplexForm = ({formik, layoutIndex, addComplex}) => {
     const [visible, setVisible] = useState(false)
 
     return (
-        <Form>
-            <Button type="link" onClick={() => setVisible(true)}>новый комплекс</Button>
+        <>
+            <Button
+                type="dashed"
+                className={styles.newComplexButton}
+                onClick={() => setVisible(true)}
+            ><PlusSquareOutlined/>новый комплекс</Button>
             <Drawer
                 title="Добавление нового комплекса"
                 width={400}
@@ -31,20 +37,22 @@ const NewComplexForm = ({formik, layoutIndex, addComplex}) => {
                     </div>
                 }
             >
-                <Form.Item label="Название комплекса">
+                <Form layout="vertical">
+                    <Form.Item label="Название комплекса">
                     <Input
                         onChange={(e) =>
                             formik.setFieldValue(`layouts.${layoutIndex}.building.complex.name`, e.currentTarget.value)}
                     />
                 </Form.Item>
-                <Form.Item label="Описание комплекса">
-                    <Input.TextArea
-                        onChange={(e) =>
-                            formik.setFieldValue(`layouts.${layoutIndex}.building.complex.description`, e.currentTarget.value)}
-                    />
-                </Form.Item>
+                    <Form.Item label="Описание комплекса">
+                        <Input.TextArea
+                            onChange={(e) =>
+                                formik.setFieldValue(`layouts.${layoutIndex}.building.complex.description`, e.currentTarget.value)}
+                        />
+                    </Form.Item>
+                </Form>
             </Drawer>
-        </Form>
+        </>
     )
 }
 
