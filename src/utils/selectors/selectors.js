@@ -1,6 +1,6 @@
 import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
-import {buildingsAPI} from '../../api/buildingsAPI'
+import {layoutsAPI} from '../../api/layoutsAPI'
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -145,43 +145,18 @@ export const getStreets = (state) => {
 }
 
 export const getFinishedBuildings = (state) => {
-    const complexesKeyIterator = IdGenerator()
-    const buildingsKeyIterator = IdGenerator()
-    const layoutsKeyIterator = IdGenerator()
 
-    return [
-        ...state.buildings.buildingComplexes.map(complex => ({
-            ...complex,
-            buildings: complex.buildings.map(building => ({
-                ...building,
-                layouts: building.layouts.map(layout => ({
-                    ...layout,
-                    actions: [{label: 'Скачать', handleSubmit: () => buildingsAPI.downloadFile(layout.id)}],
-                    key: layoutsKeyIterator.next().value
-                })),
-                key: buildingsKeyIterator.next().value
-            })),
-            key: complexesKeyIterator.next().value
+    const buildingsIdIterator = IdGenerator()
+    const layoutsIdIterator = IdGenerator()
+
+    return state.layouts.buildings.map(building => ({
+        ...building,
+        layouts: building.layouts.map(layout => ({
+            ...layout,
+            key: layoutsIdIterator.next().value
         })),
-        {
-            id: -1,
-            address: {
-                id: null,
-                city: '',
-                streetAndHouse: ''
-            },
-            name: 'Отдельные здания',
-            description: 'В этом разделе находятся здания, не входящие в какой-либо комплекс.',
-            buildings: state.buildings.buildings.map(building => ({
-                ...building,
-                layouts: building.layouts.map(layout => ({
-                    ...layout,
-                    actions: [{label: 'Скачать', handleSubmit: () => buildingsAPI.downloadFile(layout.id)}],
-                    key: layoutsKeyIterator.next().value
-                })),
-                key: buildingsKeyIterator.next().value
-            })),
-            key: complexesKeyIterator.next().value
-        }
-    ]
+        key: buildingsIdIterator.next().value
+    }))
 }
+
+export const getTotalPages = (state) => state.layouts.totalPages

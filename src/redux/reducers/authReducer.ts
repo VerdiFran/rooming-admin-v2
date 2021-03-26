@@ -65,9 +65,9 @@ export const refreshSession = () => async (dispatch: any) => {
     try {
         const response = await authAPI.refresh()
 
-        if (response.status === 200) {
-            dispatch(toggleIsAuth(true, response.data.accessToken))
-        }
+
+        dispatch(toggleIsAuth(true, response.data.accessToken))
+
     } catch (error) {
         dispatch(toggleIsAuth(false, undefined))
         throw 'Bad request, maybe refresh sessions not started'

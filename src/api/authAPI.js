@@ -16,7 +16,12 @@ export const authAPI = {
     me() {
         return instance.get('auth')
     },
-    refresh () {
-        return instance.post('auth/refresh') 
+    async refresh () {
+        const response = await instance.post('auth/refresh')
+
+        token = response.data.accessToken
+        instance.defaults.headers.common['Authorization'] = `Bearer ${token}` 
+
+        return response
     }
 }
