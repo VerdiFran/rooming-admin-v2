@@ -3,6 +3,7 @@ import {Agent} from "https"
 
 export const instance = axios.create({
     baseURL: 'http://176.119.158.143:8080/api',
+    withCredentials: true,
     httpsAgent: new Agent({
         rejectUnauthorized: false
     })
