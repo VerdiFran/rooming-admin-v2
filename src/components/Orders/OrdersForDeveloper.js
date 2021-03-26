@@ -1,14 +1,10 @@
 import React, {useState} from 'react'
-import {Badge, Table, Button, Space, List, Popover} from 'antd'
+import {Badge, Table, Button, List, Popover} from 'antd'
 import styles from './Orders.module.scss'
-import OrderFulfillmentForDeveloper from './OrderFulfillment/OrderFulfillmentForDeveloper'
 import OrderFulfillmentContainer from './OrderFulfillment/OrderFulfillmentContainer'
 import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
-import {setCurrentLayoutIds} from '../../redux/reducers/ordersReducer'
 
-const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters, clearAll, handleChange, setCurrentLayoutIds}) => {
-    /*const [currentOrder, setCurrentOrder] = useState(null)
-    const [currentLayout, setCurrentLayout] = useState(null)*/
+const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds}) => {
     const [visible, setVisible] = useState(false)
 
     const columns = [
@@ -24,16 +20,20 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
             dataIndex: 'deadline',
             key: 'deadline',
             ellipsis: false,
-            align: 'center'
+            align: 'center',
+            render: (date) => {
+                const newDate = new Date(date)
+                return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0,5)}`
+            }
         },
         {
             title: 'Адреса',
             dataIndex: 'addresses',
             key: 'addresses',
             ellipsis: false,
-            render: (addrs => <List size="small">
-                {addrs.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
-                {addrs.length > 2 && <Popover content={<List size="small">{addrs.map(addr =>
+            render: (addresses => <List size="small">
+                {addresses.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
+                {addresses.length > 2 && <Popover content={<List size="small">{addresses.map(addr =>
                     <List.Item>{addr}</List.Item>)}</List>}>
                     <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
                 </Popover>}
@@ -50,7 +50,7 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
         }
     ]
 
-    const expandedRowRender = (record, index, indent, expanded) => {
+    const expandedRowRender = (record) => {
         const columns = [
             {
                 title: 'Планировки',
@@ -72,12 +72,10 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
                 title: 'Действия',
                 dataIndex: 'actions',
                 key: 'actions',
-                render: ((text, layoutRecord, index) => layoutRecord.actions.map(act => <div>
+                render: ((text, layoutRecord) => layoutRecord.actions.map(act => <div>
                     <Button type="link" onClick={() => {
                         setCurrentLayoutIds([layoutRecord.id])
                         setVisible(true)
-                        /*setCurrentOrder(record)
-                        setCurrentLayout(layoutRecord.layout)*/
                     }}>{act}</Button>
                 </div>))
             }
@@ -112,14 +110,6 @@ const OrdersForDeveloper = ({ordersData, filteredInfo, sortedInfo, clearFilters,
                 visible={visible}
                 setVisible={setVisible}
             />
-            {/*{
-                currentOrder && currentLayout && <OrderFulfillmentContainer
-                    visible={visible}
-                    currentOrder={currentOrder}
-                    currentLayout={currentLayout}
-                    setVisible={setVisible}
-                />
-            }*/}
         </div>
     )
 }

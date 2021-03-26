@@ -34,7 +34,7 @@ export const getOrdersData = (state) => {
         description: order.orderDescription,
         deadline: order.deadline,
         addresses: order.layouts.map(addr =>
-            `${addr.building.address.city}, ${addr.building.address.street}, ${addr.building.address.house}`),
+            `г. ${addr.building.address.city}, ул. ${addr.building.address.street}, д. ${addr.building.address.house}`),
         layouts: order.layouts.map(layout => ({
             id: layout.id,
             key: layoutIdIterator.next().value,

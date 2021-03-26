@@ -14,27 +14,26 @@ const mapStateToProps = (state) => ({
 
 class NewBuildingFormContainer extends React.Component {
 
-    /*handleSubmit() {
-        const layoutValues = this.props.formik.values.layouts[this.props.layoutIndex]
+    handleSubmit = () => {
+        const {formik: {values}, layoutIndex} = this.props
 
         this.props.addAddress({
-            city: layoutValues.building.address.city,
-            street: layoutValues.building.address.street,
-            house: layoutValues.building.address.house,
-            buildingId: layoutValues.buildingId,
-            complexId: layoutValues.building.complexId,
-            complexName: layoutValues.building.complex.name
+            city: values.layouts[layoutIndex].building.address.city,
+            street: values.layouts[layoutIndex].building.address.street,
+            house: values.layouts[layoutIndex].building.address.house,
+            complexId: values.layouts[layoutIndex].building.complexId,
+            complexName: values.layouts[layoutIndex].building.complex.name
         })
-    }*/
+    }
 
     render() {
         return <NewBuildingForm
-            layoutIndex={this.props.layoutIndex}
             cities={this.props.cities}
             complexes={this.props.complexes}
             streets={this.props.streets}
+            layoutIndex={this.props.layoutIndex}
             getAddresses={this.props.getAddressesByCityName}
-            handleSubmit={this.props.addAddress}
+            handleSubmit={this.handleSubmit}
             {...this.props}
         />
     }

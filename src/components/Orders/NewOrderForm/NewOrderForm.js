@@ -4,11 +4,17 @@ import {Input, Button, Divider, Space, Drawer, Form} from 'antd'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
 import {FieldArray, FormikProvider, useFormik} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
+import styles from './NewOrderForm.module.scss'
+import DrawerFooter from '../../common/FormControls/DrawerFooter'
+import {IdGenerator} from '../../../utils/generators/generators'
 
 const NewOrderForm = ({visible, onClose, addNewOrder}) => {
 
+    const layoutIdIterator = IdGenerator()
+
     const formik = useFormik({
         initialValues: {
+            id: layoutIdIterator.next().value,
             orderDescription: '',
             deadline: null,
             layouts: [
@@ -32,35 +38,20 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                     resources: []
                 }
             ]
-        },
-        onSubmit: values => {
-            /*values.layouts.forEach((layout, index) => {
-                const resources = sendOrderFiles(layout.files)
-                console.log(resources)
-                formik.setFieldValue(`layouts.${index}.resources`, resources)
-                delete layout.files
-            })
-            addNewOrder({
-                order: {
-                    orderDescription: values.orderDescription,
-                    deadline: values.deadline.toISOString(),
-                    layouts: values.layouts.map(layout =>
-                        layout.building.complexId && /new/.test(layout.building.complexId.toString()) ? {
-                                ...layout,
-                                building: {
-                                    ...layout.building,
-                                    complexId: null
-                                }
-                            }
-                            : {...layout})
-                }
-            })*/
         }
     })
 
+    const addOrderWithValues = () => {
+        addNewOrder(formik.values)
+    }
+
     return (
         <FormikProvider value={formik}>
-            <Form>
+            <Form
+                layout="vertical"
+                wrapperCol={{span: 24}}
+                className={styles.form}
+            >
                 <Drawer
                     title="Создание нового заказа"
                     width={820}
@@ -68,82 +59,67 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                     visible={visible}
                     bodyStyle={{paddingBottom: 80}}
                     footer={
-                        <div style={{textAlign: 'right'}}>
-                            <Button onClick={onClose} style={{marginRight: 8}}>
-                                Отмена
-                            </Button>
-                            <Button htmlType="submit" onClick={() => {
-                                const {values} = formik
-
-                                addNewOrder(values)
-                                onClose()
-
-                                formik.resetForm()
-                            }} type="primary">
-                                Подтвердить
-                            </Button>
-                        </div>
+                        <DrawerFooter
+                            onCancel={[onClose]}
+                            onSubmit={[addOrderWithValues, onClose]}
+                        />
                     }
                 >
-                    <Space direction="vertical" size="small" style={{width: '100%'}}>
-                        <Form.Item label="Описание заказа">
-                            <Input.TextArea
-                                value={formik.values.orderDescription}
-                                onChange={(e => formik.setFieldValue('orderDescription', e.currentTarget.value))}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Крайний срок">
-                            <DatePicker
-                                name="deadline"
-                                id="order-deadline"
-                                value={formik.values.deadline}
-                                format="DD.MM.YYYY HH:mm"
-                                placeholder="дд.мм.гггг чч:мм"
-                                showTime
-                                onChange={(date) => formik.setFieldValue('deadline', date)}
-                            />
-                        </Form.Item>
-                        <Divider/>
-                        <FieldArray name="layouts">
-                            {({insert, remove, push}) => (
-                                <div>
-                                    <Space direction="vertical" size="small">
-                                        {formik.values.layouts.length > 0 &&
-                                        formik.values.layouts.map((layout, index) => (
-                                            <NewLayoutFormContainer
-                                                layoutIndex={index}
-                                                setFieldValue={formik.setFieldValue}
-                                            />
-                                        ))}
-                                    </Space>
-                                    <Button
-                                        style={{marginTop: '10px'}}
-                                        icon={<PlusSquareOutlined/>}
-                                        onClick={() => push({
+                    <Form.Item label="Описание заказа">
+                        <Input.TextArea
+                            value={formik.values.orderDescription}
+                            onChange={(e => formik.setFieldValue('orderDescription', e.currentTarget.value))}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Крайний срок">
+                        <DatePicker
+                            name="deadline"
+                            id="order-deadline"
+                            value={formik.values.deadline}
+                            format="DD.MM.YYYY HH:mm"
+                            placeholder="дд.мм.гггг чч:мм"
+                            showTime
+                            onChange={(date) => formik.setFieldValue('deadline', date)}
+                        />
+                    </Form.Item>
+                    <Divider/>
+                    <FieldArray name="layouts">
+                        {({insert, remove, push}) => (
+                            <div>
+                                {formik.values.layouts.length > 0 && formik.values.layouts.map((layout, index) => (
+                                    <NewLayoutFormContainer
+                                        layoutIndex={index}
+                                        setFieldValue={formik.setFieldValue}
+                                        remove={remove}
+                                    />
+                                ))}
+                                <Button
+                                    icon={<PlusSquareOutlined/>}
+                                    onClick={() => push({
+                                        id: layoutIdIterator.next().value,
+                                        description: '',
+                                        buildingId: null,
+                                        building: {
                                             description: '',
-                                            buildingId: null,
-                                            building: {
-                                                description: '',
-                                                address: {
-                                                    city: '',
-                                                    street: '',
-                                                    house: ''
-                                                },
-                                                complexId: null,
-                                                complex: {
-                                                    name: '',
-                                                    description: ''
-                                                }
+                                            address: {
+                                                city: '',
+                                                street: '',
+                                                house: ''
                                             },
-                                            files: [],
-                                            resources: []
-                                        })
-                                        }
-                                    >Добавить модель</Button>
-                                </div>
-                            )}
-                        </FieldArray>
-                    </Space>
+                                            complexId: null,
+                                            complex: {
+                                                name: '',
+                                                description: ''
+                                            }
+                                        },
+                                        files: [],
+                                        resources: []
+                                    })
+                                    }
+                                >Добавить модель</Button>
+                            </div>
+                        )}
+                    </FieldArray>
                 </Drawer>
             </Form>
         </FormikProvider>

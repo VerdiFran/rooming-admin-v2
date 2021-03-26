@@ -1,7 +1,6 @@
 import React from 'react'
 import {getAddresses, getCities} from '../../../../utils/selectors/selectors'
 import {connect} from 'react-redux'
-import throttle from 'lodash.throttle'
 import NewLayoutForm from './NewLayoutForm'
 import {getAddressesByCityName, getCitiesByNamePrefix} from '../../../../redux/reducers/ordersReducer'
 import {connect as formikConnect} from 'formik'
@@ -19,6 +18,7 @@ class NewLayoutFormContainer extends React.PureComponent {
             addresses={this.props.addresses}
             getAddresses={this.props.getAddressesByCityName}
             getCitiesByNamePrefix={this.props.getCitiesByNamePrefix}
+            remove={this.props.remove}
             {...this.props}
         />
     }

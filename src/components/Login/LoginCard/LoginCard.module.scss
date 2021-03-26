@@ -1,5 +1,4 @@
-@import '../../../scss/colors';
-@import '../../../scss/fonts';
+@import '../../../scss/variables';
 
 .loginCard {
     width: 300px;
@@ -11,8 +10,8 @@
     justify-content: center;
     align-items: center;
     border-radius: 4px;
-    box-shadow: 3px 3px 5px $shadow-color;
-    background-color: $form-bcg-color;
+    box-shadow: 3px 3px 5px $transparent-black-color;
+    background-color: $light-orange-color;
     font-family: $main-font;
 }
 
