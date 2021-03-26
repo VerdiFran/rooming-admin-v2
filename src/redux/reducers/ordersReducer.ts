@@ -168,23 +168,23 @@ export const setCurrentLayoutIds = (currentLayoutIds: Array<number>) => ({
 })
 
 export const getAddressesByCityName = (city: string) => async (dispatch: Dispatch) => {
-    const response = await ordersAPI.getAddresses(city)
-    dispatch(setAddresses(response.data))
+    const {data} = await ordersAPI.getAddresses(city)
+    dispatch(setAddresses(data))
 }
 
 export const getCitiesByNamePrefix = (prefix: string) => async (dispatch: Dispatch) => {
-    const response = await citiesDbAPI.getCitiesByNamePrefix(prefix)
-    dispatch(setCities(response.data.data.map((item: ResponseCityType) => item.city)))
+    const {data: {data}} = await citiesDbAPI.getCitiesByNamePrefix(prefix)
+    dispatch(setCities(data.map((item: ResponseCityType) => item.city)))
 }
 
 export const getCompanyOrders = () => async (dispatch: Dispatch) => {
-    const response = await ordersAPI.getOrders()
-    dispatch(setOrders(response.data))
+    const {data: {content}} = await ordersAPI.getOrders()
+    dispatch(setOrders(content))
 }
 
 export const getAllOrders = () => async (dispatch: Dispatch) => {
-    const response = await ordersAPI.getAllOrders()
-    dispatch(setOrders(response.data))
+    const {data: {content}} = await ordersAPI.getAllOrders()
+    dispatch(setOrders(content))
 }
 
 export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
@@ -244,8 +244,8 @@ const sendOrderFiles = async (files: Array<File> | undefined) => {
         let formData = new FormData()
         formData.append('image', file)
 
-        const response = await ordersAPI.sendNewOrderFile(formData)
-        fileIds.push(response.data)
+        const {data} = await ordersAPI.sendNewOrderFile(formData)
+        fileIds.push(data)
     }
 
     return fileIds

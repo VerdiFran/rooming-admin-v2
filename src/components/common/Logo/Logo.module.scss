@@ -2,12 +2,15 @@
 
 .logoContainer {
     height: $header-height;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     background-color: transparent;
     font-family: $main-font;
     font-size: 18pt;
 }
 
 .img {
-    margin: 6px;
-    width: 42px;
+    margin: $logo-margin $logo-margin $logo-margin ($logo-margin + 10px);
+    height: $logo-height;
 }

@@ -22,3 +22,5 @@ $main-font: 'Raleway', 'Roboto', 'Ubuntu', sans-serif; // main
 // *** other vars ***
 
 $header-height: 56px;
+$logo-margin: 10px;
+$logo-height: $header-height - 2 * $logo-margin;
