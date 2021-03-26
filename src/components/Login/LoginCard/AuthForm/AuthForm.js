@@ -3,7 +3,7 @@ import {Form, Alert, Button, Input, Checkbox} from 'antd'
 import 'antd/dist/antd.css'
 import styles from './AuthForm.module.scss'
 import {required} from '../../../../utils/validators/validators'
-import {MyCheckbox, renderInput, renderPasswordInput} from '../../../common/FormControls/FormControls'
+import {MyCheckbox, renderInput, renderPasswordInput} from '../../../common/FormControls/DrawerFooter'
 import QueueAnim from 'rc-queue-anim'
 import {purple} from '@ant-design/colors'
 import {Formik} from 'formik'
@@ -16,6 +16,23 @@ import {Formik} from 'formik'
  */
 
 const AuthForm = ({onSubmit}) => {
+
+    const formItemLayout = {
+        labelCol: {
+            span: 6
+        },
+        wrapperCol: {
+            span: 20
+        }
+    }
+
+    const buttonItemLayout = {
+        wrapperCol: {
+            span: 26,
+            offset: 0,
+        },
+    }
+
     return (
         <Formik
             initialValues={{
@@ -33,9 +50,13 @@ const AuthForm = ({onSubmit}) => {
                      handleSubmit,
                      values
                  }) => (
-                    <Form className={styles.authForm}>
+                    <Form
+                        {...formItemLayout}
+                        formLayout="horizontal"
+                        className={styles.authForm}
+                    >
                         <QueueAnim delay={300}>
-                            <div key="0" className={styles.validatedField}>
+                            <div key="0">
                                 <Form.Item label="Логин">
                                     <Input
                                         name="login"
@@ -44,7 +65,7 @@ const AuthForm = ({onSubmit}) => {
                                     />
                                 </Form.Item>
                             </div>
-                            <div key="1" className={styles.validatedField}>
+                            <div key="1">
                                 <Form.Item label="Пароль">
                                     <Input.Password
                                         name="password"
@@ -53,23 +74,24 @@ const AuthForm = ({onSubmit}) => {
                                     />
                                 </Form.Item>
                             </div>
-                            <div key="2" className={styles.validatedField}>
-                                <Form.Item>
+                            <div key="2">
+                                <Form.Item wrapperCol={{offset: 0, span: 26}}>
                                     <Checkbox
                                         name="rememberMe"
                                         value={values.rememberMe}
-                                        checked
                                         onChange={handleChange}
                                     >Запомнить меня</Checkbox>
                                 </Form.Item>
                             </div>
                             <div key="3">
-                                <Button
-                                    htmlType="submit"
-                                    type="primary"
-                                    className={styles.signInButton}
-                                    onClick={handleSubmit}
-                                >Войти</Button>
+                                <Form.Item {...buttonItemLayout}>
+                                    <Button
+                                        htmlType="submit"
+                                        type="primary"
+                                        className={styles.signInButton}
+                                        onClick={handleSubmit}
+                                    >Войти</Button>
+                                </Form.Item>
                             </div>
                         </QueueAnim>
                     </Form>

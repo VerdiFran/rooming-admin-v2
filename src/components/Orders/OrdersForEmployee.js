@@ -19,7 +19,11 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
             dataIndex: 'deadline',
             key: 'deadline',
             ellipsis: false,
-            align: 'center'
+            align: 'center',
+            render: (date) => {
+                const newDate = new Date(date)
+                return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0,5)}`
+            }
         },
         {
             title: 'Адреса',

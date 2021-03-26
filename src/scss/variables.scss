@@ -1,0 +1,26 @@
+/* https://colorscheme.ru/#0k21Tva9yw0w0 -- color scheme */
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap');
+
+// *** colors ***
+
+$beige-color: #fcc488; // background
+$light-orange-color: #fc9e5b; // background
+$light-beige-color: #ffe5d3; //primary
+$dark-orange-color: #A6572D; // main
+$red-color: #E01625; // second
+$turquoise-color: #013223; // accent
+$dark-turquoise-color: #002117; // accent
+$bright-red-color: #E01625; // warning
+$transparent-black-color: rgba(0, 0, 0, 0.15);
+$brown-color: #3b2a20; // font
+
+// *** fonts ***
+
+$main-font: 'Raleway', 'Roboto', 'Ubuntu', sans-serif; // main
+
+// *** other vars ***
+
+$header-height: 56px;
+$logo-margin: 10px;
+$logo-height: $header-height - 2 * $logo-margin;

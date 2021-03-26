@@ -1,6 +1,6 @@
 import React from 'react'
 import styles from './LoginCard.module.scss'
-import logo from './../../../assets/images/building.png'
+import logo from './../../../assets/images/building (1).png'
 import AuthForm from './AuthForm/AuthForm'
 
 /**
@@ -13,7 +13,7 @@ const LoginCard = ({onSubmit}) => {
     return (
         <div className={styles.loginCard}>
             <div className={styles.greeting}>Добро пожаловать!</div>
-            <img className={styles.logo} src={logo} alt='logo' width='40px' height='40px'/>
+            <img className={styles.logo} src={logo} alt='logo' width='42px' height='42px'/>
             <AuthForm onSubmit={onSubmit}/>
         </div>
     )
