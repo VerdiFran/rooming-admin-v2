@@ -1,6 +1,6 @@
 import React from 'react'
 import styles from './LoginCard.module.scss'
-import logo from './../../../assets/images/building (1).png'
+import logo from '../../../assets/images/building.png'
 import AuthForm from './AuthForm/AuthForm'
 
 /**
