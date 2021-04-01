@@ -20,6 +20,8 @@ const SideMenuPanelContainer = ({userRole}) => {
         return <SideMenuPanelForDeveloper/>
     } else if (userRole.includes(EMPLOYEE)) {
         return <SideMenuPanelForEmployee/>
+    } else if (userRole.includes(ADMIN)) {
+        return <SideMenuPanelForAdmin/>
     } else {
         return <Redirect to="/login"/>
     }

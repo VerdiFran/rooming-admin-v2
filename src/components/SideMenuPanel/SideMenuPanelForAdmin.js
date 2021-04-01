@@ -35,6 +35,7 @@ const SideMenuPanelForAdmin = ({userRole, subMenuStyle}) => {
             >
                 <SubMenu key="sub1" icon={<MailOutlined/>} title="Модели" style={subMenuStyle}>
                     <Menu.Item key="1"><NavLink to="/orders">Заказы</NavLink></Menu.Item>
+                    <Menu.Item key="2"><NavLink to="/companies">Компании</NavLink></Menu.Item>
                 </SubMenu>
             </Menu>
         </div>

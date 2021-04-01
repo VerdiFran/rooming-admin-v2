@@ -12,6 +12,7 @@ import {Button, Layout, PageHeader} from 'antd'
 import OrdersContainer from './components/Orders/OrdersContainer'
 import SideMenuPanelContainer from './components/SideMenuPanel/SideMenuPanelContainer'
 import BuildingsContainer from './components/Buildings/BuildingsContainer'
+import CompaniesContainer from './components/Companies/CompaniesContainer'
 import './App.less'
 
 class App extends React.Component {
@@ -55,6 +56,10 @@ class App extends React.Component {
                             <Route
                                 path="/buildings"
                                 render={() => <BuildingsContainer/>}
+                            />
+                            <Route
+                                path="/companies"
+                                render={() => <CompaniesContainer/>}
                             />
                             <Redirect from="/" to="/home"/>
                         </Switch>
