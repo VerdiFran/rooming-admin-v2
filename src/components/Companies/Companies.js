@@ -1,15 +1,43 @@
-import {Table} from 'antd'
+import { Table } from 'antd'
 import styles from './Companies.module.scss'
+import FilterDropdown from '../common/FilterDropdown/FilterDropdown'
+import { SearchOutlined } from '@ant-design/icons';
 
-
+/**
+ * Table with companies.
+ */
 const Companies = (props) => {
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        props.setNamePart(selectedKeys[0]);
+    };
+
+    const handleReset = clearFilters => {
+        clearFilters();
+        props.setNamePart('');
+    };
+
+    const columnSearchProps = dataIndex => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (<FilterDropdown
+            setSelectedKeys={setSelectedKeys}
+            selectedKeys={selectedKeys}
+            confirm={confirm}
+            clearFilters={clearFilters}
+            handleSearch={handleSearch}
+            handleReset={handleReset}
+            placeholder={dataIndex}
+        />),
+        filterIcon: filtered => <SearchOutlined />,
+    })
 
     const columns = [
         {
             title: 'Название компании',
             dataIndex: 'name',
             key: 'name',
-            elepsis: false
+            elepsis: false,
+            ...columnSearchProps('Название компании')
         },
         {
             title: 'Email',
@@ -38,10 +66,10 @@ const Companies = (props) => {
             <Table
                 columns={columns}
                 dataSource={props.companies}
-                pagination={{defaultPageSize: props.pageSize, total: props.totalPages * props.pageSize, onChange: changePage}}
+                pagination={{ defaultPageSize: props.pageSize, total: props.totalPages * props.pageSize, onChange: changePage }}
                 size="small"
                 tableLayout="auto"
-                scroll={{x: 900}}
+                scroll={{ x: 900 }}
             />
         </div>
     )

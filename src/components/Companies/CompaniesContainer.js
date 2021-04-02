@@ -11,6 +11,9 @@ const mapStateToProps = (state) => ({
     totalPages: getCompaniesTotalPages(state)
 })
 
+/**
+ * Container for companies table.
+ */
 const CompaniesContainer = (props) => {
 
     const [pageSize] = React.useState(10)
@@ -26,6 +29,7 @@ const CompaniesContainer = (props) => {
         totalPages={props.totalPages}
         pageSize={pageSize}
         setCurrentPage={setCurrentPage}
+        setNamePart={setNamePart}
     />
 }
 
