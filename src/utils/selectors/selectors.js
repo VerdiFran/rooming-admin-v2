@@ -160,3 +160,24 @@ export const getFinishedBuildings = (state) => {
 }
 
 export const getTotalPages = (state) => state.layouts.totalPages
+
+/**
+ * Get uploaded companies with keys from state.
+ * @param state State. 
+ * @returns Uploaded companies.
+ */
+export const getUploadedCompanies = (state) => {
+    const companiesIdIterator = IdGenerator()
+
+    return state.companies.companies.map(company => ({
+        ...company,
+        key: companiesIdIterator.next().value
+    }))
+}
+
+/**
+ * Get companies total pages.
+ * @param state State. 
+ * @returns Total pages.
+ */
+export const getCompaniesTotalPages = (state) => state.companies.totalPages
