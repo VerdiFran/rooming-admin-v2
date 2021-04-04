@@ -13,6 +13,7 @@ import OrdersContainer from './components/Orders/OrdersContainer'
 import SideMenuPanelContainer from './components/SideMenuPanel/SideMenuPanelContainer'
 import BuildingsContainer from './components/Buildings/BuildingsContainer'
 import CompaniesContainer from './components/Companies/CompaniesContainer'
+import CompanyAddRequestsContainer from './components/CompanyAddRequests/CompanyAddRequestsContainer'
 import './App.less'
 
 class App extends React.Component {
@@ -60,6 +61,10 @@ class App extends React.Component {
                             <Route
                                 path="/companies"
                                 render={() => <CompaniesContainer/>}
+                            />
+                            <Route
+                                path="/add-requests"
+                                render={() => <CompanyAddRequestsContainer/>}
                             />
                             <Redirect from="/" to="/home"/>
                         </Switch>

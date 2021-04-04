@@ -33,9 +33,10 @@ const SideMenuPanelForAdmin = ({userRole, subMenuStyle}) => {
                 onOpenChange={onOpenChange}
                 style={{backgroundColor: 'transparent'}}
             >
-                <SubMenu key="sub1" icon={<MailOutlined/>} title="Модели" style={subMenuStyle}>
+                <SubMenu key="sub1" icon={<MailOutlined/>} title="Компании" style={subMenuStyle}>
                     <Menu.Item key="1"><NavLink to="/orders">Заказы</NavLink></Menu.Item>
-                    <Menu.Item key="2"><NavLink to="/companies">Компании</NavLink></Menu.Item>
+                    <Menu.Item key="2"><NavLink to="/companies">Сведения</NavLink></Menu.Item>
+                    <Menu.Item key="3"><NavLink to="/add-requests">Заявки</NavLink></Menu.Item>
                 </SubMenu>
             </Menu>
         </div>

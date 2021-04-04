@@ -181,3 +181,28 @@ export const getUploadedCompanies = (state) => {
  * @returns Total pages.
  */
 export const getCompaniesTotalPages = (state) => state.companies.totalPages
+
+/**
+ * Gets companies add requests.
+ * @param state State.
+ */
+export const getCompaniesAddRequests = (state) => {
+    const companyAddRequestsIterator = IdGenerator()
+    const userAddRequestsIterator = IdGenerator()
+
+    return state.addRequests.companiesAddRequests.map(companyRequest => ({
+        ...companyRequest,
+        employees: companyRequest.employees.map(userRequest => ({
+            ...userRequest,
+            userName: `${userRequest.firstName} ${userRequest.lastName}`,
+            key: userAddRequestsIterator.next().value
+        })),
+        key: companyAddRequestsIterator.next().value
+    }))
+}
+
+/**
+ * Get companies add requests total pages.
+ * @param state State.
+ */
+export const getCompaniesAddRequestsTotalPages = (state) => state.addRequests.companiesRequestsTotalPages
