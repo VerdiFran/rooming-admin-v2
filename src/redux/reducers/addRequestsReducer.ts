@@ -1,16 +1,19 @@
 import {Dispatch} from "redux"
 import {addRequestsAPI} from '../../api/addRequestsApi'
 
-const SET_COMPANY_ADD_REQUESTS = 'SET_COMPANY_ADD_REQUESTS'
+const SET_COMPANY_ADD_REQUESTS = 'SET-COMPANY-ADD-REQUESTS'
+const SET_SELECTED_ADD_REQUEST = 'SET-SELECTED-ADD-REQUEST'
 
 type UserAddRequestType = {
-    firstname: string,
-    lastName: string,
-    email: string,
+    id: number
+    firstname: string
+    lastName: string
+    email: string
     phoneNumber: string
 }
 
 type CompanyAddRequestType = {
+    id: number
     name: string
     email: string
     contactPhone: string
@@ -19,11 +22,13 @@ type CompanyAddRequestType = {
 
 export type InitialStateType = {
     companiesAddRequests: Array<CompanyAddRequestType>
+    selectedCompanyAddRequest: number
     totalPages: number
 }
 
 const initialState: InitialStateType = {
     companiesAddRequests: [],
+    selectedCompanyAddRequest: 0,
     totalPages: 0
 }
 
@@ -41,6 +46,11 @@ const addRequestsReducer = (state = initialState, action: any) => {
                 companiesAddRequests: action.addRequests,
                 companiesRequestsTotalPages: action.totalPages
             }
+        case SET_SELECTED_ADD_REQUEST:
+            return {
+                ...state,
+                selectedCompanyAddRequest: action.selectedCompanyAddRequest
+            }
         default: return state
     }
 }
@@ -50,6 +60,28 @@ const setCompanyAddRequests = (addRequests: Array<CompanyAddRequestType>, totalP
     addRequests: addRequests,
     totalPages: totalPages
 })
+
+/**
+ * Set selected company-add request.
+ * @param selectedRequest Id of selected request.
+ */
+export const setSelectedCompanyAddRequest = (selectedRequest: number) => ({
+    type: SET_SELECTED_ADD_REQUEST,
+    selectedCompanyAddRequest: selectedRequest
+})
+
+/**
+ * Execute company add requests by specified ids.
+ * @param ids List of company add requests for execute.
+ */
+export const executeCompanyAddRequests = (ids: Array<number>) => async (dispatch: Dispatch) => {
+    try {
+        await addRequestsAPI.executeCompanyAddRequests(ids)
+        await downloadCompanyAddRequests(1, 10, true)(dispatch)
+    } catch (error) {
+        throw error
+    }
+}
 
 /**
  * Downloads and set company add requests.

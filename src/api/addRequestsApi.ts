@@ -22,5 +22,14 @@ export const addRequestsAPI = {
         }
         
         return instance.get('add-requests/companies', config)
+    },
+
+    /**
+     * POST request for execute company add requests.
+     * @param ids Ids of requests for execution.
+     * @returns Promise with GET request.
+     */
+    executeCompanyAddRequests(ids: Array<number>) {
+       return instance.post('companies', { ids })
     }
 }
