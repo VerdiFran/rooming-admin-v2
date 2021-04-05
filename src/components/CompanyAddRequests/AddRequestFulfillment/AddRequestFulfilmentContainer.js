@@ -1,6 +1,5 @@
 import {getSelectedCompanyAddRequest} from "../../../utils/selectors/selectors";
 import {connect} from "react-redux";
-import {executeCompanyAddRequests} from "../../../redux/reducers/addRequestsReducer";
 import AddRequestFulfillment from "./AddRequestFulfillment";
 
 const mapPropsToState = (state) => ({
@@ -25,4 +24,4 @@ const AddRequestFulfillmentContainer = (props) => {
     />
 }
 
-export default connect(mapPropsToState, {executeCompanyAddRequests})(AddRequestFulfillmentContainer)
+export default connect(mapPropsToState)(AddRequestFulfillmentContainer)

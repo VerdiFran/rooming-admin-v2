@@ -1,4 +1,4 @@
-import {Button, Table} from "antd"
+import {Button, Space, Table} from "antd"
 import styles from './CompanyAddRequests.module.scss'
 import AddRequestFulfilmentContainer from "./AddRequestFulfillment/AddRequestFulfilmentContainer";
 import React, {useState} from "react";
@@ -57,10 +57,18 @@ const CompanyAddRequests = (props) => {
 
     return (
         <div className={styles.contentContainer}>
+            <Space style={{marginBottom: 16}}>
+                <Button type="primary" onClick={() => {
+                    const ids = props.addRequests.map(request => request.id)
+                    props.setCurrentPage(1)
+                    props.executeCompanyAddRequests(ids)
+                }}>Добавить все компании страницы</Button>
+            </Space>
             <Table
                 columns={columns}
                 dataSource={props.addRequests}
                 pagination={{
+                    current: props.currentPage,
                     defaultPageSize: props.pageSize,
                     total: props.totalPages * props.pageSize,
                     onChange: changePage
@@ -72,6 +80,7 @@ const CompanyAddRequests = (props) => {
             <AddRequestFulfilmentContainer
                 setVisible={setVisible}
                 visible={visible}
+                executeCompanyAddRequests={props.executeCompanyAddRequests}
             />
         </div>
     )

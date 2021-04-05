@@ -1,7 +1,11 @@
 import {connect} from "react-redux"
 import {compose} from "redux"
 import {withAuthRedirect} from '../../hoc/withAuthRedirect'
-import {downloadCompanyAddRequests, setSelectedCompanyAddRequest} from '../../redux/reducers/addRequestsReducer'
+import {
+    downloadCompanyAddRequests,
+    executeCompanyAddRequests,
+    setSelectedCompanyAddRequest
+} from '../../redux/reducers/addRequestsReducer'
 import CompanyAddRequests from './CompanyAddRequests'
 import { getCompaniesAddRequests, getCompaniesAddRequestsTotalPages } from '../../utils/selectors/selectors'
 import React, {useEffect} from 'react'
@@ -30,13 +34,15 @@ const CompanyAddRequestsContainer = (props) => {
         totalPages={props.totalPages}
         pageSize={pageSize}
         setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
         setSelectedCompanyAddRequest={props.setSelectedCompanyAddRequest}
         selectedRequest={props.selectedRequest}
+        executeCompanyAddRequests={props.executeCompanyAddRequests}
     />
 
 }
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, {downloadCompanyAddRequests, setSelectedCompanyAddRequest})
+    connect(mapStateToProps, {downloadCompanyAddRequests, setSelectedCompanyAddRequest, executeCompanyAddRequests})
 )(CompanyAddRequestsContainer)
