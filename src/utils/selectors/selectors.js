@@ -1,6 +1,5 @@
 import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
-import {layoutsAPI} from '../../api/layoutsAPI'
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -181,3 +180,53 @@ export const getUploadedCompanies = (state) => {
  * @returns Total pages.
  */
 export const getCompaniesTotalPages = (state) => state.companies.totalPages
+
+/**
+ * Gets companies add requests.
+ * @param state State.
+ */
+export const getCompaniesAddRequests = (state) => {
+    const companyAddRequestsIterator = IdGenerator()
+    const userAddRequestsIterator = IdGenerator()
+
+    return state.addRequests.companiesAddRequests.map(companyRequest => ({
+        ...companyRequest,
+        employees: companyRequest.employees.map(userRequest => ({
+            ...userRequest,
+            userName: `${userRequest.firstName} ${userRequest.lastName}`,
+            key: userAddRequestsIterator.next().value
+        })),
+        actions: ['Подробнее'],
+        key: companyAddRequestsIterator.next().value
+    }))
+}
+
+/**
+ * Get companies add requests total pages.
+ * @param state State.
+ */
+export const getCompaniesAddRequestsTotalPages = (state) => state.addRequests.companiesRequestsTotalPages
+
+/**
+ * Returns selected company-add request.
+ * @param state State
+ * @returns Selected company-add request.
+ */
+export const getSelectedCompanyAddRequest = (state) => {
+    const requests = state.addRequests.companiesAddRequests
+    const selectedRequest = state.addRequests.selectedCompanyAddRequest
+    const request = requests.find(request => request.id === selectedRequest)
+
+    if (request) {
+        const newEmployees = request.employees.map(employee => ({
+            ...employee,
+            userName: `${employee.firstName} ${employee.lastName}`
+        }))
+        return {
+            ...request,
+            employees: newEmployees
+        }
+    }
+
+    return null
+}
