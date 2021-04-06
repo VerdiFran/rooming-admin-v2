@@ -1,5 +1,5 @@
-import { authAPI } from '../../api/authAPI'
-import { ADMIN, DEVELOPER, EMPLOYEE } from '../userRoles'
+import {authAPI} from '../../api/authAPI'
+import {EMPLOYEE} from '../userRoles'
 
 const TOGGLE_IS_AUTH = 'TOGGLE-IS-AUTH'
 const SET_USER_DATA = 'SET-USER-DATA'
@@ -48,16 +48,15 @@ export const toggleIsAuth = (isAuth: any, accessToken?: string) => ({ type: TOGG
 export const logout = () => ({ type: LOGOUT })
 
 export const login = (login: string, password: string, rememberMe: boolean) => async (dispatch: any) => {
-    let response
 
     try {
-        response = await authAPI.login(login, password, rememberMe)
+        await authAPI.login(login, password, rememberMe)
         const userData = await authAPI.me()
 
         dispatch(setUserData(userData.data))
         dispatch(toggleIsAuth(true, response.data.accessToken))
     } catch (error) {
-        let message = 'Неверный email или пароль.'
+
     }
 }
 

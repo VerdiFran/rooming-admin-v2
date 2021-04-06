@@ -36,7 +36,7 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                 ({}) => (
                     <Drawer
                         title="Выполнение заказа"
-                        width={800}
+                        width={590}
                         onClose={() => setVisible(false)}
                         visible={visible}
                         bodyStyle={{paddingBottom: 80}}
@@ -58,39 +58,51 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                         }
                     >
                         {
-                            layoutsInfo.map(layout => <Space size="small" direction="vertical">
-                                <Title level={5}>Планировка</Title>
-                                <Descriptions
-                                    bordered
-                                    size="small"
-                                    layout="vertical"
-                                >
-                                    <Descriptions.Item label="Город">{layout.building.address.city}</Descriptions.Item>
-                                    <Descriptions.Item label="Адрес" span="2">
-                                        {`Комплекс "${layout.building.complex.name}": ул. ${layout.building.address.street}, д. ${layout.building.address.house}`}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="Компания">Some Company</Descriptions.Item>
-                                    <Descriptions.Item label="Создан">{layout.createdAt}</Descriptions.Item>
-                                    <Descriptions.Item label="Крайний срок">{layout.deadline}</Descriptions.Item>
-                                    <Descriptions.Item label="Описание планировки" span="3">
-                                        {layout.description}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item
-                                        label="Описание заказа">{layout.orderDescription}</Descriptions.Item>
-                                </Descriptions>
-                                <br/>
-                                <Title level={5}>Файлы готовых моделей</Title>
-                                <Dragger  {...props}>
-                                    <p className="ant-upload-drag-icon">
-                                        <InboxOutlined/>
-                                    </p>
-                                    <p className="ant-upload-text">Щелкните или перетащите архив в эту область, чтобы
-                                                                   загрузить</p>
-                                    <p className="ant-upload-hint">
-                                        Поддерживаются архивы в формате .rar, .zip. Можно загрузить только один архив.
-                                    </p>
-                                </Dragger>
-                            </Space>)
+                            layoutsInfo.map(layout => {
+                                const createdAt = new Date(layout.createdAt)
+                                const deadline = new Date(layout.deadline)
+
+                                return <Space size="small" direction="vertical">
+                                    <Title level={5}>Планировка</Title>
+                                    <Descriptions
+                                        bordered
+                                        size="small"
+                                        layout="vertical"
+                                    >
+                                        <Descriptions.Item
+                                            label="Город">{layout.building.address.city}</Descriptions.Item>
+                                        <Descriptions.Item label="Адрес" span="2">
+                                            {`Комплекс "${layout.building.complex.name}": ул. ${layout.building.address.street}, д. ${layout.building.address.house}`}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="Компания">Some Company</Descriptions.Item>
+                                        <Descriptions.Item label="Создан">
+                                            {`${createdAt.toLocaleDateString()}, ${createdAt.toLocaleTimeString().slice(0, 5)}`}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="Крайний срок">
+                                            {`${deadline.toLocaleDateString()}, ${deadline.toLocaleTimeString().slice(0, 5)}`}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="Описание планировки" span="3">
+                                            {layout.description}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item
+                                            label="Описание заказа">{layout.orderDescription}</Descriptions.Item>
+                                    </Descriptions>
+                                    <br/>
+                                    <Title level={5}>Файлы готовых моделей</Title>
+                                    <Dragger  {...props}>
+                                        <p className="ant-upload-drag-icon">
+                                            <InboxOutlined/>
+                                        </p>
+                                        <p className="ant-upload-text">Щелкните или перетащите архив в эту область,
+                                                                       чтобы
+                                                                       загрузить</p>
+                                        <p className="ant-upload-hint">
+                                            Поддерживаются архивы в формате .rar, .zip. Можно загрузить только один
+                                            архив.
+                                        </p>
+                                    </Dragger>
+                                </Space>
+                            })
                         }
                     </Drawer>
                 )
