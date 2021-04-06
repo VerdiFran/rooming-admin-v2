@@ -38,15 +38,6 @@ const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds}) => 
                     <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
                 </Popover>}
             </List>)
-        },
-        {
-            title: 'Действия',
-            dataIndex: 'actions',
-            key: 'actions',
-            ellipsis: true,
-            fixed: 'right',
-            align: 'center',
-            render: (actions => actions.map(act => <div><Button type="link">{act}</Button></div>))
         }
     ]
 

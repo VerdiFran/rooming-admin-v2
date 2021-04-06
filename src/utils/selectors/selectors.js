@@ -47,17 +47,17 @@ export const getOrdersData = (state) => {
             },
             status: layout.layoutOrderStatus,
             createdAt: layout.createdAt,
-            actions: userRoles.includes(EMPLOYEE) ? ['посмотреть', 'изменить', 'удалить']
-                : userRoles.includes(DEVELOPER) ? ['посмотреть', 'выполнить']
-                    : userRoles.includes(ADMIN) ? ['посмотреть', 'выполнить'] : ['посмотреть']
+            actions: userRoles.includes(EMPLOYEE) ? ['посмотреть']
+                : userRoles.includes(DEVELOPER) ? ['выполнить']
+                    : userRoles.includes(ADMIN) ? [] : ['посмотреть']
         })),
         createdAt: order.createdAt,
         createdBy: order.createdBy.company
             ? `${order.createdBy.company.name} (${order.createdBy.firstName} ${order.createdBy.lastName})`
             : `${order.createdBy.firstName} ${order.createdBy.lastName}`,
-        actions: userRoles.includes(EMPLOYEE) ? ['посмотреть', 'изменить', 'отменить']
-            : userRoles.includes(DEVELOPER) ? ['посмотреть', 'выполнить']
-                : userRoles.includes(ADMIN) ? ['посмотреть', 'выполнить'] : ['посмотреть']
+        actions: userRoles.includes(EMPLOYEE) ? []
+            : userRoles.includes(DEVELOPER) ? []
+                : userRoles.includes(ADMIN) ? [] : []
     }))
 }
 

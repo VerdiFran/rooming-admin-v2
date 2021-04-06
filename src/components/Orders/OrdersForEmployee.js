@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Popover, List, Table, Button, Space, Drawer, Form, Col, Row, Input, Select, DatePicker} from 'antd'
+import {Popover, List, Table, Button, Space} from 'antd'
 import styles from './Orders.module.scss'
 import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
 
@@ -41,15 +41,6 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                     </Popover>
                 }
             </List>)
-        },
-        {
-            title: 'Действия',
-            dataIndex: 'actions',
-            key: 'actions',
-            ellipsis: true,
-            fixed: 'right',
-            align: 'center',
-            render: (actions => actions.map(act => <div><Button type="link">{act}</Button></div>))
         }
     ]
 
