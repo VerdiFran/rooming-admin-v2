@@ -50,7 +50,7 @@ export const logout = () => ({ type: LOGOUT })
 export const login = (login: string, password: string, rememberMe: boolean) => async (dispatch: any) => {
 
     try {
-        await authAPI.login(login, password, rememberMe)
+        const response = await authAPI.login(login, password, rememberMe)
         const userData = await authAPI.me()
 
         dispatch(setUserData(userData.data))
@@ -63,8 +63,9 @@ export const login = (login: string, password: string, rememberMe: boolean) => a
 export const refreshSession = () => async (dispatch: any) => {
     try {
         const response = await authAPI.refresh()
+        const userData = await authAPI.me()
 
-
+        dispatch(setUserData(userData.data))
         dispatch(toggleIsAuth(true, response.data.accessToken))
 
     } catch (error) {

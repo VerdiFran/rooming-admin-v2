@@ -12,6 +12,8 @@ import {Layout, PageHeader} from 'antd'
 import OrdersContainer from './components/Orders/OrdersContainer'
 import SideMenuPanelContainer from './components/SideMenuPanel/SideMenuPanelContainer'
 import BuildingsContainer from './components/Buildings/BuildingsContainer'
+import CompaniesContainer from './components/Companies/CompaniesContainer'
+import CompanyAddRequestsContainer from './components/CompanyAddRequests/CompanyAddRequestsContainer'
 import './App.less'
 import Preloader from './components/common/Preloader/Preloader'
 
@@ -56,6 +58,14 @@ class App extends React.Component {
                             <Route
                                 path="/buildings"
                                 render={() => <BuildingsContainer/>}
+                            />
+                            <Route
+                                path="/companies"
+                                render={() => <CompaniesContainer/>}
+                            />
+                            <Route
+                                path="/add-requests"
+                                render={() => <CompanyAddRequestsContainer/>}
                             />
                             <Redirect from="/" to="/home"/>
                         </Switch>
