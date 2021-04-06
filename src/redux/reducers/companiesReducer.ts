@@ -1,20 +1,33 @@
 import { Dispatch } from "redux"
 import { companiesAPI } from "../../api/companiesAPI"
 
-const SET_COMPANIES = 'SET_COMPANIES'
+const SET_COMPANIES = 'SET-COMPANIES'
+const SET_SELECTED_COMPANY = 'SET-SELECTED-COMPANY'
+
+type UserType = {
+    id: number
+    firstname: string
+    lastName: string
+    email: string
+    phoneNumber: string
+}
 
 type CompanyType = {
+    id: number
     name: string
     email: string
     contactPhone: string
+    employees: Array<UserType>
 }
 
 export type CompaniesStateType = {
+    selectedCompanyId: number
     companies: Array<CompanyType>
     totalPages: number
 }
 
 const initialState: CompaniesStateType = {
+    selectedCompanyId: 0,
     companies: [],
     totalPages: 0
 }
@@ -33,6 +46,11 @@ const companiesReducer = (state = initialState, action: any) => {
                 companies: action.companies,
                 totalPages: action.totalPages
             }
+        case SET_SELECTED_COMPANY:
+            return {
+                ...state,
+                selectedCompanyId: action.selectedCompanyId
+            }
         default:
             return state
     }
@@ -45,8 +63,17 @@ const setCompanies = (companies: Array<CompanyType>, totalPages: number) => ({
 })
 
 /**
+ * Set id of selected company.
+ * @param id Id of selected company.
+ */
+export const setSelectedCompanyId = (id: number) => ({
+    type: SET_SELECTED_COMPANY,
+    selectedCompanyId: id
+})
+
+/**
  * Uploads companies from server.
- * @param page Pagination number.
+ * @param pageNumber Pagination number.
  * @param pageSize Pagination size.
  * @param name Part of company name.
  */

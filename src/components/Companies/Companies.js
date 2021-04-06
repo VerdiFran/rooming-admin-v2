@@ -1,7 +1,9 @@
-import { Table } from 'antd'
+import {Button, Table} from 'antd'
 import styles from './Companies.module.scss'
 import FilterDropdown from '../common/FilterDropdown/FilterDropdown'
 import { SearchOutlined } from '@ant-design/icons';
+import React from "react";
+import CompanyInfo from "./CompanyInfo/CompanyInfo";
 
 /**
  * Table with companies.
@@ -54,6 +56,22 @@ const Companies = (props) => {
                 const newDate = new Date(date)
                 return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0, 5)}`
             }
+        },
+        {
+            title: 'Действия',
+            dataIndex: 'actions',
+            key: 'actions',
+            ellipsis: true,
+            fixed: 'right',
+            align: 'center',
+            render: ((actions, record) => actions.map(action =>
+                <div>
+                    <Button type="link" onClick={() => {
+                        props.setSelectedCompanyId(record.id)
+                        props.setVisible(true)
+                    }}>{action}
+                    </Button>
+                </div>))
         }
     ]
 
@@ -71,6 +89,11 @@ const Companies = (props) => {
                 tableLayout="auto"
                 scroll={{ x: 900 }}
             />
+            {props.selectedCompany && <CompanyInfo
+                visible={props.visible}
+                setVisible={props.setVisible}
+                selectedCompany={props.selectedCompany}
+            />}
         </div>
     )
 }
