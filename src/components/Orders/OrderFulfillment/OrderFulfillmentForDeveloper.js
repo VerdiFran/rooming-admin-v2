@@ -36,7 +36,7 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                 ({}) => (
                     <Drawer
                         title="Выполнение заказа"
-                        width={800}
+                        width={590}
                         onClose={() => setVisible(false)}
                         visible={visible}
                         bodyStyle={{paddingBottom: 80}}
