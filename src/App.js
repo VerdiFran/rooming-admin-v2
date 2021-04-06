@@ -8,13 +8,14 @@ import Home from './components/Home/Home'
 import {initializeApp} from './redux/reducers/appReducer'
 import {getInitialized, getIsAuth, getUserRoles} from './utils/selectors/selectors'
 import HeaderContainer from './components/Header/HeaderContainer'
-import {Button, Layout, PageHeader} from 'antd'
+import {Layout, PageHeader} from 'antd'
 import OrdersContainer from './components/Orders/OrdersContainer'
 import SideMenuPanelContainer from './components/SideMenuPanel/SideMenuPanelContainer'
 import BuildingsContainer from './components/Buildings/BuildingsContainer'
 import CompaniesContainer from './components/Companies/CompaniesContainer'
 import CompanyAddRequestsContainer from './components/CompanyAddRequests/CompanyAddRequestsContainer'
 import './App.less'
+import Preloader from './components/common/Preloader/Preloader'
 
 class App extends React.Component {
     componentDidMount() {
@@ -22,9 +23,9 @@ class App extends React.Component {
     }
 
     render() {
-        /*if (!this.props.initialized) {
+        if (!this.props.initialized) {
             return <Preloader/>
-        }*/
+        }
 
         const {Sider, Content} = Layout
 
@@ -87,7 +88,7 @@ let AppContainer = compose(
     connect(mapStateToProps, {initializeApp}))
 (App)
 
-let MainApp = (props) => {
+let MainApp = () => {
     return <BrowserRouter>
         <Provider store={store}>
             <AppContainer/>
