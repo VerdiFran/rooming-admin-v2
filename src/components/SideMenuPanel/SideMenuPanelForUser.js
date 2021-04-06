@@ -1,15 +1,9 @@
 import React from 'react'
 import {Menu} from 'antd'
-import {MailOutlined, SettingOutlined} from '@ant-design/icons'
+import {SettingOutlined} from '@ant-design/icons'
 import styles from './SideMenuPanel.module.scss'
-import {NavLink, Redirect} from 'react-router-dom'
-import {getUserRoles} from '../../utils/selectors/selectors'
-import {compose} from 'redux'
-import {withPermission} from '../../hoc/withPermission'
-import {ADMIN, USER} from '../../redux/userRoles'
-import {connect} from 'react-redux'
 
-const SideMenuPanelForUser = ({userRole, subMenuStyle}) => {
+const SideMenuPanelForUser = ({subMenuStyle}) => {
     const {SubMenu} = Menu
 
     const rootSubmenuKeys = ['sub1', 'sub2']
@@ -33,7 +27,7 @@ const SideMenuPanelForUser = ({userRole, subMenuStyle}) => {
                 onOpenChange={onOpenChange}
                 style={{backgroundColor: 'transparent'}}
             >
-                <SubMenu key="sub1" icon={<MailOutlined/>} title="Модели" style={subMenuStyle}>
+                <SubMenu key="sub1" title="Модели" style={subMenuStyle}>
                     <Menu.Item key="1">Модели компании</Menu.Item>
                     <Menu.Item key="2">Заказ модели</Menu.Item>
                     <Menu.Item key="3">Статистика по моделям</Menu.Item>
