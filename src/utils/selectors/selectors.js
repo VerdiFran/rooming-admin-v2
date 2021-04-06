@@ -170,6 +170,7 @@ export const getUploadedCompanies = (state) => {
 
     return state.companies.companies.map(company => ({
         ...company,
+        actions: ['Подробнее'],
         key: companiesIdIterator.next().value
     }))
 }
@@ -224,6 +225,31 @@ export const getSelectedCompanyAddRequest = (state) => {
         }))
         return {
             ...request,
+            employees: newEmployees
+        }
+    }
+
+    return null
+}
+
+/**
+ * Returns selected company.
+ * @param state State
+ * @returns {(T&{employees: unknown[]})|null} Selected company.
+ */
+export const getSelectedCompany = (state) => {
+
+    const companies = state.companies.companies
+    const selectedCompanyId = state.companies.selectedCompanyId
+    const company = companies.find(company => company.id === selectedCompanyId)
+
+    if (company) {
+        const newEmployees = company.employees.map(employee => ({
+            ...employee,
+            userName: `${employee.firstName} ${employee.lastName}`
+        }))
+        return {
+            ...company,
             employees: newEmployees
         }
     }
