@@ -46,6 +46,7 @@ export const getOrdersData = (state) => {
             },
             status: layout.layoutOrderStatus,
             createdAt: layout.createdAt,
+            executor: layout.executor,
             actions: userRoles.includes(EMPLOYEE) ? ['посмотреть']
                 : userRoles.includes(DEVELOPER) ? ['выполнить']
                     : userRoles.includes(ADMIN) ? [] : ['посмотреть']
