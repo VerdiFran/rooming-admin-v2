@@ -13,6 +13,15 @@ const SET_CURRENT_LAYOUTS_ID = 'SET_CURRENT_LAYOUTS_ID'
 const complexIdIterator = IdGenerator()
 const buildingIdIterator = IdGenerator()
 
+type ExecutorType = {
+    id: number
+    firstName: string
+    lastName: string
+    phoneNumber: string
+    email: string
+}
+
+
 type ResponseCityType = {
     id: number
     wikiDataId: string
@@ -56,6 +65,7 @@ type LayoutType = {
             firstName: string
         }
     } | null
+    executor: ExecutorType
     layoutOrderStatus?: string
     resources?: Array<number>
     files?: Array<File>

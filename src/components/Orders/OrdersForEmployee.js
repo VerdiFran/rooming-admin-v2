@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
-import {Popover, List, Table, Button, Space} from 'antd'
+import {Popover, List, Table, Button, Space, Badge} from 'antd'
 import styles from './Orders.module.scss'
 import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
+import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 
 const OrdersForEmployee = ({ordersData, handleChange}) => {
     const [visible, setVisible] = useState(false)
@@ -44,6 +45,44 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
         }
     ]
 
+    const expandedRowRender = (record) => {
+        const columns = [
+            {
+                title: 'Планировки',
+                dataIndex: 'layout',
+                key: 'layout',
+                render: (layout) => `г. ${layout.city}, комплекс ${layout.complexName}: ул. ${layout.street}, д. ${layout.house}`
+            },
+            {
+                title: 'Статус',
+                dataIndex: 'status',
+                key: 'status',
+                render: (value) => value === READY_FOR_DEVELOPMENT
+                    ? <Badge status="default" text="Создан"/>
+                    : value === IN_PROGRESS
+                        ? <Badge status="processing" text="В процессе" color="yellow"/>
+                        : <Badge status="success" text="Выполнен" />
+            },
+            {
+                title: 'Контакт исполнителя',
+                dataIndex: 'executor',
+                key: 'executor',
+                render: (executor) => executor?.email || 'Заказ еще не находится в разработке'
+            }
+        ]
+
+        const data = record.layouts.map(layout => ({
+            layout: layout.address,
+            actions: layout.actions,
+            key: layout.key,
+            status: layout.status,
+            executor: layout.executor,
+            id: layout.id
+        }))
+
+        return <Table columns={columns} dataSource={data} pagination={false}/>
+    }
+
     const showDrawer = () => {
         setVisible(true)
     }
@@ -65,6 +104,10 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                 size="small"
                 tableLayout="auto"
                 onChange={handleChange}
+                expandable={{
+                    expandedRowRender,
+                    expandRowByClick: true
+                }}
                 scroll={{x: 900}}
             />
             <NewOrderFormContainer
