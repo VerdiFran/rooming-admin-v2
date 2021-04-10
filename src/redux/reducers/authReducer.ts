@@ -1,19 +1,22 @@
 import {authAPI} from '../../api/authAPI'
 import {EMPLOYEE} from '../userRoles'
+import {Dispatch} from 'redux'
 
 const TOGGLE_IS_AUTH = 'TOGGLE-IS-AUTH'
 const SET_USER_DATA = 'SET-USER-DATA'
-const LOGOUT = 'LOGOUT'
+const RESET_USER_DATA = 'RESET-USER-DATA'
 
 const initialState = {
     isAuth: false,
-    accessToken: null,
-    company: {
-        name: 'CompanyName'
-    },
-    firstName: 'FirstName',
-    lastName: 'LastName',
-    roles: [EMPLOYEE]
+    userData: {
+        accessToken: null,
+        company: {
+            name: '{CompanyName}'
+        },
+        firstName: '{FirstName}',
+        lastName: '{LastName}',
+        roles: [EMPLOYEE]
+    }
 }
 
 const authReducer = (state = initialState, action: any) => {
@@ -22,19 +25,23 @@ const authReducer = (state = initialState, action: any) => {
             return {
                 ...state,
                 isAuth: action.isAuth,
-                accessToken: action.accessToken
+                userData: {
+                    ...state.userData,
+                    accessToken: action.accessToken
+                }
             }
         case SET_USER_DATA:
             return {
                 ...state,
-                ...action.userData,
-                roles: action.userData.roles.map((role: string) => role.toUpperCase()),
+                userData: {
+                    ...action.userData,
+                    roles: action.userData.roles.map((role: string) => role.toUpperCase())
+                },
             }
-        case LOGOUT:
+        case RESET_USER_DATA:
             return {
                 ...state,
                 isAuth: false,
-                accessToken: null,
                 userData: null
             }
         default:
@@ -42,10 +49,10 @@ const authReducer = (state = initialState, action: any) => {
     }
 }
 
-const setUserData = (userData: any) => ({ type: SET_USER_DATA, userData })
+const setUserData = (userData: any) => ({type: SET_USER_DATA, userData})
 
-export const toggleIsAuth = (isAuth: any, accessToken?: string) => ({ type: TOGGLE_IS_AUTH, isAuth, accessToken })
-export const logout = () => ({ type: LOGOUT })
+export const toggleIsAuth = (isAuth: any, accessToken?: string) => ({type: TOGGLE_IS_AUTH, isAuth, accessToken})
+export const resetUserData = () => ({type: RESET_USER_DATA})
 
 export const login = (login: string, password: string, rememberMe: boolean) => async (dispatch: any) => {
 
@@ -60,6 +67,10 @@ export const login = (login: string, password: string, rememberMe: boolean) => a
     }
 }
 
+export const logoutUser = () => (dispatch: Dispatch) => {
+    dispatch(resetUserData())
+}
+
 export const refreshSession = () => async (dispatch: any) => {
     try {
         const response = await authAPI.refresh()
@@ -70,7 +81,7 @@ export const refreshSession = () => async (dispatch: any) => {
 
     } catch (error) {
         dispatch(toggleIsAuth(false, undefined))
-        throw 'Bad request, maybe refresh sessions not started'
+        throw new Error('Bad request, maybe refresh sessions not started')
     }
 }
 

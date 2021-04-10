@@ -11,14 +11,18 @@ export const getInitialized = (state) => {
 
 export const getUserData = (state) => {
     return {
-        userName: `${state.auth.firstName} ${state.auth.lastName}`,
-        companyName: state.auth.company.name,
-        userRole: state.auth.roles
+        userName: `${state.auth.userData.firstName} ${state.auth.userData.lastName}`,
+        companyName: state.auth.userData.company.name,
+        userRole: state.auth.userData.roles
     }
 }
 
 export const getUserRoles = (state) => {
-    return state.auth.roles
+    return state.auth.userData.roles
+}
+
+export const getAccessToken = (state) => {
+    return state.auth.userData ? state.auth.userData.accessToken : ''
 }
 
 export const getOrdersData = (state) => {

@@ -4,10 +4,11 @@ import { connect } from 'react-redux'
 import jwtDecode from 'jwt-decode'
 import { refreshSession } from '../redux/reducers/authReducer'
 import Preloader from '../components/common/Preloader/Preloader'
+import {getAccessToken, getIsAuth} from '../utils/selectors/selectors'
 
 let mapStateToPropsForRedirect = (state) => ({
-    isAuth: state.auth.isAuth,
-    accessToken: state.auth.accessToken
+    isAuth: getIsAuth(state),
+    accessToken: getAccessToken(state)
 })
 
 export const withAuthRedirect = (Component) => {
@@ -24,11 +25,11 @@ export const withAuthRedirect = (Component) => {
 
             if (!props.isAuth) {
                 props.refreshSession()
-                    .then(result => {
+                    .then(() => {
                         setIsAuth(true)
                         setIsChecked(true)
                     })
-                    .catch(reject => {
+                    .catch(() => {
                         setIsAuth(false)
                         setIsChecked(true)
                     })
@@ -39,11 +40,11 @@ export const withAuthRedirect = (Component) => {
 
                 if (Date.now() > expiresIn) {
                     props.refreshSession()
-                        .then(result => {
+                        .then(() => {
                             setIsAuth(true)
                             setIsChecked(true)
                         })
-                        .catch(reject => {
+                        .catch(() => {
                             setIsAuth(false)
                             setIsChecked(true)
                         })
