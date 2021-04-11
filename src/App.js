@@ -27,7 +27,10 @@ const App = (props) => {
     }
 
     if (props.logoutIsFinished) {
-        return <Redirect to="/login"/>
+        return <>
+            <Preloader/>
+            <Redirect to="/login"/>
+        </>
     }
 
     if (!props.isAuth) {
