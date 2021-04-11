@@ -1,5 +1,7 @@
 import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
+import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
+import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -9,16 +11,24 @@ export const getInitialized = (state) => {
     return state.app.initialized
 }
 
+export const getLogoutIsFinished = (state) => {
+    return state.auth.logoutIsFinished
+}
+
 export const getUserData = (state) => {
     return {
-        userName: `${state.auth.firstName} ${state.auth.lastName}`,
-        companyName: state.auth.company.name,
-        userRole: state.auth.roles
+        userName: `${state.auth.userData.firstName} ${state.auth.userData.lastName}`,
+        companyName: state.auth.userData.company.name,
+        userRole: state.auth.userData.roles
     }
 }
 
 export const getUserRoles = (state) => {
-    return state.auth.roles
+    return state.auth.userData.roles
+}
+
+export const getAccessToken = (state) => {
+    return state.auth.accessToken
 }
 
 export const getOrdersData = (state) => {
@@ -27,6 +37,32 @@ export const getOrdersData = (state) => {
     const orderIdIterator = IdGenerator()
     const layoutIdIterator = IdGenerator()
     const userRoles = getUserRoles(state)
+
+    const actionsSelection = (userRoles, status) => {
+        if (userRoles.includes(EMPLOYEE)) {
+            return ['посмотреть']
+        }
+
+        if (userRoles.includes(DEVELOPER)) {
+            if (status === READY_FOR_DEVELOPMENT) {
+                return [TAKE_ON_EXECUTE_ACTION, EXECUTE_ORDER_ACTION]
+            }
+
+            if (status === IN_PROGRESS) {
+                return [EXECUTE_ORDER_ACTION]
+            }
+
+            if (status === COMPLETED) {
+                return []
+            }
+        }
+
+        if (userRoles.includes(ADMIN)) {
+            return ['посмотреть']
+        }
+
+        return []
+    }
 
     return state.orders.orders.map(order => ({
         key: orderIdIterator.next().value,
@@ -37,6 +73,7 @@ export const getOrdersData = (state) => {
         layouts: order.layouts.map(layout => ({
             id: layout.id,
             key: layoutIdIterator.next().value,
+            orderId: order.id,
             description: layout.description,
             address: {
                 city: layout.building.address.city,
@@ -46,9 +83,8 @@ export const getOrdersData = (state) => {
             },
             status: layout.layoutOrderStatus,
             createdAt: layout.createdAt,
-            actions: userRoles.includes(EMPLOYEE) ? ['посмотреть']
-                : userRoles.includes(DEVELOPER) ? ['выполнить']
-                    : userRoles.includes(ADMIN) ? [] : ['посмотреть']
+            executor: layout.executor,
+            actions: actionsSelection(userRoles, layout.layoutOrderStatus)
         })),
         createdAt: order.createdAt,
         createdBy: order.createdBy.company
@@ -256,3 +292,9 @@ export const getSelectedCompany = (state) => {
 
     return null
 }
+
+/**
+ * Get information about logged user.
+ * @param state State.
+ */
+export const getLoggedUserInfo = (state) => state.auth;

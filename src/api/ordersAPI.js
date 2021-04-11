@@ -27,5 +27,14 @@ export const ordersAPI = {
             }
         })
     },
+    /**
+     * PUT request for set order executor.
+     * @param orderId Id of order layout order from.
+     * @param layoutId Layout order id.
+     * @return Request promise.
+     */
+    takeOnExecute(orderId, layoutId) {
+        return instance.put(`orders/${orderId}/layouts/${layoutId}/executor`)
+    }
 }
 

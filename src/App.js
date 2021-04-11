@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {connect, Provider} from 'react-redux'
 import store from './redux/store'
 import Login from './components/Login/Login'
@@ -6,7 +6,7 @@ import {compose} from 'redux'
 import {Redirect, BrowserRouter, Route, withRouter, Switch} from 'react-router-dom'
 import Home from './components/Home/Home'
 import {initializeApp} from './redux/reducers/appReducer'
-import {getInitialized, getIsAuth, getUserRoles} from './utils/selectors/selectors'
+import {getInitialized, getIsAuth, getLogoutIsFinished} from './utils/selectors/selectors'
 import HeaderContainer from './components/Header/HeaderContainer'
 import {Layout, PageHeader} from 'antd'
 import OrdersContainer from './components/Orders/OrdersContainer'
@@ -17,70 +17,77 @@ import CompanyAddRequestsContainer from './components/CompanyAddRequests/Company
 import './App.less'
 import Preloader from './components/common/Preloader/Preloader'
 
-class App extends React.Component {
-    componentDidMount() {
-        this.props.initializeApp()
+const App = (props) => {
+    useEffect(() => {
+        props.initializeApp()
+    }, [])
+
+    if (!props.initialized) {
+        return <Preloader/>
     }
 
-    render() {
-        if (!this.props.initialized) {
-            return <Preloader/>
-        }
+    if (props.logoutIsFinished) {
+        return <>
+            <Preloader/>
+            <Redirect to="/login"/>
+        </>
+    }
 
-        const {Sider, Content} = Layout
+    if (!props.isAuth) {
+        return <Login/>
+    }
 
-        return (
-            <Layout className="app-wrapper">
-                {this.props.isAuth && <HeaderContainer/>}
-                <Layout>
-                    {this.props.isAuth &&
-                    <Sider style={{backgroundColor: 'transparent'}}>
-                        <SideMenuPanelContainer/>
-                    </Sider>}
-                    <Content>
-                        {this.props.isAuth && <PageHeader
-                            title="Title"
-                            onBack={() => window.history.back()}
-                        />}
-                        <Switch>
-                            <Route
-                                path="/home"
-                                render={() => <Home/>}
-                            />
-                            <Route
-                                path="/login"
-                                render={() => <Login/>}
-                            />
-                            <Route
-                                path="/orders"
-                                render={() => <OrdersContainer/>}
-                            />
-                            <Route
-                                path="/buildings"
-                                render={() => <BuildingsContainer/>}
-                            />
-                            <Route
-                                path="/companies"
-                                render={() => <CompaniesContainer/>}
-                            />
-                            <Route
-                                path="/add-requests"
-                                render={() => <CompanyAddRequestsContainer/>}
-                            />
-                            <Redirect from="/" to="/home"/>
-                        </Switch>
-                    </Content>
-                </Layout>
+    const {Sider, Content} = Layout
+
+    return (
+        <Layout className="app-wrapper">
+            <HeaderContainer/>
+            <Layout>
+                <Sider style={{backgroundColor: 'transparent'}}>
+                    <SideMenuPanelContainer/>
+                </Sider>
+                <Content>
+                    <PageHeader
+                        title="Title"
+                        onBack={() => props.history.goBack()}
+                    />
+                    <Switch>
+                        <Route
+                            path="/home"
+                            render={() => <Home/>}
+                        />
+                        <Route
+                            path="/login"
+                            render={() => <Login/>}
+                        />
+                        <Route
+                            path="/orders"
+                            render={() => <OrdersContainer/>}
+                        />
+                        <Route
+                            path="/buildings"
+                            render={() => <BuildingsContainer/>}
+                        />
+                        <Route
+                            path="/companies"
+                            render={() => <CompaniesContainer/>}
+                        />
+                        <Route
+                            path="/add-requests"
+                            render={() => <CompanyAddRequestsContainer/>}
+                        />
+                        <Redirect from="/" to="/home"/>
+                    </Switch>
+                </Content>
             </Layout>
-        )
-    }
+        </Layout>
+    )
 }
-
 
 const mapStateToProps = (state) => ({
     initialized: getInitialized(state),
-    userRole: getUserRoles(state),
-    isAuth: getIsAuth(state)
+    isAuth: getIsAuth(state),
+    logoutIsFinished: getLogoutIsFinished(state)
 })
 
 let AppContainer = compose(
@@ -88,6 +95,10 @@ let AppContainer = compose(
     connect(mapStateToProps, {initializeApp}))
 (App)
 
+/**
+ * Wrapper for App component
+ * @returns {JSX.Element}
+ */
 let MainApp = () => {
     return <BrowserRouter>
         <Provider store={store}>
