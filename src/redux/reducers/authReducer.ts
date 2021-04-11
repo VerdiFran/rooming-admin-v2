@@ -10,6 +10,7 @@ const RESET_USER_DATA = 'RESET-USER-DATA'
 const TOGGLE_LOGOUT_IS_FINISHED = 'TOGGLE-LOGOUT-IS-FINISHED'
 
 const initialState = {
+    id: 0,
     isAuth: false,
     accessToken: null,
     userData: {

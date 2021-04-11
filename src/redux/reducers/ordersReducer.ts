@@ -2,16 +2,28 @@ import {ordersAPI} from '../../api/ordersAPI'
 import {Dispatch} from 'redux'
 import {citiesDbAPI} from '../../api/citiesDbAPI'
 import {IdGenerator} from '../../utils/generators/generators'
+import {message} from "antd";
+import {updateLayoutOrderExecutor} from "../../utils/helpers/ordersHelper";
 
 const SET_CITIES = 'SET-CITIES'
 const SET_ADDRESSES = 'SET-ADDRESSES'
 const ADD_ADDRESS = 'ADD-ADDRESS'
 const ADD_COMPLEX = 'ADD-COMPLEX'
 const SET_ORDERS = 'SET-ORDERS'
-const SET_CURRENT_LAYOUTS_ID = 'SET_CURRENT_LAYOUTS_ID'
+const SET_CURRENT_LAYOUTS_ID = 'SET-CURRENT-LAYOUTS-ID'
+const SET_LAYOUT_ORDER_EXECUTOR = 'SET-LAYOUT-ORDER-EXECUTOR'
 
 const complexIdIterator = IdGenerator()
 const buildingIdIterator = IdGenerator()
+
+export type ExecutorType = {
+    id: number
+    firstName: string
+    lastName: string
+    phoneNumber: string
+    email: string
+}
+
 
 type ResponseCityType = {
     id: number
@@ -56,6 +68,7 @@ type LayoutType = {
             firstName: string
         }
     } | null
+    executor: ExecutorType
     layoutOrderStatus?: string
     resources?: Array<number>
     files?: Array<File>
@@ -76,7 +89,7 @@ type ComplexType = {
     complexId?: string
 }
 
-type OrderType = {
+export type OrderType = {
     orderDescription: string
     deadline: string
     layouts: Array<LayoutType>
@@ -151,6 +164,11 @@ const ordersReducer = (state = initialState, action: any) => {
                 ...state,
                 currentLayoutIds: action.currentLayoutIds
             }
+        case SET_LAYOUT_ORDER_EXECUTOR:
+            return {
+                ...state,
+                orders: updateLayoutOrderExecutor(state.orders, action.orderId, action.layoutOrderId, action.executor)
+            }
         default:
             return state
     }
@@ -166,6 +184,30 @@ export const setCurrentLayoutIds = (currentLayoutIds: Array<number>) => ({
     type: SET_CURRENT_LAYOUTS_ID,
     currentLayoutIds
 })
+
+const setExecutor = (layoutOrderId: number, orderId: number, executor: ExecutorType) => ({
+    type: SET_LAYOUT_ORDER_EXECUTOR,
+    layoutOrderId,
+    orderId,
+    executor
+})
+
+/**
+ * Set user who will execute layout order and related status of execution.
+ * @param layoutOrderId Layout order to execute.
+ * @param orderId Order is that contains layout order to execute.
+ * @param executor User who will execute order.
+ */
+export const takeLayoutOrderOnExecute = (layoutOrderId: number, orderId: number, executor: ExecutorType) => async (dispatch: Dispatch) => {
+    try {
+        await ordersAPI.takeOnExecute(orderId, layoutOrderId)
+        dispatch(setExecutor(layoutOrderId, orderId, executor))
+    }
+    catch (error) {
+        message.error("Не удалось взять заказ на разработку, попробуйте еще раз", 3)
+    }
+    message.success("Вы успешно стали исполнителем!")
+}
 
 export const getAddressesByCityName = (city: string) => async (dispatch: Dispatch) => {
     const {data} = await ordersAPI.getAddresses(city)
