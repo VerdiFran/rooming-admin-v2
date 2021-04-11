@@ -1,4 +1,4 @@
-import {authAPI} from '../../api/authAPI'
+import {refreshSession} from './authReducer'
 
 const INITIALIZED_SUCCESS = 'INITIALIZED-SUCCESS'
 
@@ -28,13 +28,11 @@ type InitializedSuccessActionType = {
 
 export const initializedSuccess = (): InitializedSuccessActionType => ({type: INITIALIZED_SUCCESS})
 
-export const initializeApp = () => (dispatch: any) => {
-    /*let promise = dispatch(getAuthUserData())
-
-    Promise.all([promise]).then(() => {
-        dispatch(initializedSuccess())
-    })*/
-
+/**
+ * Refresh session an download user data
+ */
+export const initializeApp = () => async (dispatch: any) => {
+    await dispatch(refreshSession())
     dispatch(initializedSuccess())
 }
 

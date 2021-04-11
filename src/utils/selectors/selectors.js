@@ -9,6 +9,10 @@ export const getInitialized = (state) => {
     return state.app.initialized
 }
 
+export const getLogoutIsFinished = (state) => {
+    return state.auth.logoutIsFinished
+}
+
 export const getUserData = (state) => {
     return {
         userName: `${state.auth.userData.firstName} ${state.auth.userData.lastName}`,
@@ -22,7 +26,7 @@ export const getUserRoles = (state) => {
 }
 
 export const getAccessToken = (state) => {
-    return state.auth.userData ? state.auth.userData.accessToken : ''
+    return state.auth.accessToken
 }
 
 export const getOrdersData = (state) => {
