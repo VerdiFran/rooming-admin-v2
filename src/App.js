@@ -18,22 +18,30 @@ import './App.less'
 import Preloader from './components/common/Preloader/Preloader'
 
 const App = (props) => {
+    const {
+        initialized,
+        isAuth,
+        logoutIsFinished,
+        history,
+        initializeApp
+    } = props
+
     useEffect(() => {
-        props.initializeApp()
+        initializeApp()
     }, [])
 
-    if (!props.initialized) {
+    if (!initialized) {
         return <Preloader/>
     }
 
-    if (props.logoutIsFinished) {
+    if (logoutIsFinished) {
         return <>
             <Preloader/>
             <Redirect to="/login"/>
         </>
     }
 
-    if (!props.isAuth) {
+    if (!isAuth) {
         return <Login/>
     }
 
@@ -49,7 +57,7 @@ const App = (props) => {
                 <Content>
                     <PageHeader
                         title="Title"
-                        onBack={() => props.history.goBack()}
+                        onBack={() => history.goBack()}
                     />
                     <Switch>
                         <Route

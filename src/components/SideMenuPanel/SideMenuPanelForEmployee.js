@@ -1,36 +1,29 @@
 import React from 'react'
-import {Menu} from 'antd'
-import {NavLink} from 'react-router-dom'
+import SideMenuPanel from './SideMenuPanel'
 
-const SideMenuPanelForEmployee = ({subMenuStyle}) => {
-    const {SubMenu} = Menu
+const SideMenuPanelForEmployee = () => {
+    const menuItems = [
+        {
+            key: '/home',
+            title: 'Главная'
+        },
+        {
+            key: '/models',
+            title: 'Модели',
+            children: [
+                {
+                    key: '/orders',
+                    title: 'Заказы'
+                },
+                {
+                    key: '/buildings',
+                    title: 'Планировки'
+                },
+            ]
+        },
+    ]
 
-    const rootSubmenuKeys = ['sub1', 'sub2']
-
-    const [openKeys, setOpenKeys] = React.useState(['sub1'])
-
-    const onOpenChange = keys => {
-        const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1)
-        if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-            setOpenKeys(keys)
-        } else {
-            setOpenKeys(latestOpenKey ? [latestOpenKey] : [])
-        }
-    }
-
-    return (
-        <Menu
-            mode="inline"
-            openKeys={openKeys}
-            onOpenChange={onOpenChange}
-            style={{backgroundColor: 'transparent'}}
-        >
-            <SubMenu key="sub1" title="Модели" style={subMenuStyle}>
-                <Menu.Item key="1"><NavLink to="/orders">Заказы</NavLink></Menu.Item>
-                    <Menu.Item key="2"><NavLink to="/buildings">Планировки</NavLink></Menu.Item>
-            </SubMenu>
-        </Menu>
-    )
+    return <SideMenuPanel menuItems={menuItems}/>
 }
 
 export default SideMenuPanelForEmployee
