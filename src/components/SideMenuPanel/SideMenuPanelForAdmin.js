@@ -1,46 +1,33 @@
 import React from 'react'
-import {Menu} from 'antd'
-import {MailOutlined, SettingOutlined} from '@ant-design/icons'
-import styles from './SideMenuPanel.module.scss'
-import {NavLink, Redirect} from 'react-router-dom'
-import {getUserRoles} from '../../utils/selectors/selectors'
-import {compose} from 'redux'
-import {withPermission} from '../../hoc/withPermission'
-import {ADMIN} from '../../redux/userRoles'
-import {connect} from 'react-redux'
+import SideMenuPanel from './SideMenuPanel'
 
-const SideMenuPanelForAdmin = ({userRole, subMenuStyle}) => {
-    const {SubMenu} = Menu
+const SideMenuPanelForAdmin = ({location}) => {
+    const menuItems = [
+        {
+            key: '/home',
+            title: 'Главная'
+        },
+        {
+            key: '/companies',
+            title: 'Компании',
+            children: [
+                {
+                    key: '/orders',
+                    title: 'Заказы'
+                },
+                {
+                    key: '/companies',
+                    title: 'Сведения'
+                },
+                {
+                    key: '/add-requests',
+                    title: 'Заявки'
+                },
+            ]
+        },
+    ]
 
-    const rootSubmenuKeys = ['sub1', 'sub2']
-
-    const [openKeys, setOpenKeys] = React.useState(['sub1'])
-
-    const onOpenChange = keys => {
-        const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1)
-        if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-            setOpenKeys(keys)
-        } else {
-            setOpenKeys(latestOpenKey ? [latestOpenKey] : [])
-        }
-    }
-
-    return (
-        <div className={styles.menuPanel}>
-            <Menu
-                mode="inline"
-                openKeys={openKeys}
-                onOpenChange={onOpenChange}
-                style={{backgroundColor: 'transparent'}}
-            >
-                <SubMenu key="sub1" icon={<MailOutlined/>} title="Компании" style={subMenuStyle}>
-                    <Menu.Item key="1"><NavLink to="/orders">Заказы</NavLink></Menu.Item>
-                    <Menu.Item key="2"><NavLink to="/companies">Сведения</NavLink></Menu.Item>
-                    <Menu.Item key="3"><NavLink to="/add-requests">Заявки</NavLink></Menu.Item>
-                </SubMenu>
-            </Menu>
-        </div>
-    )
+    return <SideMenuPanel menuItems={menuItems} location={location}/>
 }
 
 export default SideMenuPanelForAdmin
