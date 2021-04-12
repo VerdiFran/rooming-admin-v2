@@ -1,6 +1,6 @@
 import React from 'react'
 import {DatePicker} from 'formik-antd'
-import {Input, Button, Divider, Space, Drawer, Form} from 'antd'
+import {Input, Button, Divider, Drawer, Form} from 'antd'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
 import {FieldArray, FormikProvider, useFormik} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
@@ -38,7 +38,8 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                     resources: []
                 }
             ]
-        }
+        },
+        validateOnChange: false
     })
 
     const addOrderWithValues = () => {
@@ -84,7 +85,7 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                     </Form.Item>
                     <Divider/>
                     <FieldArray name="layouts">
-                        {({insert, remove, push}) => (
+                        {({remove, push}) => (
                             <div>
                                 {formik.values.layouts.length > 0 && formik.values.layouts.map((layout, index) => (
                                     <NewLayoutFormContainer

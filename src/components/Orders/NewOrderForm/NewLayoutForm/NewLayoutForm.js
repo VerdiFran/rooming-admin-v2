@@ -1,15 +1,21 @@
 import React, {useEffect, useState} from 'react'
-import {InboxOutlined} from '@ant-design/icons'
-import {Card, Input, Space, Upload, message, Form, AutoComplete, Cascader, Modal, Row, Col, Button} from 'antd'
+import {Card, Input, Space, Upload, message, Form, AutoComplete, Cascader, Modal, Button} from 'antd'
 import {CloseOutlined} from '@ant-design/icons'
 import NewBuildingFormContainer from './NewBuildingForm/NewBuildingFormContainer'
 import useDebounce from '../../../../hooks/useDebounce'
-import {FieldArray} from 'formik'
 import styles from './NewLayoutForm.module.scss'
 import DraggerContent from '../../../common/FormControls/DraggerContent'
 
 const NewLayoutForm = (props) => {
-    const {layoutIndex, formik, cities, addresses, setFieldValue, getAddresses, getCitiesByNamePrefix, remove} = props
+    const {
+        layoutIndex,
+        formik: {setFieldValue},
+        cities,
+        addresses,
+        getAddresses,
+        getCitiesByNamePrefix,
+        remove
+    } = props
 
     const [citiesOptions, setCitiesOptions] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
@@ -27,12 +33,14 @@ const NewLayoutForm = (props) => {
             setCitiesOptions(Array.from(new Set(cities)).map(city => ({value: city})))
             setIsSearching(false)
         }
+    }, [cities])
 
+    useEffect(() => {
         if (debouncedSearchTerm) {
             setIsSearching(true)
             getCitiesByNamePrefix(searchTerm)
         }
-    }, [cities, debouncedSearchTerm])
+    }, [debouncedSearchTerm])
 
     const handlePreview = async file => {
         if (!file.url && !file.preview) {
@@ -100,7 +108,7 @@ const NewLayoutForm = (props) => {
                             }
                             if (status === 'done') {
                                 message.success(`${info.file.name} file uploaded successfully.`)
-                                formik.setFieldValue(`layouts.${layoutIndex}.files`, [...files])
+                                setFieldValue(`layouts.${layoutIndex}.files`, [...files])
                             } else if (status === 'error') {
                                 message.error(`${info.file.name} file upload failed.`)
                             }
@@ -134,9 +142,9 @@ const NewLayoutForm = (props) => {
                         <Cascader
                             options={addresses}
                             /*value={[
-                                formik.values.layouts[layoutIndex].building.complexId,
-                                formik.values.layouts[layoutIndex].building.complex.name,
-                                formik.values.layouts[layoutIndex].buildingId
+                                values.layouts[layoutIndex].building.complexId,
+                                values.layouts[layoutIndex].building.complex.name,
+                                values.layouts[layoutIndex].buildingId
                             ]}*/
                             onChange={(value => {
                                 setFieldValue(`layouts.${layoutIndex}.buildingId`, value[2])
@@ -154,8 +162,8 @@ const NewLayoutForm = (props) => {
                 <Form.Item label="Описание планировки">
                     <Input.TextArea
                         name={`layouts.${layoutIndex}.description`}
-                        onChange={(value) =>
-                            setFieldValue(`layouts.${layoutIndex}.description`, value.currentTarget.value)}
+                        onChange={(e) =>
+                            setFieldValue(`layouts.${layoutIndex}.description`, e.currentTarget.value)}
                     />
                 </Form.Item>
             </Form>
