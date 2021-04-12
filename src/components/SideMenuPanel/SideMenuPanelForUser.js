@@ -1,7 +1,7 @@
 import React from 'react'
 import SideMenuPanel from './SideMenuPanel'
 
-const SideMenuPanelForUser = () => {
+const SideMenuPanelForUser = ({location}) => {
     const menuItems = [
         {
             key: '/home',
@@ -9,7 +9,7 @@ const SideMenuPanelForUser = () => {
         }
     ]
 
-    return <SideMenuPanel menuItems={menuItems}/>
+    return <SideMenuPanel menuItems={menuItems} location={location}/>
 }
 
 export default SideMenuPanelForUser

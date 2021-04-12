@@ -12,13 +12,13 @@ const mapStateToProps = (state) => ({
     userRoles: getUserRoles(state)
 })
 
-const SideMenuPanelContainer = ({userRoles}) => {
+const SideMenuPanelContainer = ({userRoles, location}) => {
     if (userRoles.includes(DEVELOPER)) {
-        return <SideMenuPanelForDeveloper/>
+        return <SideMenuPanelForDeveloper location={location}/>
     } else if (userRoles.includes(EMPLOYEE)) {
-        return <SideMenuPanelForEmployee/>
+        return <SideMenuPanelForEmployee location={location}/>
     } else if (userRoles.includes(ADMIN)) {
-        return <SideMenuPanelForAdmin/>
+        return <SideMenuPanelForAdmin location={location}/>
     } else {
         return <Redirect to="/login"/>
     }

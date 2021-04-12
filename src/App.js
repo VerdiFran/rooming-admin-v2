@@ -23,6 +23,7 @@ const App = (props) => {
         isAuth,
         logoutIsFinished,
         history,
+        location,
         initializeApp
     } = props
 
@@ -52,7 +53,7 @@ const App = (props) => {
             <HeaderContainer/>
             <Layout>
                 <Sider style={{backgroundColor: 'transparent'}}>
-                    <SideMenuPanelContainer/>
+                    <SideMenuPanelContainer location={location}/>
                 </Sider>
                 <Content>
                     <PageHeader
