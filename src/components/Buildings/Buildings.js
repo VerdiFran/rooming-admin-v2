@@ -1,14 +1,20 @@
-import React from 'react'
-import {Badge, Button, List, Popover, Table} from 'antd'
+import React, {useState} from 'react'
+import {Table} from 'antd'
 import styles from './Buildings.module.scss'
+import ActionButton from "../common/ActionButton/ActionButton";
+import {GET_LAYOUT_INFO_ACTION} from "../../utils/actions/layoutActions";
+import LayoutInfoContainer from "./LayoutInfo/LayoutInfoContainer";
 
-const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
+const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelectedLayoutId}) => {
+
+    const [visible, setVisible] = useState(false)
 
     const columns = [
         {
             title: 'Адрес здания',
             dataIndex: 'address',
             key: 'address',
+            width: "25%",
             ellipsis: false,
             render: (addr) => `г. ${addr.city} ул. ${addr.street}-${addr.house}`
         },
@@ -22,18 +28,37 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
             title: 'Комплекс',
             dataIndex: 'complex',
             key: 'complex',
+            align: 'center',
+            width: "20%",
             ellipsis: false,
             render: (complex) => complex.name
         }
     ]
 
-    const expandedBuildingRowRender = (record, index, indent, expanded) => {
+    const getButtonByActionType = (action, record) => {
+        switch (action.type) {
+            case GET_LAYOUT_INFO_ACTION.type:
+                return <ActionButton
+                    title={action.title}
+                    handleClick={() => {
+                        setSelectedLayoutId(record.id)
+                        setVisible(true)
+                    }}
+                />
+            default:
+                return null
+        }
+    }
+
+    const expandedBuildingRowRender = (record) => {
         const columns = [
             {
                 title: 'Дата и время создания',
                 dataIndex: 'createdAt',
                 key: 'createdAt',
-                render: (date) => { 
+                align: 'center',
+                width: "15%",
+                render: (date) => {
                     return new Date(date).toLocaleString()
                 }
             },
@@ -46,33 +71,36 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
                 title: 'Действия',
                 dataIndex: 'actions',
                 key: 'actions',
-                render: ((text, layoutRecord, index) => layoutRecord.actions.map(act => <div>
-                    <Button type="link" onClick={act.handleSubmit}>{act.label}</Button>
-                </div>))
+                align: 'center',
+                render: ((text, layoutRecord) => layoutRecord.actions.map(action =>
+                    getButtonByActionType(action, layoutRecord)))
             }
         ]
 
         const data = record.layouts.map(layout => ({
+            id: layout.id,
             key: layout.key,
             description: layout.description,
             createdAt: layout.createdAt,
-            actions: []
+            actions: layout.actions
         }))
 
         return <Table
-            columns={columns}
-            dataSource={data}
-            pagination={false}
-        />
+                bordered
+                columns={columns}
+                dataSource={data}
+                pagination={false}
+            />
     }
 
-    const changePage = (page, pageSize) => {
+    const changePage = (page) => {
         setCurrentPage(page)
     }
 
     return (
         <div className={styles.contentContainer}>
             <Table
+                bordered
                 columns={columns}
                 dataSource={buildings}
                 pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
@@ -80,6 +108,10 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
                 tableLayout="auto"
                 expandable={{expandedRowRender: expandedBuildingRowRender, expandRowByClick: true}}
                 scroll={{x: 900}}
+            />
+            <LayoutInfoContainer
+                setVisible={setVisible}
+                visible={visible}
             />
         </div>
     )

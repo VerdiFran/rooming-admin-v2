@@ -1,4 +1,4 @@
-import {instance} from './instances'
+import {instance, instanceForDownloadFile} from './instances'
 
 let token
 
@@ -8,6 +8,7 @@ export const authAPI = {
 
         token = response.data.accessToken
         instance.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        instanceForDownloadFile.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
         return response
     },
@@ -19,6 +20,7 @@ export const authAPI = {
 
         token = response.data.accessToken
         instance.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        instanceForDownloadFile.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
         return response
     },
@@ -30,6 +32,7 @@ export const authAPI = {
         const response = await instance.post('auth/logout')
 
         instance.defaults.headers.common['Authorization'] = ''
+        instanceForDownloadFile.defaults.headers.common['Authorization'] = ''
 
         return response
     }

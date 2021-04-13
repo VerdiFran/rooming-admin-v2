@@ -4,7 +4,7 @@ import Buildings from './Buildings'
 import { getFinishedBuildings, getTotalPages } from '../../utils/selectors/selectors'
 import { compose } from 'redux'
 import { withAuthRedirect } from '../../hoc/withAuthRedirect'
-import { getBuildingsWithCompletedLayouts } from '../../redux/reducers/buildingsReducer'
+import { getBuildingsWithCompletedLayouts, setSelectedLayoutId } from '../../redux/reducers/buildingsReducer'
 
 const mapStateToProps = (state) => ({
     buildings: getFinishedBuildings(state),
@@ -25,11 +25,12 @@ const BuildingsContainer = (props) => {
         totalPages={props.totalPages}
         pageSize={pageSize}
         setCurrentPage={setCurrentPage}
+        setSelectedLayoutId={props.setSelectedLayoutId}
     />
 
 }
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, { getBuildingsWithCompletedLayouts })
+    connect(mapStateToProps, { getBuildingsWithCompletedLayouts, setSelectedLayoutId })
 )(BuildingsContainer)

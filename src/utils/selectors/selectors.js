@@ -2,6 +2,7 @@ import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
 import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
 import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
+import {GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -179,22 +180,33 @@ export const getStreets = (state) => {
     }))
 }
 
+/**
+ * Returns buildings with finished layouts.
+ * @param state State.
+ * @return List of buildings.
+ */
 export const getFinishedBuildings = (state) => {
 
     const buildingsIdIterator = IdGenerator()
     const layoutsIdIterator = IdGenerator()
 
-    return state.layouts.buildings.map(building => ({
+    return state.buildings.buildings.map(building => ({
         ...building,
         layouts: building.layouts.map(layout => ({
             ...layout,
-            key: layoutsIdIterator.next().value
+            key: layoutsIdIterator.next().value,
+            actions: [GET_LAYOUT_INFO_ACTION]
         })),
         key: buildingsIdIterator.next().value
     }))
 }
 
-export const getTotalPages = (state) => state.layouts.totalPages
+/**
+ * Returns total pages of buildings.
+ * @param state State.
+ * @return Number of total page.
+ */
+export const getTotalPages = (state) => state.buildings.totalPages
 
 /**
  * Get uploaded companies with keys from state.
@@ -298,3 +310,31 @@ export const getSelectedCompany = (state) => {
  * @param state State.
  */
 export const getLoggedUserInfo = (state) => state.auth;
+
+/**
+ * Returns selected layout.
+ * @param state State.
+ * @return Selected layout or null if it is not exist.
+ */
+export const getSelectedLayout = (state) => {
+
+    const selectedLayoutId = state.buildings.selectedLayoutId
+
+    if (selectedLayoutId === 0) {
+        return 0;
+    }
+
+    for (const building of state.buildings.buildings) {
+        const selectedLayout = building.layouts.find(layout => layout.id === selectedLayoutId)
+        if (selectedLayout) {
+            return {
+                ...selectedLayout,
+                buildingId: building.id,
+                createdAt: new Date(selectedLayout?.createdAt),
+                key: 'selectedLayout'
+            }
+        }
+    }
+
+    return null
+}

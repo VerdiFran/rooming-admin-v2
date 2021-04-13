@@ -1,13 +1,9 @@
-
-type OrderAction = {
-    title: string
-    type: string
-}
-
 /**
  * Take on execution action.
  */
-export const TAKE_ON_EXECUTE_ACTION: OrderAction = {
+import {Action} from "./Action";
+
+export const TAKE_ON_EXECUTE_ACTION: Action = {
     title: 'стать исполнителем',
     type: 'TAKE-ON-EXECUTE-ACTION'
 }
@@ -15,7 +11,7 @@ export const TAKE_ON_EXECUTE_ACTION: OrderAction = {
 /**
  * Execute order action.
  */
-export const EXECUTE_ORDER_ACTION: OrderAction = {
+export const EXECUTE_ORDER_ACTION: Action = {
     title: 'выполнить',
     type: 'EXECUTE-ORDER-ACTION'
 }
