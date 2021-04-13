@@ -23,7 +23,7 @@ const LayoutInfo = ({setVisible, visible, selectedLayout, handleDownload}) => {
             <Descriptions bordered size="small" layout="vertical">
                 <Descriptions.Item label="Описание" span={3}>{selectedLayout?.description}</Descriptions.Item>
                 <Descriptions.Item label="Контакт исполнителя">{selectedLayout?.createdBy?.email}</Descriptions.Item>
-                <Descriptions.Item width="40%" label="Дата создания">
+                <Descriptions.Item width="40%" label="Дата и время создания">
                     {`${selectedLayout?.createdAt?.toLocaleDateString()}, ${selectedLayout?.createdAt?.toLocaleTimeString()?.slice(0, 5)}`}
                 </Descriptions.Item>
             </Descriptions>

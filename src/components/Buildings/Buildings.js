@@ -14,6 +14,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
             title: 'Адрес здания',
             dataIndex: 'address',
             key: 'address',
+            width: "25%",
             ellipsis: false,
             render: (addr) => `г. ${addr.city} ул. ${addr.street}-${addr.house}`
         },
@@ -27,6 +28,8 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
             title: 'Комплекс',
             dataIndex: 'complex',
             key: 'complex',
+            align: 'center',
+            width: "20%",
             ellipsis: false,
             render: (complex) => complex.name
         }
@@ -53,6 +56,8 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
                 title: 'Дата и время создания',
                 dataIndex: 'createdAt',
                 key: 'createdAt',
+                align: 'center',
+                width: "15%",
                 render: (date) => {
                     return new Date(date).toLocaleString()
                 }
@@ -66,6 +71,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
                 title: 'Действия',
                 dataIndex: 'actions',
                 key: 'actions',
+                align: 'center',
                 render: ((text, layoutRecord) => layoutRecord.actions.map(action =>
                     getButtonByActionType(action, layoutRecord)))
             }
@@ -80,6 +86,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
         }))
 
         return <Table
+                bordered
                 columns={columns}
                 dataSource={data}
                 pagination={false}
@@ -93,6 +100,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
     return (
         <div className={styles.contentContainer}>
             <Table
+                bordered
                 columns={columns}
                 dataSource={buildings}
                 pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
