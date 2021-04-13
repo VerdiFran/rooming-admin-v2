@@ -24,6 +24,7 @@ const CompanyAddRequestsContainer = (props) => {
 
     const [pageSize] = React.useState(10)
     const [currentPage, setCurrentPage] = React.useState(1)
+    const [selectedRequests, setSelectedRequests] = React.useState([])
 
     useEffect(() => {
         props.downloadCompanyAddRequests(currentPage, pageSize, true)
@@ -37,6 +38,8 @@ const CompanyAddRequestsContainer = (props) => {
         currentPage={currentPage}
         setSelectedCompanyAddRequest={props.setSelectedCompanyAddRequest}
         selectedRequest={props.selectedRequest}
+        selectedRequests={selectedRequests}
+        setSelectedRequests={setSelectedRequests}
         executeCompanyAddRequests={props.executeCompanyAddRequests}
     />
 

@@ -9,6 +9,7 @@ import React, {useState} from "react";
  */
 const CompanyAddRequests = (props) => {
     const [visible, setVisible] = useState(false)
+    const [buttonDisabled, setButtonDisabled] = useState(true)
 
     const columns = [
         {
@@ -51,18 +52,33 @@ const CompanyAddRequests = (props) => {
         }
     ]
 
-    const changePage = (page, pageSize) => {
+    const changePage = (page) => {
         props.setCurrentPage(page)
+    }
+
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setButtonDisabled(selectedRows.length === 0)
+            props.setSelectedRequests(selectedRows)
+        }
     }
 
     return (
         <div className={styles.contentContainer}>
             <Space style={{marginBottom: 16}}>
-                <Button type="primary" onClick={() => {
-                    const ids = props.addRequests.map(request => request.id)
-                    props.setCurrentPage(1)
-                    props.executeCompanyAddRequests(ids)
-                }}>Добавить все компании страницы</Button>
+                <Button
+                    type="primary"
+                    onClick={() => {
+                        const ids = props.selectedRequests.map(request => request.id)
+                        props.setSelectedRequests([])
+                        props.setCurrentPage(1)
+                        props.executeCompanyAddRequests(ids)
+                        setButtonDisabled(true)
+                    }}
+                    disabled={buttonDisabled}
+                >
+                    Добавить компании
+                </Button>
             </Space>
             <Table
                 columns={columns}
@@ -73,6 +89,11 @@ const CompanyAddRequests = (props) => {
                     total: props.totalPages * props.pageSize,
                     onChange: changePage
                 }}
+                rowSelection={{
+                    type: 'checkbox',
+                    ...rowSelection,
+                }}
+                selection={props.selectedRequests}
                 size="small"
                 tableLayout="auto"
                 scroll={{x: 900}}
