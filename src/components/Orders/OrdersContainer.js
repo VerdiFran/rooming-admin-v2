@@ -1,5 +1,5 @@
-import React from 'react'
-import {getLoggedUserInfo, getOrdersData, getUserRoles} from '../../utils/selectors/selectors'
+import React, {useEffect, useState} from 'react'
+import {getLoggedUserInfo, getOrdersData, getTotalPagesOfOrders, getUserRoles} from '../../utils/selectors/selectors'
 import {compose} from 'redux'
 import {connect} from 'react-redux'
 import OrdersForDeveloper from './OrdersForDeveloper'
@@ -17,39 +17,52 @@ import {
 const mapStateToProps = (state) => ({
     ordersData: getOrdersData(state),
     userRoles: getUserRoles(state),
+    totalPages: getTotalPagesOfOrders(state),
     getLoggedUser: () => getLoggedUserInfo(state)
 })
 
-class OrdersContainer extends React.PureComponent {
+/**
+ * Component for orders presentation.
+ * @param props Properties.
+ */
+const OrdersContainer = (props) => {
 
-    componentWillMount() {
-        if (this.props.userRoles.includes(DEVELOPER)) {
-            this.props.getAllOrders()
+    const [pageSize] = useState(10)
+    const [currentPage, setCurrentPage] = useState(1)
+
+    useEffect(() => {
+        if (props.userRoles.includes(DEVELOPER)) {
+            props.getAllOrders(currentPage, pageSize)
         } else {
-            this.props.getCompanyOrders()
+            props.getCompanyOrders(currentPage, pageSize)
         }
+    }, [currentPage])
+
+    if (props.userRoles.includes(DEVELOPER)) {
+        return <OrdersForDeveloper
+            ordersData={props.ordersData}
+            handleChange={() => {
+            }}
+            setCurrentLayoutIds={props.setCurrentLayoutIds}
+            takeLayoutOrderOnExecute={props.takeLayoutOrderOnExecute}
+            getLoggedUser={props.getLoggedUser}
+            setCurrentPage={setCurrentPage}
+            totalPages={props.totalPages}
+            pageSize={pageSize}
+        />
+    } else if (props.userRoles.includes(EMPLOYEE)) {
+        return <OrdersForEmployee
+            ordersData={props.ordersData}
+            handleChange={() => {
+            }}
+            setCurrentPage={setCurrentPage}
+            totalPages={props.totalPages}
+            pageSize={pageSize}
+        />
+    } else {
+        return <Redirect to="/login"/>
     }
 
-    render() {
-        if (this.props.userRoles.includes(DEVELOPER)) {
-            return <OrdersForDeveloper
-                ordersData={this.props.ordersData}
-                handleChange={() => {
-                }}
-                setCurrentLayoutIds={this.props.setCurrentLayoutIds}
-                takeLayoutOrderOnExecute={this.props.takeLayoutOrderOnExecute}
-                getLoggedUser={this.props.getLoggedUser}
-            />
-        } else if (this.props.userRoles.includes(EMPLOYEE)) {
-            return <OrdersForEmployee
-                ordersData={this.props.ordersData}
-                handleChange={() => {
-                }}
-            />
-        } else {
-            return <Redirect to="/login"/>
-        }
-    }
 }
 
 export default compose(

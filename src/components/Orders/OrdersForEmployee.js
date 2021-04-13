@@ -4,7 +4,11 @@ import styles from './Orders.module.scss'
 import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
 import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 
-const OrdersForEmployee = ({ordersData, handleChange}) => {
+/**
+ * Component with employee presentation of orders.
+ * @return Table with company orders.
+ */
+const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages, pageSize}) => {
     const [visible, setVisible] = useState(false)
 
     const columns = [
@@ -98,6 +102,10 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
         setVisible(false)
     }
 
+    const changePage = (pageNumber) => {
+        setCurrentPage(pageNumber)
+    }
+
     return (
         <div className={styles.contentContainer}>
             <Space style={{marginBottom: 16}}>
@@ -112,6 +120,7 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                 size="small"
                 tableLayout="auto"
                 onChange={handleChange}
+                pagination={{ defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage }}
                 expandable={{
                     expandedRowRender,
                     expandRowByClick: true
