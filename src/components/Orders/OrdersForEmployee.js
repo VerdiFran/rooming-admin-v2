@@ -12,8 +12,8 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
             title: 'Описание заказа',
             dataIndex: 'description',
             key: 'description',
-            ellipsis: false,
-            width: 400
+            width: "50%",
+            ellipsis: false
         },
         {
             title: 'Крайний срок',
@@ -30,6 +30,8 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
             title: 'Адреса',
             dataIndex: 'addresses',
             key: 'addresses',
+            align: 'center',
+            width: "30%",
             ellipsis: false,
             render: (addrs => <List size="small">
                 {addrs.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
@@ -48,15 +50,16 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
     const expandedRowRender = (record) => {
         const columns = [
             {
-                title: 'Планировки',
-                dataIndex: 'layout',
-                key: 'layout',
-                render: (layout) => `г. ${layout.city}, комплекс ${layout.complexName}: ул. ${layout.street}, д. ${layout.house}`
+                title: 'Описание планировки',
+                dataIndex: 'description',
+                key: 'layoutDescription',
+                width: '50%'
             },
             {
                 title: 'Статус',
                 dataIndex: 'status',
                 key: 'status',
+                align: 'center',
                 render: (value) => value === READY_FOR_DEVELOPMENT
                     ? <Badge status="default" text="Создан"/>
                     : value === IN_PROGRESS
@@ -67,7 +70,10 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                 title: 'Контакт исполнителя',
                 dataIndex: 'executor',
                 key: 'executor',
-                render: (executor) => executor?.email || 'Заказ еще не находится в разработке'
+                align: 'center',
+                width: '30%',
+                render: (executor) => !executor ? 'Заказ еще не находится в разработке'
+                    : `${executor.email} | ${executor.firstName} ${executor.lastName}`
             }
         ]
 
@@ -77,10 +83,11 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
             key: layout.key,
             status: layout.status,
             executor: layout.executor,
+            description: layout.description,
             id: layout.id
         }))
 
-        return <Table columns={columns} dataSource={data} pagination={false}/>
+        return <Table bordered columns={columns} dataSource={data} pagination={false}/>
     }
 
     const showDrawer = () => {
@@ -99,6 +106,7 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                 }}>Добавить заказ</Button>
             </Space>
             <Table
+                bordered
                 columns={columns}
                 dataSource={ordersData}
                 size="small"
