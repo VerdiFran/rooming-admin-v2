@@ -6,7 +6,12 @@ import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentSt
 import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../../utils/actions/orderActions";
 import ActionButton from "../common/ActionButton/ActionButton";
 
-const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds, takeLayoutOrderOnExecute, getLoggedUser}) => {
+/**
+ * Component for developer presentation of orders.
+ * @return Table with all orders.
+ */
+const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds, takeLayoutOrderOnExecute, getLoggedUser,
+                                setCurrentPage, totalPages, pageSize}) => {
     const [visible, setVisible] = useState(false)
 
     const columns = [
@@ -116,11 +121,16 @@ const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds, take
         />
     }
 
+    const changePage = (pageNumber) => {
+        setCurrentPage(pageNumber)
+    }
+
     return (
         <div className={styles.contentContainer}>
             <Table
                 columns={columns}
                 dataSource={ordersData}
+                pagination={{ defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage }}
                 size="small"
                 tableLayout="auto"
                 bordered

@@ -110,6 +110,7 @@ export type OrderType = {
 
 export type InitialStateType = {
     orders: Array<OrderType>
+    totalPagesOfOrders: number
     addresses: Array<BuildingType>
     newAddresses: Array<BuildingType>
     cities: Array<string>
@@ -119,6 +120,7 @@ export type InitialStateType = {
 
 const initialState: InitialStateType = {
     orders: [],
+    totalPagesOfOrders: 0,
     addresses: [],
     cities: [],
     newAddresses: [],
@@ -157,7 +159,8 @@ const ordersReducer = (state = initialState, action: any) => {
         case SET_ORDERS:
             return {
                 ...state,
-                orders: action.orders
+                orders: action.orders,
+                totalPagesOfOrders: action.total
             }
         case SET_CURRENT_LAYOUTS_ID:
             return {
@@ -176,7 +179,7 @@ const ordersReducer = (state = initialState, action: any) => {
 
 const setCities = (cities: Array<string>) => ({type: SET_CITIES, cities})
 const setAddresses = (addresses: Array<BuildingType>) => ({type: SET_ADDRESSES, addresses})
-const setOrders = (orders: Array<OrderType>) => ({type: SET_ORDERS, orders})
+const setOrders = (orders: Array<OrderType>, total: number) => ({type: SET_ORDERS, orders, total})
 
 export const addAddress = (address: BuildingType) => ({type: ADD_ADDRESS, address})
 export const addComplex = (complex: ComplexType) => ({type: ADD_COMPLEX, complex})
@@ -219,14 +222,24 @@ export const getCitiesByNamePrefix = (prefix: string) => async (dispatch: Dispat
     dispatch(setCities(data.map((item: ResponseCityType) => item.city)))
 }
 
-export const getCompanyOrders = () => async (dispatch: Dispatch) => {
-    const {data: {content}} = await ordersAPI.getOrders()
-    dispatch(setOrders(content))
+/**
+ * Returns company orders.
+ * @param pageNumber Page number.
+ * @param pageSize Page size.
+ */
+export const getCompanyOrders = (pageNumber: number, pageSize: number) => async (dispatch: Dispatch) => {
+    const response = await ordersAPI.getOrders(pageNumber, pageSize)
+    dispatch(setOrders(response.data.content, response.data.total))
 }
 
-export const getAllOrders = () => async (dispatch: Dispatch) => {
-    const {data: {content}} = await ordersAPI.getAllOrders()
-    dispatch(setOrders(content))
+/**
+ * Returns all orders.
+ * @param pageNumber Page number.
+ * @param pageSize Page size.
+ */
+export const getAllOrders = (pageNumber: number, pageSize: number) => async (dispatch: Dispatch) => {
+    const response = await ordersAPI.getAllOrders(pageNumber, pageSize)
+    dispatch(setOrders(response.data.content, response.data.total))
 }
 
 export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
@@ -273,7 +286,7 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
             layouts: layoutsReadyForSending
         }
     })
-    await getCompanyOrders()
+    await getCompanyOrders(1, 10)
 }
 
 const sendOrderFiles = async (files: Array<File> | undefined) => {

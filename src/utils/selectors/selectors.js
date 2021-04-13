@@ -97,6 +97,12 @@ export const getOrdersData = (state) => {
     }))
 }
 
+/**
+ * Returns total pages of orders.
+ * @param state State.
+ */
+export const getTotalPagesOfOrders = (state) => state.orders.totalPagesOfOrders
+
 export const getBuildings = (state) => state.orders.addresses ? state.orders.addresses.buildings : []
 
 export const getCities = (state) => {
