@@ -59,7 +59,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
                 align: 'center',
                 width: "15%",
                 render: (date) => {
-                    return new Date(date).toLocaleString()
+                    return `${date.toLocaleDateString()}, ${date.toLocaleTimeString()?.slice(0, 5)}`
                 }
             },
             {
@@ -81,7 +81,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
             id: layout.id,
             key: layout.key,
             description: layout.description,
-            createdAt: layout.createdAt,
+            createdAt: new Date(layout.createdAt),
             actions: layout.actions
         }))
 
