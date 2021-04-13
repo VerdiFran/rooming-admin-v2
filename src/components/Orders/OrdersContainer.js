@@ -3,7 +3,7 @@ import {getLoggedUserInfo, getOrdersData, getTotalPagesOfOrders, getUserRoles} f
 import {compose} from 'redux'
 import {connect} from 'react-redux'
 import OrdersForDeveloper from './OrdersForDeveloper'
-import {DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
+import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {Redirect} from 'react-router-dom'
 import OrdersForEmployee from './OrdersForEmployee'
 import {withAuthRedirect} from '../../hoc/withAuthRedirect'
@@ -31,14 +31,14 @@ const OrdersContainer = (props) => {
     const [currentPage, setCurrentPage] = useState(1)
 
     useEffect(() => {
-        if (props.userRoles.includes(DEVELOPER)) {
+        if (props.userRoles.includes(DEVELOPER) || props.userRoles.includes(ADMIN)) {
             props.getAllOrders(currentPage, pageSize)
         } else {
             props.getCompanyOrders(currentPage, pageSize)
         }
     }, [currentPage])
 
-    if (props.userRoles.includes(DEVELOPER)) {
+    if (props.userRoles.includes(DEVELOPER) || props.userRoles.includes(ADMIN)) {
         return <OrdersForDeveloper
             ordersData={props.ordersData}
             handleChange={() => {
