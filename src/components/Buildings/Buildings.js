@@ -1,8 +1,13 @@
-import React from 'react'
-import {Badge, Button, List, Popover, Table} from 'antd'
+import React, {useState} from 'react'
+import {Table} from 'antd'
 import styles from './Buildings.module.scss'
+import ActionButton from "../common/ActionButton/ActionButton";
+import {GET_LAYOUT_INFO_ACTION} from "../../utils/actions/layoutActions";
+import LayoutInfoContainer from "./LayoutInfo/LayoutInfoContainer";
 
-const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
+const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelectedLayoutId}) => {
+
+    const [visible, setVisible] = useState(false)
 
     const columns = [
         {
@@ -27,13 +32,28 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
         }
     ]
 
-    const expandedBuildingRowRender = (record, index, indent, expanded) => {
+    const getButtonByActionType = (action, record) => {
+        switch (action.type) {
+            case GET_LAYOUT_INFO_ACTION.type:
+                return <ActionButton
+                    title={action.title}
+                    handleClick={() => {
+                        setSelectedLayoutId(record.id)
+                        setVisible(true)
+                    }}
+                />
+            default:
+                return null
+        }
+    }
+
+    const expandedBuildingRowRender = (record) => {
         const columns = [
             {
                 title: 'Дата и время создания',
                 dataIndex: 'createdAt',
                 key: 'createdAt',
-                render: (date) => { 
+                render: (date) => {
                     return new Date(date).toLocaleString()
                 }
             },
@@ -46,27 +66,27 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
                 title: 'Действия',
                 dataIndex: 'actions',
                 key: 'actions',
-                render: ((text, layoutRecord, index) => layoutRecord.actions.map(act => <div>
-                    <Button type="link" onClick={act.handleSubmit}>{act.label}</Button>
-                </div>))
+                render: ((text, layoutRecord) => layoutRecord.actions.map(action =>
+                    getButtonByActionType(action, layoutRecord)))
             }
         ]
 
         const data = record.layouts.map(layout => ({
+            id: layout.id,
             key: layout.key,
             description: layout.description,
             createdAt: layout.createdAt,
-            actions: []
+            actions: layout.actions
         }))
 
         return <Table
-            columns={columns}
-            dataSource={data}
-            pagination={false}
-        />
+                columns={columns}
+                dataSource={data}
+                pagination={false}
+            />
     }
 
-    const changePage = (page, pageSize) => {
+    const changePage = (page) => {
         setCurrentPage(page)
     }
 
@@ -80,6 +100,10 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage}) => {
                 tableLayout="auto"
                 expandable={{expandedRowRender: expandedBuildingRowRender, expandRowByClick: true}}
                 scroll={{x: 900}}
+            />
+            <LayoutInfoContainer
+                setVisible={setVisible}
+                visible={visible}
             />
         </div>
     )
