@@ -44,7 +44,7 @@ export const getOrdersData = (state) => {
             return ['посмотреть']
         }
 
-        if (userRoles.includes(DEVELOPER)) {
+        if (userRoles.includes(DEVELOPER) || userRoles.includes(ADMIN)) {
             if (status === READY_FOR_DEVELOPMENT) {
                 return [TAKE_ON_EXECUTE_ACTION, EXECUTE_ORDER_ACTION]
             }
@@ -56,10 +56,6 @@ export const getOrdersData = (state) => {
             if (status === COMPLETED) {
                 return []
             }
-        }
-
-        if (userRoles.includes(ADMIN)) {
-            return ['посмотреть']
         }
 
         return []
