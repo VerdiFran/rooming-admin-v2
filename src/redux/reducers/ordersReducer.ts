@@ -227,7 +227,7 @@ export const getCitiesByNamePrefix = (prefix: string) => async (dispatch: Dispat
  * @param pageNumber Page number.
  * @param pageSize Page size.
  */
-export const getCompanyOrders = (pageNumber: number, pageSize: number) => async (dispatch: Dispatch) => {
+export const getCompanyOrders = (pageNumber: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getOrders(pageNumber, pageSize)
     dispatch(setOrders(response.data.content, response.data.total))
 }
@@ -237,7 +237,7 @@ export const getCompanyOrders = (pageNumber: number, pageSize: number) => async 
  * @param pageNumber Page number.
  * @param pageSize Page size.
  */
-export const getAllOrders = (pageNumber: number, pageSize: number) => async (dispatch: Dispatch) => {
+export const getAllOrders = (pageNumber: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getAllOrders(pageNumber, pageSize)
     dispatch(setOrders(response.data.content, response.data.total))
 }
