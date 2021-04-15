@@ -3,12 +3,14 @@ import {Popover, List, Table, Button, Space, Badge} from 'antd'
 import styles from './Orders.module.scss'
 import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
 import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
+import {REMOVE_ORDER_ACTION} from "../../utils/actions/orderActions";
+import ActionButton from "../common/ActionButton/ActionButton";
 
 /**
  * Component with employee presentation of orders.
  * @return Table with company orders.
  */
-const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages, pageSize}) => {
+const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages, pageSize, handleRemove}) => {
     const [visible, setVisible] = useState(false)
 
     const columns = [
@@ -16,7 +18,7 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
             title: 'Описание заказа',
             dataIndex: 'description',
             key: 'description',
-            width: "50%",
+            width: '40%',
             ellipsis: false
         },
         {
@@ -35,7 +37,7 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
             dataIndex: 'addresses',
             key: 'addresses',
             align: 'center',
-            width: "30%",
+            width: "20%",
             ellipsis: false,
             render: (addrs => <List size="small">
                 {addrs.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
@@ -48,6 +50,16 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
                     </Popover>
                 }
             </List>)
+        },
+        {
+            title: 'Действия',
+            dataIndex: 'actions',
+            key: 'actions',
+            align: 'center',
+            width: '20%',
+            render: ((actions, record) => actions.map(action => {
+                return getButtonByActionType(action, record)
+            }))
         }
     ]
 
@@ -106,6 +118,20 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
         setCurrentPage(pageNumber)
     }
 
+    const getButtonByActionType = (action, record) => {
+        switch (action.type) {
+            case REMOVE_ORDER_ACTION.type:
+                return <ActionButton
+                    title={action.title}
+                    handleClick={() => {
+                        handleRemove(record.id)
+                    }}
+                />
+            default:
+                return null
+        }
+    }
+
     return (
         <div className={styles.contentContainer}>
             <Space style={{marginBottom: 16}}>
@@ -123,7 +149,7 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
                 pagination={{ defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage }}
                 expandable={{
                     expandedRowRender,
-                    expandRowByClick: true
+                    expandRowByClick: false
                 }}
                 scroll={{x: 900}}
             />

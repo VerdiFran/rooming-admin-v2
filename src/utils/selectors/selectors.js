@@ -1,6 +1,6 @@
 import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
-import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
+import {EXECUTE_ORDER_ACTION, REMOVE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
 import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 import {GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
 
@@ -39,10 +39,15 @@ export const getOrdersData = (state) => {
     const layoutIdIterator = IdGenerator()
     const userRoles = getUserRoles(state)
 
-    const actionsSelection = (userRoles, status) => {
+    const orderActionsSelection = (userRoles) => {
         if (userRoles.includes(EMPLOYEE)) {
-            return ['посмотреть']
+            return [REMOVE_ORDER_ACTION]
         }
+
+        return []
+    }
+
+    const layoutActionsSelection = (userRoles, status) => {
 
         if (userRoles.includes(DEVELOPER) || userRoles.includes(ADMIN)) {
             if (status === READY_FOR_DEVELOPMENT) {
@@ -62,6 +67,7 @@ export const getOrdersData = (state) => {
     }
 
     return state.orders.orders.map(order => ({
+        id: order.id,
         key: orderIdIterator.next().value,
         description: order.orderDescription,
         deadline: order.deadline,
@@ -81,15 +87,13 @@ export const getOrdersData = (state) => {
             status: layout.layoutOrderStatus,
             createdAt: layout.createdAt,
             executor: layout.executor,
-            actions: actionsSelection(userRoles, layout.layoutOrderStatus)
+            actions: layoutActionsSelection(userRoles, layout.layoutOrderStatus)
         })),
         createdAt: order.createdAt,
         createdBy: order.createdBy.company
             ? `${order.createdBy.company.name} (${order.createdBy.firstName} ${order.createdBy.lastName})`
             : `${order.createdBy.firstName} ${order.createdBy.lastName}`,
-        actions: userRoles.includes(EMPLOYEE) ? []
-            : userRoles.includes(DEVELOPER) ? []
-                : userRoles.includes(ADMIN) ? [] : []
+        actions: orderActionsSelection(userRoles)
     }))
 }
 
