@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import {Card, Input, Space, Upload, message, Form, AutoComplete, Cascader, Modal, Button} from 'antd'
+import {Button, Card, message, Modal, Space, Upload} from 'antd'
+import {AutoComplete, Cascader, Form, Input} from 'formik-antd'
 import {CloseOutlined} from '@ant-design/icons'
 import NewBuildingFormContainer from './NewBuildingForm/NewBuildingFormContainer'
 import useDebounce from '../../../../hooks/useDebounce'
@@ -20,11 +21,14 @@ const NewLayoutForm = (props) => {
     const [citiesOptions, setCitiesOptions] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
     const [isSearching, setIsSearching] = useState(false)
+
     const [previewVisible, setPreviewVisible] = useState(false)
     const [previewImage, setPreviewImage] = useState('')
     const [previewTitle, setPreviewTitle] = useState('')
 
     const [files, setFiles] = useState([])
+
+    const [currentComplexName, setCurrentComplexName] = useState('')
 
     const debouncedSearchTerm = useDebounce(searchTerm, 1000)
 
@@ -71,14 +75,10 @@ const NewLayoutForm = (props) => {
             style={{marginBottom: '10px'}}
             extra={<Button
                 type="link"
-                onClick={() => {
-                    remove(layoutIndex)
-                }}
+                onClick={remove}
             ><CloseOutlined/></Button>}
         >
-            <Form
-                layout="vertical"
-            >
+            <Form layout="vertical">
                 <div className={styles.draggerContainer}>
                     <Upload.Dragger
                         style={{width: '100%'}}
@@ -127,39 +127,52 @@ const NewLayoutForm = (props) => {
                     </Modal>
                 </div>
                 <Space direction="horizontal" style={{width: '100%'}}>
-                    <Form.Item label="Город" className={styles.formItem}>
+                    <Form.Item
+                        label="Город"
+                        name={`layouts.${layoutIndex}.city`}
+                        className={styles.formItem}
+                    >
                         <AutoComplete
                             name={`layouts.${layoutIndex}.city`}
                             options={citiesOptions}
                             onChange={(value => {
-                                setFieldValue(`layouts.${layoutIndex}.building.address.city`, value)
+                                setFieldValue(`layouts.${layoutIndex}.city`, value)
                                 setSearchTerm(value)
                             })}
                             onSelect={(value) => getAddresses(value)}
                         />
                     </Form.Item>
-                    <Form.Item label="Адрес" className={styles.formItem}>
+                    <Form.Item
+                        label="Адрес"
+                        name={`layouts.${layoutIndex}.building.address`}
+                        className={styles.formItem}
+                    >
                         <Cascader
+                            name={`layouts.${layoutIndex}.building.address`}
                             options={addresses}
-                            /*value={[
-                                values.layouts[layoutIndex].building.complexId,
-                                values.layouts[layoutIndex].building.complex.name,
-                                values.layouts[layoutIndex].buildingId
-                            ]}*/
-                            onChange={(value => {
+                            displayRender={(label, selectedOptions) => {
+                                if (selectedOptions[0]) {
+                                    setCurrentComplexName(selectedOptions[0].label)
+                                }
+                                return label[1] ? `${currentComplexName} / ${label[1]} / ${label[2]}` : ''
+                            }}
+                            onChange={((value) => {
                                 setFieldValue(`layouts.${layoutIndex}.buildingId`, value[2])
                                 setFieldValue(`layouts.${layoutIndex}.building.complexId`, value[0])
                             })}
                         />
                     </Form.Item>
-                    <Form.Item>
+                    <Form.Item name={`layouts.${layoutIndex}.building`}>
                         <div className={styles.orNewBuildingContainer}>
                             <span>или</span>
                             <NewBuildingFormContainer layoutIndex={layoutIndex}/>
                         </div>
                     </Form.Item>
                 </Space>
-                <Form.Item label="Описание планировки">
+                <Form.Item
+                    label="Описание планировки"
+                    name={`layouts.${layoutIndex}.description`}
+                >
                     <Input.TextArea
                         name={`layouts.${layoutIndex}.description`}
                         onChange={(e) =>

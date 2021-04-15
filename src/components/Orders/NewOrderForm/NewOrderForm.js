@@ -6,15 +6,10 @@ import {FieldArray, FormikProvider, useFormik} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import styles from './NewOrderForm.module.scss'
 import DrawerFooter from '../../common/FormControls/DrawerFooter'
-import {IdGenerator} from '../../../utils/generators/generators'
 
 const NewOrderForm = ({visible, onClose, addNewOrder}) => {
-
-    const layoutIdIterator = IdGenerator()
-
     const formik = useFormik({
         initialValues: {
-            id: layoutIdIterator.next().value,
             orderDescription: '',
             deadline: null,
             layouts: [
@@ -23,11 +18,7 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                     buildingId: null,
                     building: {
                         description: '',
-                        address: {
-                            city: '',
-                            street: '',
-                            house: ''
-                        },
+                        address: [],
                         complexId: null,
                         complex: {
                             name: '',
@@ -91,22 +82,17 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                                     <NewLayoutFormContainer
                                         layoutIndex={index}
                                         setFieldValue={formik.setFieldValue}
-                                        remove={remove}
+                                        remove={() => remove(index)}
                                     />
                                 ))}
                                 <Button
                                     icon={<PlusSquareOutlined/>}
                                     onClick={() => push({
-                                        id: layoutIdIterator.next().value,
                                         description: '',
                                         buildingId: null,
                                         building: {
                                             description: '',
-                                            address: {
-                                                city: '',
-                                                street: '',
-                                                house: ''
-                                            },
+                                            address: [],
                                             complexId: null,
                                             complex: {
                                                 name: '',
