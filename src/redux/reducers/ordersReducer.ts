@@ -289,6 +289,22 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
     await getCompanyOrders(1, 10)
 }
 
+/**
+ * Removes order and download actual orders.
+ * @param orderId Id of order to remove.
+ */
+export const removeOrder = (orderId: number) => async (dispatch: Dispatch) => {
+    try {
+        await ordersAPI.removeOrder(orderId)
+    } catch (error) {
+        message.error('Не удалось удалить заказ, попробуйте позже.')
+        return
+    }
+
+    message.success('Заказ успешно удалён!')
+    await getCompanyOrders()(dispatch)
+}
+
 const sendOrderFiles = async (files: Array<File> | undefined) => {
 
     if (!files) return []
