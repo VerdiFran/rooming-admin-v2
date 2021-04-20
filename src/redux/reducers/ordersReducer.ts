@@ -255,7 +255,8 @@ export const addNewOrder = (order: OrderType) => async () => {
                     buildingId: null,
                     building: {
                         ...layout.building,
-                        complex: null
+                        complex: null,
+                        complexId: layout.building.complexId === -1 ? null : layout.building.complexId
                     }
                 }
             }

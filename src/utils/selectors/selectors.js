@@ -77,7 +77,7 @@ export const getOrdersData = (state) => {
             description: layout.description,
             address: {
                 city: layout.building.address.city,
-                complexName: layout.building.complex.name,
+                complexName: layout.building.complex ? layout.building.complex.name : 'Отдельные здания',
                 street: layout.building.address.street,
                 house: layout.building.address.house
             },
@@ -132,8 +132,8 @@ export const getAddresses = (state) => {
                 }
             } else {
                 return [...groupedAddresses, {
-                    value: currAddr.complexId,
-                    label: currAddr.complexName,
+                    value: currAddr.complexId || -1,
+                    label: currAddr.complexName || 'Отдельные здания',
                     children: [{
                         value: currAddr.street,
                         label: currAddr.street,

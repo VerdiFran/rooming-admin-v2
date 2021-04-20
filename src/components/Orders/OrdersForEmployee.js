@@ -51,7 +51,10 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                 title: 'Планировки',
                 dataIndex: 'layout',
                 key: 'layout',
-                render: (layout) => `г. ${layout.city}, комплекс ${layout.complexName}: ул. ${layout.street}, д. ${layout.house}`
+                render: (layout) =>
+                    layout.complexName === 'Отдельные здания'
+                        ? `г. ${layout.city}: ул. ${layout.street}, д. ${layout.house}`
+                        : `г. ${layout.city}, комплекс ${layout.complexName}: ул. ${layout.street}, д. ${layout.house}`
             },
             {
                 title: 'Статус',

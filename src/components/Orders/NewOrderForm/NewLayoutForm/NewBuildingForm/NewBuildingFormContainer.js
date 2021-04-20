@@ -30,8 +30,8 @@ const NewBuildingFormContainer = (props) => {
             city: formik.values.layouts[layoutIndex].city,
             street: values.street,
             house: values.house,
-            complexId: values.complexId,
-            complexName: values.complexName,
+            complexId: values.complexId || -1,
+            complexName: values.complexName.length ? values.complexName : 'Отдельные здания',
             description: values.description
         }
 
