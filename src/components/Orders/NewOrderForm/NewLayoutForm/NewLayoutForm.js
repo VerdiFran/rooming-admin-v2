@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {Button, Card, message, Modal, Space, Upload} from 'antd'
 import {AutoComplete, Cascader, Form, Input} from 'formik-antd'
 import {CloseOutlined} from '@ant-design/icons'
 import NewBuildingFormContainer from './NewBuildingForm/NewBuildingFormContainer'
-import useDebounce from '../../../../hooks/useDebounce'
 import styles from './NewLayoutForm.module.scss'
 import DraggerContent from '../../../common/FormControls/DraggerContent'
 
@@ -11,16 +10,12 @@ const NewLayoutForm = (props) => {
     const {
         layoutIndex,
         formik: {setFieldValue},
-        cities,
+        citiesOptions,
         addresses,
         getAddresses,
-        getCitiesByNamePrefix,
+        setSearchTerm,
         remove
     } = props
-
-    const [citiesOptions, setCitiesOptions] = useState([])
-    const [searchTerm, setSearchTerm] = useState('')
-    const [isSearching, setIsSearching] = useState(false)
 
     const [previewVisible, setPreviewVisible] = useState(false)
     const [previewImage, setPreviewImage] = useState('')
@@ -29,22 +24,6 @@ const NewLayoutForm = (props) => {
     const [files, setFiles] = useState([])
 
     const [currentComplexName, setCurrentComplexName] = useState('')
-
-    const debouncedSearchTerm = useDebounce(searchTerm, 1000)
-
-    useEffect(() => {
-        if (cities !== citiesOptions) {
-            setCitiesOptions(Array.from(new Set(cities)).map(city => ({value: city})))
-            setIsSearching(false)
-        }
-    }, [cities])
-
-    useEffect(() => {
-        if (debouncedSearchTerm) {
-            setIsSearching(true)
-            getCitiesByNamePrefix(searchTerm)
-        }
-    }, [debouncedSearchTerm])
 
     const handlePreview = async file => {
         if (!file.url && !file.preview) {
@@ -73,10 +52,7 @@ const NewLayoutForm = (props) => {
             title={`Планировка ${layoutIndex + 1}`}
             size="small"
             style={{marginBottom: '10px'}}
-            extra={<Button
-                type="link"
-                onClick={remove}
-            ><CloseOutlined/></Button>}
+            extra={<Button type="link" onClick={remove}><CloseOutlined/></Button>}
         >
             <Form layout="vertical">
                 <div className={styles.draggerContainer}>

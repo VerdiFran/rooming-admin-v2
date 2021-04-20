@@ -2,43 +2,55 @@ import React from 'react'
 import {connect} from 'react-redux'
 import NewBuildingForm from './NewBuildingForm'
 import {addAddress, getAddressesByCityName} from '../../../../../redux/reducers/ordersReducer'
-import {getCities, getComplexes, getStreets} from '../../../../../utils/selectors/selectors'
+import {getCities, getComplexesOptions, getStreets} from '../../../../../utils/selectors/selectors'
 import {compose} from 'redux'
-import {connect as formikConnect} from 'formik'
+import {connect as formikConnect, useFormik} from 'formik'
 
 const mapStateToProps = (state) => ({
     cities: getCities(state),
-    complexes: getComplexes(state),
+    complexes: getComplexesOptions(state),
     streets: getStreets(state)
 })
 
-class NewBuildingFormContainer extends React.Component {
+const NewBuildingFormContainer = (props) => {
+    const buildingFormik = useFormik({
+        initialValues: {
+            city: '',
+            street: '',
+            house: '',
+            complexId: null,
+            complexName: ''
+        }
+    })
 
-    handleSubmit = () => {
-        const {formik: {values}, layoutIndex} = this.props
+    const handleSubmit = (values = buildingFormik.values) => {
+        const {layoutIndex, formik} = props
 
-        this.props.addAddress({
-            city: values.layouts[layoutIndex].building.address.city,
-            street: values.layouts[layoutIndex].building.address.street,
-            house: values.layouts[layoutIndex].building.address.house,
-            complexId: values.layouts[layoutIndex].building.complexId,
-            complexName: values.layouts[layoutIndex].building.complex.name
-        })
+        const address = {
+            city: formik.values.layouts[layoutIndex].city,
+            street: values.street,
+            house: values.house,
+            complexId: values.complexId,
+            complexName: values.complexName,
+            description: values.description
+        }
+
+        props.addAddress(address)
     }
 
-    render() {
-        return <NewBuildingForm
-            cities={this.props.cities}
-            complexes={this.props.complexes}
-            streets={this.props.streets}
-            layoutIndex={this.props.layoutIndex}
-            getAddresses={this.props.getAddressesByCityName}
-            handleSubmit={this.handleSubmit}
-            {...this.props}
-        />
-    }
+    return <NewBuildingForm
+        buildingFormik={buildingFormik}
+        cities={props.cities}
+        complexes={props.complexes}
+        streets={props.streets}
+        layoutIndex={props.layoutIndex}
+        getAddresses={props.getAddressesByCityName}
+        handleSubmit={handleSubmit}
+        {...props}
+    />
 }
 
 export default compose(
-    connect(mapStateToProps, {getAddressesByCityName, addAddress})
-)(formikConnect(NewBuildingFormContainer))
+    connect(mapStateToProps, {getAddressesByCityName, addAddress}),
+    formikConnect
+)(NewBuildingFormContainer)

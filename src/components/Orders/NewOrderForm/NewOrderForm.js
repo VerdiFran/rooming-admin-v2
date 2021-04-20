@@ -2,41 +2,12 @@ import React from 'react'
 import {DatePicker} from 'formik-antd'
 import {Input, Button, Divider, Drawer, Form} from 'antd'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
-import {FieldArray, FormikProvider, useFormik} from 'formik'
+import {FieldArray, FormikProvider} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import styles from './NewOrderForm.module.scss'
 import DrawerFooter from '../../common/FormControls/DrawerFooter'
 
-const NewOrderForm = ({visible, onClose, addNewOrder}) => {
-    const formik = useFormik({
-        initialValues: {
-            orderDescription: '',
-            deadline: null,
-            layouts: [
-                {
-                    description: '',
-                    buildingId: null,
-                    building: {
-                        description: '',
-                        address: [],
-                        complexId: null,
-                        complex: {
-                            name: '',
-                            description: ''
-                        }
-                    },
-                    files: [],
-                    resources: []
-                }
-            ]
-        },
-        validateOnChange: false
-    })
-
-    const addOrderWithValues = () => {
-        addNewOrder(formik.values)
-    }
-
+const NewOrderForm = ({visible, formik, onClose, handleSubmit}) => {
     return (
         <FormikProvider value={formik}>
             <Form
@@ -53,7 +24,7 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                     footer={
                         <DrawerFooter
                             onCancel={[onClose]}
-                            onSubmit={[addOrderWithValues, onClose]}
+                            onSubmit={[handleSubmit, onClose]}
                         />
                     }
                 >

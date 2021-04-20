@@ -80,7 +80,8 @@ type BuildingType = {
     house: string
     buildingId: number
     complexId: number
-    complexName: string
+    complexName: string,
+    description: string
 }
 
 type ComplexType = {
@@ -229,7 +230,7 @@ export const getAllOrders = () => async (dispatch: Dispatch) => {
     dispatch(setOrders(content))
 }
 
-export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
+export const addNewOrder = (order: OrderType) => async () => {
     const {orderDescription, deadline, layouts} = order
 
     for (const layout of layouts) {

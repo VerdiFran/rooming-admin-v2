@@ -96,7 +96,12 @@ export const getOrdersData = (state) => {
     }))
 }
 
-export const getBuildings = (state) => state.orders.addresses ? state.orders.addresses.buildings : []
+export const getBuildings = (state) => {
+    const addresses = state.orders.addresses
+    const newAddresses = state.orders.newAddresses
+
+    return addresses.length || newAddresses.length ? addresses.concat(newAddresses) : []
+}
 
 export const getCities = (state) => {
     return state.orders.cities.length > 0 ? state.orders.cities : []
@@ -144,6 +149,12 @@ export const getAddresses = (state) => {
 }
 
 export const getComplexes = (state) => {
+    const newComplexes = state.orders.newComplexes
+
+    return newComplexes.length ? newComplexes : []
+}
+
+export const getComplexesOptions = (state) => {
     const reduceAddressesToComplexes = (addresses) => addresses.reduce((acc, currAddr) => {
         return acc.some(complex => complex.value === currAddr.complexId)
             ? acc

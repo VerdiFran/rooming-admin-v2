@@ -1,9 +1,10 @@
 import React, {useState} from 'react'
-import {Button, Drawer, Form, Space, Input, AutoComplete} from 'antd'
+import {Button, Drawer, Form, Input} from 'antd'
 import styles from './NewComplexForm.module.scss'
 import {PlusSquareOutlined} from '@ant-design/icons'
+import DrawerFooter from '../../../../../common/FormControls/DrawerFooter'
 
-const NewComplexForm = ({formik, layoutIndex, addComplex}) => {
+const NewComplexForm = ({formik, addComplex}) => {
     const [visible, setVisible] = useState(false)
 
     return (
@@ -19,35 +20,22 @@ const NewComplexForm = ({formik, layoutIndex, addComplex}) => {
                 onClose={() => setVisible(false)}
                 visible={visible}
                 bodyStyle={{paddingBottom: 80}}
-                footer={
-                    <div style={{textAlign: 'right'}}>
-                        <Button onClick={() => setVisible(false)} style={{marginRight: 8}}>
-                            Отмена
-                        </Button>
-                        <Button onClick={() => {
-                            const complex = formik.values.layouts[layoutIndex].building.complex
-                            addComplex({
-                                complexName: complex.name,
-                                complexDescription: complex.description
-                            })
-                            setVisible(false)
-                        }} type="primary">
-                            Подтвердить
-                        </Button>
-                    </div>
-                }
+                footer={<DrawerFooter
+                    onCancel={[() => setVisible(false)]}
+                    onSubmit={[addComplex, () => setVisible(false)]}
+                />}
             >
                 <Form layout="vertical">
                     <Form.Item label="Название комплекса">
                     <Input
                         onChange={(e) =>
-                            formik.setFieldValue(`layouts.${layoutIndex}.building.complex.name`, e.currentTarget.value)}
+                            formik.setFieldValue(`name`, e.currentTarget.value)}
                     />
                 </Form.Item>
                     <Form.Item label="Описание комплекса">
                         <Input.TextArea
                             onChange={(e) =>
-                                formik.setFieldValue(`layouts.${layoutIndex}.building.complex.description`, e.currentTarget.value)}
+                                formik.setFieldValue(`description`, e.currentTarget.value)}
                         />
                     </Form.Item>
                 </Form>

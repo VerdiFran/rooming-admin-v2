@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Button, Drawer, Form, Select, Space, Input, AutoComplete, Row} from 'antd'
+import {Button, Drawer, Form, Select, Space, Input, AutoComplete} from 'antd'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import NewComplexFormContainer from './NewComplexForm/NewComplexFormContainer'
 import styles from './NewBuildingForm.module.scss'
@@ -7,7 +7,7 @@ import DrawerFooter from '../../../../common/FormControls/DrawerFooter'
 import TextArea from 'antd/es/input/TextArea'
 
 const NewBuildingForm = (props) => {
-    const {layoutIndex, complexes, streets, formik, handleSubmit} = props
+    const {buildingFormik, layoutIndex, complexes, streets, handleSubmit} = props
 
     const {Option} = Select
 
@@ -45,8 +45,8 @@ const NewBuildingForm = (props) => {
                             <Select
                                 style={{width: '200px'}}
                                 onChange={(value, option) => {
-                                    formik.setFieldValue(`layouts.${layoutIndex}.building.complexId`, value)
-                                    formik.setFieldValue(`layouts.${layoutIndex}.building.complex.name`, option.children)
+                                    buildingFormik.setFieldValue(`complexId`, value)
+                                    buildingFormik.setFieldValue(`complexName`, option.children)
                                 }}
                                 onSelect={(value) => getStreetsByComplex(value)}
                             >
@@ -68,23 +68,28 @@ const NewBuildingForm = (props) => {
                             <AutoComplete
                                 style={{width: '200px'}}
                                 options={streetsByComplex}
-                                onChange={(value => formik.setFieldValue(
-                                    `layouts.${layoutIndex}.building.address.street`,
+                                onChange={(value => buildingFormik.setFieldValue(
+                                    `street`,
                                     value
                                 ))}
                             />
                         </Form.Item>
                         <Form.Item label="Дом">
                             <Input
-                                onChange={(e) => formik.setFieldValue(
-                                    `layouts.${layoutIndex}.building.address.house`,
+                                onChange={(e) => buildingFormik.setFieldValue(
+                                    `house`,
                                     e.currentTarget.value
                                 )}
                             />
                         </Form.Item>
                     </Space>
                     <Form.Item label="Описание здания">
-                        <TextArea/>
+                        <TextArea
+                            onChange={(e) => buildingFormik.setFieldValue(
+                                `description`,
+                                e.currentTarget.value
+                            )}
+                        />
                     </Form.Item>
                 </Form>
             </Drawer>
