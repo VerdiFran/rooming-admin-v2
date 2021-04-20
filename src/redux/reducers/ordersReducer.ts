@@ -230,7 +230,7 @@ export const getAllOrders = () => async (dispatch: Dispatch) => {
     dispatch(setOrders(content))
 }
 
-export const addNewOrder = (order: OrderType) => async () => {
+export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
     const {orderDescription, deadline, layouts} = order
 
     for (const layout of layouts) {
@@ -275,7 +275,7 @@ export const addNewOrder = (order: OrderType) => async () => {
             layouts: layoutsReadyForSending
         }
     })
-    await getCompanyOrders()
+    await getCompanyOrders()(dispatch)
 }
 
 const sendOrderFiles = async (files: Array<File> | undefined) => {
