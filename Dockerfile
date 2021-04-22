@@ -7,6 +7,7 @@ COPY package.json /usr/src/app/package.json
 COPY tsconfig.json /usr/src/app/tsconfig.json
 COPY craco.config.js /usr/src/app/craco.config.js
 COPY yarn.lock /usr/src/app/yarn.lock
+COPY .env /usr/src/app/.env
 RUN npm install --legacy-peer-deps
 COPY ./public/. /usr/src/app/public/
 COPY ./src/. /usr/src/app/src/

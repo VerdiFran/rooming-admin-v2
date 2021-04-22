@@ -2,7 +2,7 @@ import * as axios from 'axios'
 import {Agent} from "https"
 
 export const instance = axios.create({
-    baseURL: 'http://' + window.location.hostname + ':8080/api',
+    baseURL: 'http://' + (process.env.REACT_APP_SERVER_HOST || window.location.hostname) + ':8080/api',
     withCredentials: true,
     httpsAgent: new Agent({
         rejectUnauthorized: false
@@ -10,7 +10,7 @@ export const instance = axios.create({
 })
 
 export const instanceForDownloadFile = axios.create({
-    baseURL: 'http://' + window.location.hostname + ':8080/api',
+    baseURL: 'http://' + (process.env.REACT_APP_SERVER_HOST || window.location.hostname) + ':8080/api',
     httpsAgent: new Agent({
         rejectUnauthorized: false
     }),
