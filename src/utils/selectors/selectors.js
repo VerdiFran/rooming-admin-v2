@@ -1,7 +1,7 @@
 import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
-import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
-import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
+import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from '../actions/orderActions'
+import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -100,7 +100,20 @@ export const getBuildings = (state) => {
     const addresses = state.orders.addresses
     const newAddresses = state.orders.newAddresses
 
-    return addresses.length || newAddresses.length ? addresses.concat(newAddresses) : []
+    return addresses.length || newAddresses.length
+        ? addresses.concat(newAddresses).reduce((groupedAddresses, currAddr) => {
+            const city = currAddr.city
+            const group = groupedAddresses[city]
+
+            if (group) {
+                group.push({...currAddr})
+            } else {
+                groupedAddresses[city] = [{...currAddr}]
+            }
+
+            return groupedAddresses
+        }, {})
+        : []
 }
 
 export const getCities = (state) => {
@@ -109,66 +122,135 @@ export const getCities = (state) => {
 
 export const getAddresses = (state) => {
     return state.orders.addresses.length > 0 || state.orders.newAddresses.length > 0
-        ? state.orders.addresses.concat(state.orders.newAddresses).reduce((groupedAddresses, currAddr) => {
-            const currComplex = groupedAddresses.find((addr) => addr.value === currAddr.complexId)
-            if (currComplex) {
-                const currStreet = currComplex.children.find((street) => street.value === currAddr.street)
-                if (currStreet) {
-                    currStreet.children.push({
-                        value: currAddr.buildingId,
-                        label: currAddr.house
-                    })
-                    return groupedAddresses
-                } else {
-                    currComplex.children.push({
-                        value: currAddr.street,
-                        label: currAddr.street,
-                        children: [{
-                            value: currAddr.buildingId,
-                            label: currAddr.house
+        ? state.orders.addresses
+            .concat(state.orders.newAddresses)
+            .reduce((groupedAddresses, currAddr) => {
+                const city = currAddr.city
+
+                const group = groupedAddresses[city]
+
+                if (group) {
+                    const currComplex = group.find((addr) => addr.value === currAddr.complexId)
+
+                    if (currComplex) {
+                        const currStreet = currComplex.children.find((street) => street.value === currAddr.street)
+                        if (currStreet) {
+                            currStreet.children.push({
+                                value: currAddr.buildingId,
+                                label: currAddr.house
+                            })
+                            return groupedAddresses
+                        } else {
+                            currComplex.children.push({
+                                value: currAddr.street,
+                                label: currAddr.street,
+                                children: [{
+                                    value: currAddr.buildingId,
+                                    label: currAddr.house
+                                }]
+                            })
+                            return groupedAddresses
+                        }
+                    } else {
+                        /*return [...groupedAddresses, {
+                            value: currAddr.complexId || -1,
+                            label: currAddr.complexName || 'Отдельные здания',
+                            children: [{
+                                value: currAddr.street,
+                                label: currAddr.street,
+                                children: [{
+                                    value: currAddr.buildingId,
+                                    label: currAddr.house
+                                }]
+                            }]
+                        }]*/
+
+                        groupedAddresses[city] = [...groupedAddresses[city], {
+                            value: currAddr.complexId || -1,
+                            label: currAddr.complexName || 'Отдельные здания',
+                            children: [{
+                                value: currAddr.street,
+                                label: currAddr.street,
+                                children: [{
+                                    value: currAddr.buildingId,
+                                    label: currAddr.house
+                                }]
+                            }]
                         }]
-                    })
-                    return groupedAddresses
-                }
-            } else {
-                return [...groupedAddresses, {
-                    value: currAddr.complexId || -1,
-                    label: currAddr.complexName || 'Отдельные здания',
-                    children: [{
-                        value: currAddr.street,
-                        label: currAddr.street,
+
+                        return groupedAddresses
+                    }
+                } else {
+                    groupedAddresses[city] = [{
+                        value: currAddr.complexId || -1,
+                        label: currAddr.complexName || 'Отдельные здания',
                         children: [{
-                            value: currAddr.buildingId,
-                            label: currAddr.house
+                            value: currAddr.street,
+                            label: currAddr.street,
+                            children: [{
+                                value: currAddr.buildingId,
+                                label: currAddr.house
+                            }]
                         }]
                     }]
-                }]
-            }
-        }, [])
+
+                    return groupedAddresses
+                }
+            }, {})
         : []
 }
 
-export const getComplexes = (state) => {
+export const getNewComplexes = (state) => {
     const newComplexes = state.orders.newComplexes
 
-    return newComplexes.length ? newComplexes : []
+    return newComplexes.length
+        ? newComplexes.reduce((groupedComplexes, currComplex) => {
+            const city = currComplex.city
+            const group = groupedComplexes[city]
+
+            if (group) {
+                group.push({...currComplex})
+            } else {
+                groupedComplexes[city] = [{...currComplex}]
+            }
+
+            return groupedComplexes
+        }, {})
+        : []
 }
 
 export const getComplexesOptions = (state) => {
-    const reduceAddressesToComplexes = (addresses) => addresses.reduce((acc, currAddr) => {
-        return acc.some(complex => complex.value === currAddr.complexId)
-            ? acc
-            : [...acc, {
-                value: currAddr.complexId,
-                label: currAddr.complexName
-            }]
-    }, [])
+    const reduceAddressesToComplexes = (addresses) =>
+        addresses
+            .filter(address => address.complexId && address.complexId !== -1)
+            .reduce((groupedComplexes, currAddr) => {
+                const city = currAddr.city
+                const group = groupedComplexes[city]
+
+                if (group) {
+                    if (!group.some(complex => complex.value === currAddr.complexId)) {
+                        group.push({
+                            value: currAddr.complexId,
+                            label: currAddr.complexName
+                        })
+                    }
+
+                    return groupedComplexes
+                } else {
+                    groupedComplexes[city] = [{
+                        value: currAddr.complexId,
+                        label: currAddr.complexName
+                    }]
+
+                    return groupedComplexes
+                }
+            }, {})
 
     return reduceAddressesToComplexes(state.orders.addresses.concat(state.orders.newComplexes))
 }
 
 export const getLayoutsInfo = (state) => {
-    if (state.orders.currentLayoutIds.length === 0 ) return []
+    if (state.orders.currentLayoutIds.length === 0) return []
 
     const currentOrder = state.orders.orders.filter(order =>
         order.layouts.some(layout => state.orders.currentLayoutIds.includes(layout.id)))[0]
@@ -209,7 +291,7 @@ export const getTotalPages = (state) => state.layouts.totalPages
 
 /**
  * Get uploaded companies with keys from state.
- * @param state State. 
+ * @param state State.
  * @returns Uploaded companies.
  */
 export const getUploadedCompanies = (state) => {
@@ -224,7 +306,7 @@ export const getUploadedCompanies = (state) => {
 
 /**
  * Get companies total pages.
- * @param state State. 
+ * @param state State.
  * @returns Total pages.
  */
 export const getCompaniesTotalPages = (state) => state.companies.totalPages
@@ -308,4 +390,4 @@ export const getSelectedCompany = (state) => {
  * Get information about logged user.
  * @param state State.
  */
-export const getLoggedUserInfo = (state) => state.auth;
+export const getLoggedUserInfo = (state) => state.auth

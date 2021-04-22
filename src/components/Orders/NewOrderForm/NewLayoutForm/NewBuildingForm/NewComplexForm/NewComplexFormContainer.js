@@ -15,6 +15,7 @@ function NewComplexFormContainer(props) {
 
     const handleSubmit = (values = complexFormik.values) => {
         props.addComplex({
+            city: props.formik.values.layouts[props.layoutIndex].city,
             complexName: values.name,
             complexDescription: values.description
         })

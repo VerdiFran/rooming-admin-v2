@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {connect} from 'react-redux'
 import NewBuildingForm from './NewBuildingForm'
 import {addAddress, getAddressesByCityName} from '../../../../../redux/reducers/ordersReducer'
@@ -13,6 +13,16 @@ const mapStateToProps = (state) => ({
 })
 
 const NewBuildingFormContainer = (props) => {
+    const {
+        formik,
+        cities,
+        complexes,
+        streets,
+        layoutIndex,
+        getAddressesByCityName,
+        addAddress
+    } = props
+
     const buildingFormik = useFormik({
         initialValues: {
             city: '',
@@ -23,9 +33,15 @@ const NewBuildingFormContainer = (props) => {
         }
     })
 
-    const handleSubmit = (values = buildingFormik.values) => {
-        const {layoutIndex, formik} = props
+    const [cityComplexes, setCityComplexes] = useState([])
 
+    useEffect(() => {
+        const complexesByCity = complexes[formik.values.layouts[layoutIndex].city]
+        console.log(complexesByCity)
+        setCityComplexes(complexesByCity)
+    }, [complexes])
+
+    const handleSubmit = (values = buildingFormik.values) => {
         const address = {
             city: formik.values.layouts[layoutIndex].city,
             street: values.street,
@@ -35,18 +51,17 @@ const NewBuildingFormContainer = (props) => {
             description: values.description
         }
 
-        props.addAddress(address)
+        addAddress(address)
     }
 
     return <NewBuildingForm
         buildingFormik={buildingFormik}
-        cities={props.cities}
-        complexes={props.complexes}
-        streets={props.streets}
-        layoutIndex={props.layoutIndex}
-        getAddresses={props.getAddressesByCityName}
+        cities={cities}
+        complexes={cityComplexes}
+        streets={streets}
+        layoutIndex={layoutIndex}
+        getAddresses={getAddressesByCityName}
         handleSubmit={handleSubmit}
-        {...props}
     />
 }
 

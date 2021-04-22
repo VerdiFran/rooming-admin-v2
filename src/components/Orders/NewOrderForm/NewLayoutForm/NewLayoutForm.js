@@ -14,7 +14,8 @@ const NewLayoutForm = (props) => {
         addresses,
         getAddresses,
         setSearchTerm,
-        remove
+        remove,
+        setSelectedCity
     } = props
 
     const [previewVisible, setPreviewVisible] = useState(false)
@@ -114,28 +115,43 @@ const NewLayoutForm = (props) => {
                             onChange={(value => {
                                 setFieldValue(`layouts.${layoutIndex}.city`, value)
                                 setSearchTerm(value)
+
+                                if (citiesOptions.some(option => option.value === value)) {
+                                    setSelectedCity(value)
+                                } else {
+                                    setSelectedCity('')
+                                }
                             })}
-                            onSelect={(value) => getAddresses(value)}
+                            onSelect={(value) => {
+                                setSelectedCity(value)
+                            }}
+                            onClick={(e => {
+                                if (e.target.value) {
+                                    setSearchTerm(e.target.value)
+                                }
+                            })}
                         />
                     </Form.Item>
                     <Form.Item
                         label="Адрес"
-                        name={`layouts.${layoutIndex}.building.address`}
+                        name={`layouts.${layoutIndex}.building.addressOption`}
                         className={styles.formItem}
                     >
                         <Cascader
-                            name={`layouts.${layoutIndex}.building.address`}
+                            name={`layouts.${layoutIndex}.building.addressOption`}
                             options={addresses}
                             displayRender={(label, selectedOptions) => {
                                 if (selectedOptions[0]) {
-                                    setCurrentComplexName(selectedOptions[0].label)
+                                    setCurrentComplexName(selectedOptions[0]?.label)
                                 }
+
                                 return label[1] ? `${currentComplexName} / ${label[1]} / ${label[2]}` : ''
                             }}
                             onChange={((value) => {
                                 setFieldValue(`layouts.${layoutIndex}.buildingId`, value[2])
                                 setFieldValue(`layouts.${layoutIndex}.building.complexId`, value[0])
                             })}
+                            onClick={getAddresses}
                         />
                     </Form.Item>
                     <Form.Item name={`layouts.${layoutIndex}.building`}>

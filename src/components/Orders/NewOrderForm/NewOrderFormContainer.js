@@ -1,13 +1,13 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {getBuildings, getComplexes} from '../../../utils/selectors/selectors'
+import {getBuildings, getNewComplexes} from '../../../utils/selectors/selectors'
 import NewOrderForm from './NewOrderForm'
-import {addNewOrder} from '../../../redux/reducers/ordersReducer'
+import {addNewOrder, getAddressesByCityName} from '../../../redux/reducers/ordersReducer'
 import {useFormik} from 'formik'
 
 const mapStateToProps = (state) => ({
     buildings: getBuildings(state),
-    complexes: getComplexes(state)
+    complexes: getNewComplexes(state)
 })
 
 const NewOrderFormContainer = (props) => {
@@ -21,7 +21,12 @@ const NewOrderFormContainer = (props) => {
                     buildingId: null,
                     building: {
                         description: '',
-                        address: [],
+                        addressOption: [],
+                        address: {
+                            city: '',
+                            street: '',
+                            house: ''
+                        },
                         complexId: null,
                         complex: {
                             name: '',
@@ -36,7 +41,7 @@ const NewOrderFormContainer = (props) => {
         validateOnChange: false
     })
 
-    const handleSubmit = (values = formik.values) => {
+    const handleSubmit = async (values = formik.values) => {
         const order = {
             ...values,
             layouts: values.layouts.map(layout => ({
@@ -45,15 +50,21 @@ const NewOrderFormContainer = (props) => {
                     ...layout.building,
                     address: {
                         city: layout.city,
-                        street: props.buildings.find(building => building.street === layout.building.address[1]).street,
-                        house: props.buildings.find(building => building.buildingId === layout.building.address[2]).house
+                        street: props.buildings[layout.city]
+                            ?.find(building => building?.street === layout.building.addressOption[1])?.street || null,
+                        house: props.buildings[layout.city]
+                            ?.find(building => building.buildingId === layout.building.addressOption[2])?.house || null
                     },
                     complex: {
-                        name: props.complexes.find(complex => complex.complexId === layout.building.complexId)?.complexName,
-                        description: props.complexes.find(complex => complex.complexId === layout.building.complexId)?.complexDescription
+                        name: props.complexes[layout.city]
+                            ?.find(complex => complex.complexId === layout.building.complexId)?.complexName || null,
+                        description: props.complexes[layout.city]
+                            ?.find(complex => complex.complexId === layout.building.complexId)?.complexDescription || null
                     },
-                    description: props.buildings.find(building => building.buildingId === layout.buildingId)?.description || ""
+                    description: props.buildings[layout.city]
+                        ?.find(building => building.buildingId === layout.buildingId)?.description || null
                 }
+
             }))
         }
 
@@ -67,4 +78,4 @@ const NewOrderFormContainer = (props) => {
     />
 }
 
-export default connect(mapStateToProps, {addNewOrder})(NewOrderFormContainer)
+export default connect(mapStateToProps, {addNewOrder, getAddressesByCityName})(NewOrderFormContainer)

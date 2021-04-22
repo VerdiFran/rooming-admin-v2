@@ -63,7 +63,12 @@ const NewOrderForm = ({visible, formik, onClose, handleSubmit}) => {
                                         buildingId: null,
                                         building: {
                                             description: '',
-                                            address: [],
+                                            addressOption: [],
+                                            address: {
+                                                city: '',
+                                                street: '',
+                                                house: ''
+                                            },
                                             complexId: null,
                                             complex: {
                                                 name: '',

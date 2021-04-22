@@ -85,6 +85,7 @@ type BuildingType = {
 }
 
 type ComplexType = {
+    city: string,
     complexName: string
     complexDescription: string
     complexId?: string
@@ -245,8 +246,10 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
                     ...layout,
                     buildingId: null,
                     building: {
-                        ...layout.building,
-                        complexId: null
+                        address: layout.building.address,
+                        complexId: null,
+                        complex: layout.building.complex,
+                        description: layout.building.description
                     }
                 }
             } else {
@@ -254,9 +257,10 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
                     ...layout,
                     buildingId: null,
                     building: {
-                        ...layout.building,
+                        address: layout.building.address,
                         complex: null,
-                        complexId: layout.building.complexId === -1 ? null : layout.building.complexId
+                        complexId: layout.building.complexId === -1 ? null : layout.building.complexId,
+                        description: layout.building.description
                     }
                 }
             }
