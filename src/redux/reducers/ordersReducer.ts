@@ -12,6 +12,8 @@ const ADD_COMPLEX = 'ADD-COMPLEX'
 const SET_ORDERS = 'SET-ORDERS'
 const SET_CURRENT_LAYOUTS_ID = 'SET-CURRENT-LAYOUTS-ID'
 const SET_LAYOUT_ORDER_EXECUTOR = 'SET-LAYOUT-ORDER-EXECUTOR'
+const RESET_CITIES = 'RESET-CITIES'
+const RESET_ADDRESSES = 'RESET-ADDRESSES'
 
 const complexIdIterator = IdGenerator()
 const buildingIdIterator = IdGenerator()
@@ -171,6 +173,18 @@ const ordersReducer = (state = initialState, action: any) => {
                 ...state,
                 orders: updateLayoutOrderExecutor(state.orders, action.orderId, action.layoutOrderId, action.executor)
             }
+        case RESET_CITIES:
+            return {
+                ...state,
+                cities: []
+            }
+        case RESET_ADDRESSES:
+            return {
+                ...state,
+                addresses: [],
+                newAddresses: [],
+                newComplexes: []
+            }
         default:
             return state
     }
@@ -179,6 +193,8 @@ const ordersReducer = (state = initialState, action: any) => {
 const setCities = (cities: Array<string>) => ({type: SET_CITIES, cities})
 const setAddresses = (addresses: Array<BuildingType>) => ({type: SET_ADDRESSES, addresses})
 const setOrders = (orders: Array<OrderType>) => ({type: SET_ORDERS, orders})
+const resetCities = () => ({type: RESET_CITIES})
+const resetAddresses = () => ({type: RESET_ADDRESSES})
 
 export const addAddress = (address: BuildingType) => ({type: ADD_ADDRESS, address})
 export const addComplex = (complex: ComplexType) => ({type: ADD_COMPLEX, complex})
@@ -272,14 +288,22 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
         }
     })
 
-    await ordersAPI.sendNewOrder({
-        order: {
-            orderDescription,
-            deadline,
-            layouts: layoutsReadyForSending
-        }
-    })
-    await getCompanyOrders()(dispatch)
+    try {
+        await ordersAPI.sendNewOrder({
+            order: {
+                orderDescription,
+                deadline,
+                layouts: layoutsReadyForSending
+            }
+        })
+
+        dispatch(resetCities())
+        dispatch(resetAddresses())
+
+        await getCompanyOrders()(dispatch)
+    } catch (e) {
+        message.error('При отправке заказа что-то пошло не так.')
+    }
 }
 
 const sendOrderFiles = async (files: Array<File> | undefined) => {

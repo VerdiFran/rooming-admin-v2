@@ -68,7 +68,9 @@ const NewOrderFormContainer = (props) => {
             }))
         }
 
-        props.addNewOrder(order)
+        await props.addNewOrder(order)
+
+        formik.resetForm()
     }
 
     return <NewOrderForm
@@ -78,4 +80,7 @@ const NewOrderFormContainer = (props) => {
     />
 }
 
-export default connect(mapStateToProps, {addNewOrder, getAddressesByCityName})(NewOrderFormContainer)
+export default connect(
+    mapStateToProps,
+    {addNewOrder, getAddressesByCityName}
+)(NewOrderFormContainer)

@@ -9,7 +9,7 @@ import DraggerContent from '../../../common/FormControls/DraggerContent'
 const NewLayoutForm = (props) => {
     const {
         layoutIndex,
-        formik: {setFieldValue},
+        formik: {setFieldValue, values},
         citiesOptions,
         addresses,
         getAddresses,
@@ -21,8 +21,6 @@ const NewLayoutForm = (props) => {
     const [previewVisible, setPreviewVisible] = useState(false)
     const [previewImage, setPreviewImage] = useState('')
     const [previewTitle, setPreviewTitle] = useState('')
-
-    const [files, setFiles] = useState([])
 
     const [currentComplexName, setCurrentComplexName] = useState('')
 
@@ -47,6 +45,46 @@ const NewLayoutForm = (props) => {
         })
     }
 
+    const files = [...values.layouts[layoutIndex].files]
+
+    const draggerProps = {
+        style: {width: '100%'},
+        name: `layouts.${layoutIndex}.files`,
+        multiple: true,
+        accept: 'image/png',
+        defaultFileList: files,
+        fileList: files,
+        beforeUpload: (file, fileList) => {
+            setFieldValue(`layouts.${layoutIndex}.files`, [...files, ...fileList])
+            return true
+        },
+        customRequest: (reqOption) => {
+            const {onSuccess, onError, file} = reqOption
+            try {
+            } catch (e) {
+                onError(e)
+            }
+            onSuccess(null, file)
+        },
+        onChange: (info) => {
+            const {status} = info.file
+            if (status === 'done') {
+                message.success(`Файл ${info.file.name} загружен успешно.`)
+            } else if (status === 'error') {
+                message.error(`Произошла ошибка при загрузке ${info.file.name}.`)
+            }
+        },
+        onRemove: (file) => {
+            const fileIndex = files.indexOf(file)
+            const newFileList = files.slice()
+            newFileList.splice(fileIndex, 1)
+            setFieldValue(`layouts.${layoutIndex}.files`, [...newFileList])
+        },
+        // onPreview: handlePreview
+    }
+
+    console.log(values.layouts[layoutIndex].city)
+
     return (
         <Card
             hoverable
@@ -57,41 +95,7 @@ const NewLayoutForm = (props) => {
         >
             <Form layout="vertical">
                 <div className={styles.draggerContainer}>
-                    <Upload.Dragger
-                        style={{width: '100%'}}
-                        name={`layouts.${layoutIndex}.files`}
-                        multiple="true"
-                        listType='picture-card'
-                        accept='image/png'
-                        beforeUpload={(file, fileList) => {
-                            setFiles([...fileList])
-                        }}
-                        customRequest={(reqOption) => {
-                            const {onSuccess, onError, file} = reqOption
-                            // const files = [...formik.values.layouts[layoutIndex].files]
-
-                            try {
-                                // setFiles([...files, file])
-                            } catch (e) {
-                                onError(e)
-                            }
-
-                            onSuccess(null, file)
-                        }}
-                        onChange={(info) => {
-                            const {status} = info.file
-                            if (status !== 'uploading') {
-                                console.log(info.file, info.fileList)
-                            }
-                            if (status === 'done') {
-                                message.success(`${info.file.name} file uploaded successfully.`)
-                                setFieldValue(`layouts.${layoutIndex}.files`, [...files])
-                            } else if (status === 'error') {
-                                message.error(`${info.file.name} file upload failed.`)
-                            }
-                        }}
-                        onPreview={handlePreview}
-                    >
+                    <Upload.Dragger {...draggerProps}>
                         <DraggerContent/>
                     </Upload.Dragger>
                     <Modal
@@ -111,6 +115,7 @@ const NewLayoutForm = (props) => {
                     >
                         <AutoComplete
                             name={`layouts.${layoutIndex}.city`}
+                            value={values.layouts[layoutIndex].city || ''}
                             options={citiesOptions}
                             onChange={(value => {
                                 setFieldValue(`layouts.${layoutIndex}.city`, value)
@@ -140,6 +145,7 @@ const NewLayoutForm = (props) => {
                         <Cascader
                             name={`layouts.${layoutIndex}.building.addressOption`}
                             options={addresses}
+                            placeholder="Комплекс / Улица / Дом"
                             displayRender={(label, selectedOptions) => {
                                 if (selectedOptions[0]) {
                                     setCurrentComplexName(selectedOptions[0]?.label)

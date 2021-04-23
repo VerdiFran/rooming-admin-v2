@@ -42,13 +42,13 @@ function NewLayoutFormContainer(props) {
         }
     }, [debouncedSearchTerm])
 
-    const [selectedCity, setSelectedCity] = useState('')
-    const [cityAddresses, setCityAddresses] = useState([])
+    const [selectedCity, setSelectedCity] = useState(formik.values.layouts[layoutIndex].city )
+    const [cityAddresses, setCityAddresses] = useState(addresses[selectedCity])
 
     const getAddressesByCurrentCity = () => getAddressesByCityName(selectedCity)
 
     useEffect(() => {
-        if (selectedCity.length) {
+        if (selectedCity?.length) {
             getAddressesByCurrentCity()
         } else {
             setCitiesOptions([])
@@ -57,8 +57,10 @@ function NewLayoutFormContainer(props) {
     }, [selectedCity])
 
     useEffect(() => {
-        if (selectedCity.length) {
+        if (selectedCity?.length) {
             setCityAddresses(addresses[selectedCity])
+        } else {
+            setCityAddresses([])
         }
     }, [addresses])
 

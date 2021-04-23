@@ -37,7 +37,6 @@ const NewBuildingFormContainer = (props) => {
 
     useEffect(() => {
         const complexesByCity = complexes[formik.values.layouts[layoutIndex].city]
-        console.log(complexesByCity)
         setCityComplexes(complexesByCity)
     }, [complexes])
 
