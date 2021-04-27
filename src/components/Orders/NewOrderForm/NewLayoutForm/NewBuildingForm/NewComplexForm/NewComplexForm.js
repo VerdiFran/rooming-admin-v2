@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
-import {Button, Drawer, Form, Input} from 'antd'
+import {Button, Drawer} from 'antd'
+import {Form, Input} from 'formik-antd'
 import styles from './NewComplexForm.module.scss'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import DrawerFooter from '../../../../../common/FormControls/DrawerFooter'
 
-const NewComplexForm = ({formik, addComplex}) => {
+const NewComplexForm = ({formik: {values, setFieldValue}, addComplex}) => {
     const [visible, setVisible] = useState(false)
 
     return (
@@ -26,16 +27,26 @@ const NewComplexForm = ({formik, addComplex}) => {
                 />}
             >
                 <Form layout="vertical">
-                    <Form.Item label="Название комплекса">
-                    <Input
-                        onChange={(e) =>
-                            formik.setFieldValue(`name`, e.currentTarget.value)}
-                    />
-                </Form.Item>
-                    <Form.Item label="Описание комплекса">
-                        <Input.TextArea
+                    <Form.Item
+                        name="name"
+                        label="Название комплекса"
+                    >
+                        <Input
+                            name="name"
+                            value={values.name}
                             onChange={(e) =>
-                                formik.setFieldValue(`description`, e.currentTarget.value)}
+                                setFieldValue(`name`, e.currentTarget.value)}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        name="description"
+                        label="Описание комплекса"
+                    >
+                        <Input.TextArea
+                            name="description"
+                            value={values.description}
+                            onChange={(e) =>
+                                setFieldValue(`description`, e.currentTarget.value)}
                         />
                     </Form.Item>
                 </Form>
