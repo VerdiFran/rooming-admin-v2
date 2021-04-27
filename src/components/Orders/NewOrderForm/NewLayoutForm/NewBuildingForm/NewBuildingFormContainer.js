@@ -40,7 +40,13 @@ const NewBuildingFormContainer = (props) => {
         setCityComplexes(complexesByCity)
     }, [complexes])
 
-    const handleSubmit = (values = buildingFormik.values) => {
+    const [complexStreets, setComplexStreets] = useState([])
+
+    useEffect(() => {
+        setComplexStreets(streets)
+    }, [streets])
+
+    const handleSubmit = async (values = buildingFormik.values) => {
         const address = {
             city: formik.values.layouts[layoutIndex].city,
             street: values.street,
@@ -50,14 +56,19 @@ const NewBuildingFormContainer = (props) => {
             description: values.description
         }
 
-        addAddress(address)
+        await addAddress(address)
+
+        buildingFormik.resetForm()
+
+        setCityComplexes([])
+        setComplexStreets([])
     }
 
     return <NewBuildingForm
         buildingFormik={buildingFormik}
         cities={cities}
         complexes={cityComplexes}
-        streets={streets}
+        streets={complexStreets}
         layoutIndex={layoutIndex}
         getAddresses={getAddressesByCityName}
         handleSubmit={handleSubmit}

@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
-import {Button, Drawer, Form, Select, Space, Input, AutoComplete} from 'antd'
+import {Button, Drawer, Space} from 'antd'
+import {Select, Input, AutoComplete, Form} from 'formik-antd'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import NewComplexFormContainer from './NewComplexForm/NewComplexFormContainer'
 import styles from './NewBuildingForm.module.scss'
@@ -7,7 +8,13 @@ import DrawerFooter from '../../../../common/FormControls/DrawerFooter'
 import TextArea from 'antd/es/input/TextArea'
 
 const NewBuildingForm = (props) => {
-    const {buildingFormik, layoutIndex, complexes, streets, handleSubmit} = props
+    const {
+        buildingFormik: {values, setFieldValue, handleChange},
+        layoutIndex,
+        complexes,
+        streets,
+        handleSubmit
+    } = props
 
     const {Option} = Select
 
@@ -41,12 +48,17 @@ const NewBuildingForm = (props) => {
             >
                 <Form layout="vertical" style={{width: '100%'}}>
                     <Space direction="horizontal" style={{width: '100%'}}>
-                        <Form.Item label="Комплекс">
+                        <Form.Item
+                            name="complex"
+                            label="Комплекс"
+                        >
                             <Select
+                                name="complexId"
+                                value={values.complexName}
                                 style={{width: '200px'}}
                                 onChange={(value, option) => {
-                                    buildingFormik.setFieldValue(`complexId`, value)
-                                    buildingFormik.setFieldValue(`complexName`, option.children)
+                                    setFieldValue(`complexId`, value)
+                                    setFieldValue(`complexName`, option.children)
                                 }}
                                 onSelect={(value) => getStreetsByComplex(value)}
                             >
@@ -56,7 +68,7 @@ const NewBuildingForm = (props) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item name="newComplex">
                             <div className={styles.orNewComplexContainer}>
                                 <span>или</span>
                                 <NewComplexFormContainer layoutIndex={layoutIndex}/>
@@ -64,31 +76,37 @@ const NewBuildingForm = (props) => {
                         </Form.Item>
                     </Space>
                     <Space direction="horizontal" style={{width: '100%'}}>
-                        <Form.Item label="Улица">
+                        <Form.Item
+                            name="street"
+                            label="Улица"
+                        >
                             <AutoComplete
+                                name="street"
+                                value={values.street}
                                 style={{width: '200px'}}
                                 options={streetsByComplex}
-                                onChange={(value => buildingFormik.setFieldValue(
-                                    `street`,
-                                    value
-                                ))}
+                                onChange={(value => setFieldValue(`street`, value))}
                             />
                         </Form.Item>
-                        <Form.Item label="Дом">
+                        <Form.Item
+                            name="house"
+                            label="Дом"
+                        >
                             <Input
-                                onChange={(e) => buildingFormik.setFieldValue(
-                                    `house`,
-                                    e.currentTarget.value
-                                )}
+                                name="house"
+                                value={values.house}
+                                onChange={handleChange}
                             />
                         </Form.Item>
                     </Space>
-                    <Form.Item label="Описание здания">
+                    <Form.Item
+                        name="buildingDescription"
+                        label="Описание здания"
+                    >
                         <TextArea
-                            onChange={(e) => buildingFormik.setFieldValue(
-                                `description`,
-                                e.currentTarget.value
-                            )}
+                            name="description"
+                            value={values.description}
+                            onChange={handleChange}
                         />
                     </Form.Item>
                 </Form>
