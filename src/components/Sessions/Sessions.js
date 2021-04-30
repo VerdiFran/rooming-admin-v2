@@ -2,12 +2,12 @@ import {Table} from "antd";
 import styles from "../Sessions/Sessions.module.scss";
 import React from "react";
 import ActionButton from "../common/ActionButton/ActionButton";
-import {DELETE_SESSION_ACTION} from "../../utils/actions/sessionsActions";
+import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION} from "../../utils/actions/sessionsActions";
 
 /**
  * Component with sessions list.
  */
-const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSession}) => {
+const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSession, deleteSessionLayout}) => {
 
     const getSessionActions = (action, record) => {
         switch (action.type) {
@@ -59,6 +59,21 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
     ]
 
     const expandedSessionRowRender = (record) => {
+
+        const getSessionLayoutActions = (action, record) => {
+            switch (action.type) {
+                case DELETE_SESSION_LAYOUT_ACTION.type:
+                    return <ActionButton
+                        title={action.title}
+                        handleClick={() => {
+                            deleteSessionLayout(record.sessionId, record.id)
+                        }}
+                    />
+                default:
+                    return null
+            }
+        }
+
         const columns = [
             {
                 title: 'Дата и время создания',
@@ -74,6 +89,15 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
                 title: 'Описание планировки',
                 dataIndex: 'description',
                 key: 'description'
+            },
+            {
+                title: 'Действия',
+                dataIndex: 'actions',
+                key: 'actions',
+                align: 'center',
+                width: '15%',
+                render: ((actions, session) => session.actions.map(action =>
+                    getSessionLayoutActions(action, session)))
             }
         ]
 

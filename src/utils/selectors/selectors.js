@@ -3,7 +3,7 @@ import {IdGenerator} from '../generators/generators'
 import {EXECUTE_ORDER_ACTION, REMOVE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
 import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 import {GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
-import {DELETE_SESSION_ACTION} from "../actions/sessionsActions";
+import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION} from "../actions/sessionsActions";
 
 const idIterator = IdGenerator()
 
@@ -360,7 +360,9 @@ export const getSessions = (state) => {
             layouts: session.layouts.map(layout => ({
                 ...layout,
                 createdAt: new Date(layout.createdAt),
-                key: idIterator.next().value
+                key: idIterator.next().value,
+                sessionId: session.id,
+                actions: [DELETE_SESSION_LAYOUT_ACTION]
             })),
             actions: [DELETE_SESSION_ACTION],
             createdAt: new Date(session.createdAt),

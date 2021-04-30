@@ -23,5 +23,17 @@ export const sessionsApi = {
      */
     deleteSession(sessionId: number) {
         return instance.delete(`company/sessions/${sessionId}`)
+    },
+
+    /**
+     * Delete layout from session.
+     * @param sessionId Session id.
+     * @param layoutId Layouts id.
+     */
+    deleteLayoutFromSession(sessionId: number, layoutId: number) {
+        const config = {
+            data: {layouts: [layoutId]}
+        }
+        return instance.delete(`company/sessions/${sessionId}/layouts`, config)
     }
 }

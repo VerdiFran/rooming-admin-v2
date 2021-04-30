@@ -74,4 +74,21 @@ export const deleteSession = (sessionId: number) => async (dispatch: Dispatch) =
     message.success('Сессия успешно удалена')
 }
 
+/**
+ * Delete layout from session.
+ * @param sessionId Session id.
+ * @param layoutId Layout id.
+ */
+export const deleteLayoutFromSession = (sessionId: number, layoutId: number) => async (dispatch: Dispatch) => {
+    try {
+        await sessionsApi.deleteLayoutFromSession(sessionId, layoutId)
+    } catch (error) {
+        message.error('Не удалось удалить планировку из сессии')
+        return
+    }
+
+    await downloadSessions(new SimplePaginationArgs())(dispatch)
+    message.success('Планировка успешно удалена из сессии')
+}
+
 export default sessionsReducer

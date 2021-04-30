@@ -3,7 +3,7 @@ import React from "react";
 import {compose} from "redux";
 import {withAuthRedirect} from "../../hoc/withAuthRedirect";
 import {connect} from "react-redux";
-import {downloadSessions, deleteSession} from "../../redux/reducers/sessionsReducer";
+import {downloadSessions, deleteSession, deleteLayoutFromSession} from "../../redux/reducers/sessionsReducer";
 import Sessions from "./Sessions";
 import {usePagination} from "../../hooks/usePagination";
 
@@ -26,11 +26,12 @@ const SessionsContainer = (props) => {
         pageSize={pageSize}
         setCurrentPage={setCurrentPage}
         deleteSession={props.deleteSession}
+        deleteSessionLayout={props.deleteLayoutFromSession}
     />
 
 }
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, { downloadSessions, deleteSession })
+    connect(mapStateToProps, { downloadSessions, deleteSession, deleteLayoutFromSession })
 )(SessionsContainer)
