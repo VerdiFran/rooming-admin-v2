@@ -12,6 +12,8 @@ const ADD_COMPLEX = 'ADD-COMPLEX'
 const SET_ORDERS = 'SET-ORDERS'
 const SET_CURRENT_LAYOUTS_ID = 'SET-CURRENT-LAYOUTS-ID'
 const SET_LAYOUT_ORDER_EXECUTOR = 'SET-LAYOUT-ORDER-EXECUTOR'
+const RESET_CITIES = 'RESET-CITIES'
+const RESET_ADDRESSES = 'RESET-ADDRESSES'
 
 const complexIdIterator = IdGenerator()
 const buildingIdIterator = IdGenerator()
@@ -80,10 +82,12 @@ type BuildingType = {
     house: string
     buildingId: number
     complexId: number
-    complexName: string
+    complexName: string,
+    description: string
 }
 
 type ComplexType = {
+    city: string,
     complexName: string
     complexDescription: string
     complexId?: string
@@ -172,6 +176,18 @@ const ordersReducer = (state = initialState, action: any) => {
                 ...state,
                 orders: updateLayoutOrderExecutor(state.orders, action.orderId, action.layoutOrderId, action.executor)
             }
+        case RESET_CITIES:
+            return {
+                ...state,
+                cities: []
+            }
+        case RESET_ADDRESSES:
+            return {
+                ...state,
+                addresses: [],
+                newAddresses: [],
+                newComplexes: []
+            }
         default:
             return state
     }
@@ -179,6 +195,8 @@ const ordersReducer = (state = initialState, action: any) => {
 
 const setCities = (cities: Array<string>) => ({type: SET_CITIES, cities})
 const setAddresses = (addresses: Array<BuildingType>) => ({type: SET_ADDRESSES, addresses})
+const resetCities = () => ({type: RESET_CITIES})
+const resetAddresses = () => ({type: RESET_ADDRESSES})
 const setOrders = (orders: Array<OrderType>, total: number) => ({type: SET_ORDERS, orders, total})
 
 export const addAddress = (address: BuildingType) => ({type: ADD_ADDRESS, address})
@@ -257,8 +275,10 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
                     ...layout,
                     buildingId: null,
                     building: {
-                        ...layout.building,
-                        complexId: null
+                        address: layout.building.address,
+                        complexId: null,
+                        complex: layout.building.complex,
+                        description: layout.building.description
                     }
                 }
             } else {
@@ -266,8 +286,10 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
                     ...layout,
                     buildingId: null,
                     building: {
-                        ...layout.building,
-                        complex: null
+                        address: layout.building.address,
+                        complex: null,
+                        complexId: layout.building.complexId === -1 ? null : layout.building.complexId,
+                        description: layout.building.description
                     }
                 }
             }
@@ -278,15 +300,22 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
             }
         }
     })
+    try {
+        await ordersAPI.sendNewOrder({
+            order: {
+                orderDescription,
+                deadline,
+                layouts: layoutsReadyForSending
+            }
+        })
 
-    await ordersAPI.sendNewOrder({
-        order: {
-            orderDescription,
-            deadline,
-            layouts: layoutsReadyForSending
-        }
-    })
-    await getCompanyOrders(1, 10)
+        dispatch(resetCities())
+        dispatch(resetAddresses())
+
+        await getCompanyOrders(1, 10)(dispatch)
+    } catch (e) {
+        message.error('При отправке заказа что-то пошло не так.')
+    }
 }
 
 const sendOrderFiles = async (files: Array<File> | undefined) => {

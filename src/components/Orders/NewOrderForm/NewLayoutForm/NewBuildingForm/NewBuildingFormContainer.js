@@ -1,44 +1,86 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {connect} from 'react-redux'
 import NewBuildingForm from './NewBuildingForm'
 import {addAddress, getAddressesByCityName} from '../../../../../redux/reducers/ordersReducer'
-import {getCities, getComplexes, getStreets} from '../../../../../utils/selectors/selectors'
+import {getCities, getComplexesOptions, getStreets} from '../../../../../utils/selectors/selectors'
 import {compose} from 'redux'
-import {connect as formikConnect} from 'formik'
+import {connect as formikConnect, useFormik} from 'formik'
 
 const mapStateToProps = (state) => ({
     cities: getCities(state),
-    complexes: getComplexes(state),
+    complexes: getComplexesOptions(state),
     streets: getStreets(state)
 })
 
-class NewBuildingFormContainer extends React.Component {
+const NewBuildingFormContainer = (props) => {
+    const {
+        formik,
+        cities,
+        complexes,
+        streets,
+        layoutIndex,
+        cityIsSelected,
+        getAddressesByCityName,
+        addAddress,
+        setAutoCompletedAddress
+    } = props
 
-    handleSubmit = () => {
-        const {formik: {values}, layoutIndex} = this.props
+    const buildingFormik = useFormik({
+        initialValues: {
+            city: '',
+            street: '',
+            house: '',
+            complexId: null,
+            complexName: ''
+        }
+    })
 
-        this.props.addAddress({
-            city: values.layouts[layoutIndex].building.address.city,
-            street: values.layouts[layoutIndex].building.address.street,
-            house: values.layouts[layoutIndex].building.address.house,
-            complexId: values.layouts[layoutIndex].building.complexId,
-            complexName: values.layouts[layoutIndex].building.complex.name
-        })
+    const [cityComplexes, setCityComplexes] = useState([])
+
+    useEffect(() => {
+        const complexesByCity = complexes[formik.values.layouts[layoutIndex].city]
+        setCityComplexes(complexesByCity)
+    }, [complexes])
+
+    const [complexStreets, setComplexStreets] = useState([])
+
+    useEffect(() => {
+        setComplexStreets(streets)
+    }, [streets])
+
+    const handleSubmit = async (values = buildingFormik.values) => {
+        const address = {
+            city: formik.values.layouts[layoutIndex].city,
+            street: values.street,
+            house: values.house,
+            complexId: values.complexId || -1,
+            complexName: values.complexName.length ? values.complexName : 'Отдельные здания',
+            description: values.description
+        }
+
+        await addAddress(address)
+
+        setAutoCompletedAddress([address.complexId, address.street, address.house])
+
+        buildingFormik.resetForm()
+
+        setCityComplexes([])
+        setComplexStreets([])
     }
 
-    render() {
-        return <NewBuildingForm
-            cities={this.props.cities}
-            complexes={this.props.complexes}
-            streets={this.props.streets}
-            layoutIndex={this.props.layoutIndex}
-            getAddresses={this.props.getAddressesByCityName}
-            handleSubmit={this.handleSubmit}
-            {...this.props}
-        />
-    }
+    return <NewBuildingForm
+        cityIsSelected={cityIsSelected}
+        buildingFormik={buildingFormik}
+        cities={cities}
+        complexes={cityComplexes}
+        streets={complexStreets}
+        layoutIndex={layoutIndex}
+        getAddresses={getAddressesByCityName}
+        handleSubmit={handleSubmit}
+    />
 }
 
 export default compose(
-    connect(mapStateToProps, {getAddressesByCityName, addAddress})
-)(formikConnect(NewBuildingFormContainer))
+    connect(mapStateToProps, {getAddressesByCityName, addAddress}),
+    formikConnect
+)(NewBuildingFormContainer)

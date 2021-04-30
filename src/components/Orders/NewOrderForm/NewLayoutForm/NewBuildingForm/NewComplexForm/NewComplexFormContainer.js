@@ -1,21 +1,37 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import NewComplexForm from './NewComplexForm'
-import {connect as formikConnect} from 'formik'
+import {connect as formikConnect, useFormik} from 'formik'
 import {addComplex} from '../../../../../../redux/reducers/ordersReducer'
 
-const mapStateToProps = (state) => ({})
+function NewComplexFormContainer(props) {
 
-class NewComplexFormContainer extends React.Component {
-    render() {
-        return <NewComplexForm
-            layoutIndex={this.props.layoutIndex}
-            addComplex={this.props.addComplex}
-            {...this.props}
-        />
+    const complexFormik = useFormik({
+        initialValues: {
+            name: '',
+            description: ''
+        }
+    })
+
+    const handleSubmit = (values = complexFormik.values) => {
+        props.addComplex({
+            city: props.formik.values.layouts[props.layoutIndex].city,
+            complexName: values.name,
+            complexDescription: values.description
+        })
+
+        props.setComplex(values.name)
+
+        complexFormik.resetForm()
     }
+
+    return <NewComplexForm
+        formik={complexFormik}
+        layoutIndex={props.layoutIndex}
+        addComplex={handleSubmit}
+    />
 }
 
 export default connect(
-    mapStateToProps, {addComplex}
+    null, {addComplex}
 )(formikConnect(NewComplexFormContainer))

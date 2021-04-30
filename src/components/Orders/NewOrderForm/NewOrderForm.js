@@ -1,49 +1,16 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {DatePicker} from 'formik-antd'
-import {Input, Button, Divider, Space, Drawer, Form} from 'antd'
+import {Input, Button, Divider, Drawer, Form} from 'antd'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
-import {FieldArray, FormikProvider, useFormik} from 'formik'
+import {FieldArray, FormikProvider} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import styles from './NewOrderForm.module.scss'
 import DrawerFooter from '../../common/FormControls/DrawerFooter'
-import {IdGenerator} from '../../../utils/generators/generators'
 
-const NewOrderForm = ({visible, onClose, addNewOrder}) => {
+const NewOrderForm = ({visible, formik, onClose, handleSubmit}) => {
+    const [drawerVisible, setDrawerVisible] = useState(!visible)
 
-    const layoutIdIterator = IdGenerator()
-
-    const formik = useFormik({
-        initialValues: {
-            id: layoutIdIterator.next().value,
-            orderDescription: '',
-            deadline: null,
-            layouts: [
-                {
-                    description: '',
-                    buildingId: null,
-                    building: {
-                        description: '',
-                        address: {
-                            city: '',
-                            street: '',
-                            house: ''
-                        },
-                        complexId: null,
-                        complex: {
-                            name: '',
-                            description: ''
-                        }
-                    },
-                    files: [],
-                    resources: []
-                }
-            ]
-        }
-    })
-
-    const addOrderWithValues = () => {
-        addNewOrder(formik.values)
-    }
+    setTimeout(() => {setDrawerVisible(visible)}, 50)
 
     return (
         <FormikProvider value={formik}>
@@ -56,12 +23,12 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                     title="Создание нового заказа"
                     width={820}
                     onClose={onClose}
-                    visible={visible}
+                    visible={drawerVisible}
                     bodyStyle={{paddingBottom: 80}}
                     footer={
                         <DrawerFooter
                             onCancel={[onClose]}
-                            onSubmit={[addOrderWithValues, onClose]}
+                            onSubmit={[handleSubmit, onClose]}
                         />
                     }
                 >
@@ -84,23 +51,23 @@ const NewOrderForm = ({visible, onClose, addNewOrder}) => {
                     </Form.Item>
                     <Divider/>
                     <FieldArray name="layouts">
-                        {({insert, remove, push}) => (
+                        {({remove, push}) => (
                             <div>
                                 {formik.values.layouts.length > 0 && formik.values.layouts.map((layout, index) => (
                                     <NewLayoutFormContainer
                                         layoutIndex={index}
                                         setFieldValue={formik.setFieldValue}
-                                        remove={remove}
+                                        remove={() => remove(index)}
                                     />
                                 ))}
                                 <Button
                                     icon={<PlusSquareOutlined/>}
                                     onClick={() => push({
-                                        id: layoutIdIterator.next().value,
                                         description: '',
                                         buildingId: null,
                                         building: {
                                             description: '',
+                                            addressOption: [],
                                             address: {
                                                 city: '',
                                                 street: '',

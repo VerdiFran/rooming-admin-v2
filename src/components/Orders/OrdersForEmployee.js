@@ -27,7 +27,7 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
             align: 'center',
             render: (date) => {
                 const newDate = new Date(date)
-                return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0,5)}`
+                return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0, 5)}`
             }
         },
         {
@@ -63,12 +63,11 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
                 title: 'Статус',
                 dataIndex: 'status',
                 key: 'status',
-                align: 'center',
                 render: (value) => value === READY_FOR_DEVELOPMENT
                     ? <Badge status="default" text="Создан"/>
                     : value === IN_PROGRESS
                         ? <Badge status="processing" text="В процессе" color="yellow"/>
-                        : <Badge status="success" text="Выполнен" />
+                        : <Badge status="success" text="Выполнен"/>
             },
             {
                 title: 'Контакт исполнителя',
@@ -127,11 +126,13 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
                 }}
                 scroll={{x: 900}}
             />
-            <NewOrderFormContainer
-                visible={visible}
-                showDrawer={showDrawer}
-                onClose={onClose}
-            />
+            {
+                visible && <NewOrderFormContainer
+                    visible={visible}
+                    showDrawer={showDrawer}
+                    onClose={onClose}
+                />
+            }
         </div>
     )
 }

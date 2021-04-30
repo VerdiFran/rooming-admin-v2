@@ -1,38 +1,66 @@
 import React, {useEffect, useState} from 'react'
-import {InboxOutlined} from '@ant-design/icons'
-import {Card, Input, Space, Upload, message, Form, AutoComplete, Cascader, Modal, Row, Col, Button} from 'antd'
+import {Button, Card, message, Modal, Space, Upload} from 'antd'
+import {AutoComplete, Cascader, Form, Input} from 'formik-antd'
 import {CloseOutlined} from '@ant-design/icons'
 import NewBuildingFormContainer from './NewBuildingForm/NewBuildingFormContainer'
-import useDebounce from '../../../../hooks/useDebounce'
-import {FieldArray} from 'formik'
 import styles from './NewLayoutForm.module.scss'
 import DraggerContent from '../../../common/FormControls/DraggerContent'
 
 const NewLayoutForm = (props) => {
-    const {layoutIndex, formik, cities, addresses, setFieldValue, getAddresses, getCitiesByNamePrefix, remove} = props
+    const {
+        layoutIndex,
+        formik: {setFieldValue, values},
+        citiesOptions,
+        addresses,
+        cityIsSelected,
+        getAddresses,
+        setSearchTerm,
+        remove,
+        setSelectedCity
+    } = props
 
-    const [citiesOptions, setCitiesOptions] = useState([])
-    const [searchTerm, setSearchTerm] = useState('')
-    const [isSearching, setIsSearching] = useState(false)
+    useEffect(() => {
+        console.log(cityIsSelected)
+    }, [cityIsSelected])
+
     const [previewVisible, setPreviewVisible] = useState(false)
     const [previewImage, setPreviewImage] = useState('')
     const [previewTitle, setPreviewTitle] = useState('')
 
-    const [files, setFiles] = useState([])
+    const [currentComplexName, setCurrentComplexName] = useState('')
 
-    const debouncedSearchTerm = useDebounce(searchTerm, 1000)
+    const [autoCompletedAddress, setAutoCompletedAddress] = useState(null)
+    const [selectedAddress, setSelectedAddress] = useState(null)
 
     useEffect(() => {
-        if (cities !== citiesOptions) {
-            setCitiesOptions(Array.from(new Set(cities)).map(city => ({value: city})))
-            setIsSearching(false)
+        let complexGroup
+        let streetGroup
+        let house
+
+        if (autoCompletedAddress) {
+            complexGroup = addresses?.find(address => address.value === autoCompletedAddress[0])
         }
 
-        if (debouncedSearchTerm) {
-            setIsSearching(true)
-            getCitiesByNamePrefix(searchTerm)
+        if (complexGroup) {
+            streetGroup = complexGroup?.children.find(street => street.value === autoCompletedAddress[1])
         }
-    }, [cities, debouncedSearchTerm])
+
+        if (streetGroup) {
+            house = streetGroup?.children.find(house => house.label === autoCompletedAddress[2])
+        }
+
+        if (house) {
+            setSelectedAddress([complexGroup.value, streetGroup.value, house.value])
+            setFieldValue(
+                `layouts.${layoutIndex}.building.addressOption`,
+                [complexGroup.value, streetGroup.value, house.value]
+            )
+            setFieldValue(`layouts.${layoutIndex}.buildingId`, house.value)
+            setFieldValue(`layouts.${layoutIndex}.building.complexId`, complexGroup.value)
+        } else {
+            setSelectedAddress(null)
+        }
+    }, [autoCompletedAddress, addresses])
 
     const handlePreview = async file => {
         if (!file.url && !file.preview) {
@@ -55,58 +83,55 @@ const NewLayoutForm = (props) => {
         })
     }
 
+    const files = [...values.layouts[layoutIndex].files]
+
+    const draggerProps = {
+        style: {width: '100%'},
+        name: `layouts.${layoutIndex}.files`,
+        multiple: true,
+        accept: 'image/png',
+        defaultFileList: files,
+        fileList: files,
+        beforeUpload: (file, fileList) => {
+            setFieldValue(`layouts.${layoutIndex}.files`, [...files, ...fileList])
+            return true
+        },
+        customRequest: (reqOption) => {
+            const {onSuccess, onError, file} = reqOption
+            try {
+            } catch (e) {
+                onError(e)
+            }
+            onSuccess(null, file)
+        },
+        onChange: (info) => {
+            const {status} = info.file
+            if (status === 'done') {
+                message.success(`Файл ${info.file.name} загружен успешно.`)
+            } else if (status === 'error') {
+                message.error(`Произошла ошибка при загрузке ${info.file.name}.`)
+            }
+        },
+        onRemove: (file) => {
+            const fileIndex = files.indexOf(file)
+            const newFileList = files.slice()
+            newFileList.splice(fileIndex, 1)
+            setFieldValue(`layouts.${layoutIndex}.files`, [...newFileList])
+        },
+        // onPreview: handlePreview
+    }
+
     return (
         <Card
             hoverable
             title={`Планировка ${layoutIndex + 1}`}
             size="small"
             style={{marginBottom: '10px'}}
-            extra={<Button
-                type="link"
-                onClick={() => {
-                    remove(layoutIndex)
-                }}
-            ><CloseOutlined/></Button>}
+            extra={<Button type="link" onClick={remove}><CloseOutlined/></Button>}
         >
-            <Form
-                layout="vertical"
-            >
+            <Form layout="vertical">
                 <div className={styles.draggerContainer}>
-                    <Upload.Dragger
-                        style={{width: '100%'}}
-                        name={`layouts.${layoutIndex}.files`}
-                        multiple="true"
-                        listType='picture-card'
-                        accept='image/png'
-                        beforeUpload={(file, fileList) => {
-                            setFiles([...fileList])
-                        }}
-                        customRequest={(reqOption) => {
-                            const {onSuccess, onError, file} = reqOption
-                            // const files = [...formik.values.layouts[layoutIndex].files]
-
-                            try {
-                                // setFiles([...files, file])
-                            } catch (e) {
-                                onError(e)
-                            }
-
-                            onSuccess(null, file)
-                        }}
-                        onChange={(info) => {
-                            const {status} = info.file
-                            if (status !== 'uploading') {
-                                console.log(info.file, info.fileList)
-                            }
-                            if (status === 'done') {
-                                message.success(`${info.file.name} file uploaded successfully.`)
-                                formik.setFieldValue(`layouts.${layoutIndex}.files`, [...files])
-                            } else if (status === 'error') {
-                                message.error(`${info.file.name} file upload failed.`)
-                            }
-                        }}
-                        onPreview={handlePreview}
-                    >
+                    <Upload.Dragger {...draggerProps}>
                         <DraggerContent/>
                     </Upload.Dragger>
                     <Modal
@@ -119,43 +144,80 @@ const NewLayoutForm = (props) => {
                     </Modal>
                 </div>
                 <Space direction="horizontal" style={{width: '100%'}}>
-                    <Form.Item label="Город" className={styles.formItem}>
+                    <Form.Item
+                        label="Город"
+                        name={`layouts.${layoutIndex}.city`}
+                        className={styles.formItem}
+                    >
                         <AutoComplete
                             name={`layouts.${layoutIndex}.city`}
+                            value={values.layouts[layoutIndex].city || ''}
                             options={citiesOptions}
                             onChange={(value => {
-                                setFieldValue(`layouts.${layoutIndex}.building.address.city`, value)
+                                setFieldValue(`layouts.${layoutIndex}.city`, value)
                                 setSearchTerm(value)
+
+                                if (citiesOptions.some(option => option.value === value)) {
+                                    setSelectedCity(value)
+                                } else {
+                                    setSelectedCity('')
+                                }
                             })}
-                            onSelect={(value) => getAddresses(value)}
+                            onSelect={(value) => {
+                                setSelectedCity(value)
+                            }}
+                            onClick={(e => {
+                                if (e.target.value) {
+                                    setSearchTerm(e.target.value)
+                                }
+                            })}
                         />
                     </Form.Item>
-                    <Form.Item label="Адрес" className={styles.formItem}>
+                    <Form.Item
+                        label="Адрес"
+                        name={`layouts.${layoutIndex}.building.addressOption`}
+                        className={styles.formItem}
+                    >
                         <Cascader
+                            name={`layouts.${layoutIndex}.building.addressOption`}
+                            value={selectedAddress || values.layouts[layoutIndex].building.addressOption}
                             options={addresses}
-                            /*value={[
-                                formik.values.layouts[layoutIndex].building.complexId,
-                                formik.values.layouts[layoutIndex].building.complex.name,
-                                formik.values.layouts[layoutIndex].buildingId
-                            ]}*/
-                            onChange={(value => {
+                            placeholder="Комплекс / Улица / Дом"
+                            disabled={!cityIsSelected}
+                            displayRender={(label, selectedOptions) => {
+                                if (selectedOptions[0]) {
+                                    setCurrentComplexName(selectedOptions[0]?.label)
+                                }
+
+                                return label[1] ? `${currentComplexName} / ${label[1]} / ${label[2]}` : ''
+                            }}
+                            onChange={((value) => {
+                                setAutoCompletedAddress(null)
                                 setFieldValue(`layouts.${layoutIndex}.buildingId`, value[2])
                                 setFieldValue(`layouts.${layoutIndex}.building.complexId`, value[0])
                             })}
+                            onClick={getAddresses}
                         />
                     </Form.Item>
-                    <Form.Item>
+                    <Form.Item name={`layouts.${layoutIndex}.building`}>
                         <div className={styles.orNewBuildingContainer}>
                             <span>или</span>
-                            <NewBuildingFormContainer layoutIndex={layoutIndex}/>
+                            <NewBuildingFormContainer
+                                layoutIndex={layoutIndex}
+                                cityIsSelected={cityIsSelected}
+                                setAutoCompletedAddress={setAutoCompletedAddress}
+                            />
                         </div>
                     </Form.Item>
                 </Space>
-                <Form.Item label="Описание планировки">
+                <Form.Item
+                    label="Описание планировки"
+                    name={`layouts.${layoutIndex}.description`}
+                >
                     <Input.TextArea
                         name={`layouts.${layoutIndex}.description`}
-                        onChange={(value) =>
-                            setFieldValue(`layouts.${layoutIndex}.description`, value.currentTarget.value)}
+                        onChange={(e) =>
+                            setFieldValue(`layouts.${layoutIndex}.description`, e.currentTarget.value)}
                     />
                 </Form.Item>
             </Form>

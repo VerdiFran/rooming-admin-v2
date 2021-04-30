@@ -1,5 +1,6 @@
-import React, {useState} from 'react'
-import {Button, Drawer, Form, Select, Space, Input, AutoComplete, Row} from 'antd'
+import React, {useEffect, useState} from 'react'
+import {Button, Drawer, Space} from 'antd'
+import {Select, Input, AutoComplete, Form} from 'formik-antd'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import NewComplexFormContainer from './NewComplexForm/NewComplexFormContainer'
 import styles from './NewBuildingForm.module.scss'
@@ -7,12 +8,33 @@ import DrawerFooter from '../../../../common/FormControls/DrawerFooter'
 import TextArea from 'antd/es/input/TextArea'
 
 const NewBuildingForm = (props) => {
-    const {layoutIndex, complexes, streets, formik, handleSubmit} = props
+    const {
+        buildingFormik: {values, setFieldValue, handleChange},
+        layoutIndex,
+        complexes,
+        streets,
+        cityIsSelected,
+        handleSubmit
+    } = props
 
     const {Option} = Select
 
     const [visible, setVisible] = useState(false)
     const [streetsByComplex, setStreetsByComplex] = useState([])
+
+    const [autoCompletedComplex, setAutoCompletedComplex] = useState(null)
+    const [selectedComplex, setSelectedComplex] = useState(null)
+
+    useEffect(() => {
+        if (autoCompletedComplex) {
+            const complex = complexes?.find(complex => complex.label === autoCompletedComplex)
+            setSelectedComplex(complex?.value)
+            setFieldValue(`complexId`, complex?.value)
+            setFieldValue(`complexName`, complex?.label)
+        } else {
+            setSelectedComplex(null)
+        }
+    }, [autoCompletedComplex, complexes])
 
     const getStreetsByComplex = (complexId) =>
         setStreetsByComplex(streets.filter(street => street.complexId === complexId)
@@ -25,6 +47,7 @@ const NewBuildingForm = (props) => {
         <>
             <Button
                 type="dashed"
+                disabled={!cityIsSelected}
                 className={styles.newBuildingButton}
                 onClick={() => setVisible(true)}
             ><PlusSquareOutlined/>новое здание</Button>
@@ -41,12 +64,18 @@ const NewBuildingForm = (props) => {
             >
                 <Form layout="vertical" style={{width: '100%'}}>
                     <Space direction="horizontal" style={{width: '100%'}}>
-                        <Form.Item label="Комплекс">
+                        <Form.Item
+                            name="complex"
+                            label="Комплекс"
+                        >
                             <Select
+                                name="complexId"
+                                value={selectedComplex || values.complexName}
                                 style={{width: '200px'}}
                                 onChange={(value, option) => {
-                                    formik.setFieldValue(`layouts.${layoutIndex}.building.complexId`, value)
-                                    formik.setFieldValue(`layouts.${layoutIndex}.building.complex.name`, option.children)
+                                    setAutoCompletedComplex(null)
+                                    setFieldValue(`complexId`, value)
+                                    setFieldValue(`complexName`, option.children)
                                 }}
                                 onSelect={(value) => getStreetsByComplex(value)}
                             >
@@ -56,35 +85,49 @@ const NewBuildingForm = (props) => {
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item name="newComplex">
                             <div className={styles.orNewComplexContainer}>
                                 <span>или</span>
-                                <NewComplexFormContainer layoutIndex={layoutIndex}/>
+                                <NewComplexFormContainer
+                                    layoutIndex={layoutIndex}
+                                    setComplex={setAutoCompletedComplex}
+                                />
                             </div>
                         </Form.Item>
                     </Space>
                     <Space direction="horizontal" style={{width: '100%'}}>
-                        <Form.Item label="Улица">
+                        <Form.Item
+                            name="street"
+                            label="Улица"
+                        >
                             <AutoComplete
+                                name="street"
+                                value={values.street}
                                 style={{width: '200px'}}
                                 options={streetsByComplex}
-                                onChange={(value => formik.setFieldValue(
-                                    `layouts.${layoutIndex}.building.address.street`,
-                                    value
-                                ))}
+                                onChange={(value => setFieldValue(`street`, value))}
                             />
                         </Form.Item>
-                        <Form.Item label="Дом">
+                        <Form.Item
+                            name="house"
+                            label="Дом"
+                        >
                             <Input
-                                onChange={(e) => formik.setFieldValue(
-                                    `layouts.${layoutIndex}.building.address.house`,
-                                    e.currentTarget.value
-                                )}
+                                name="house"
+                                value={values.house}
+                                onChange={handleChange}
                             />
                         </Form.Item>
                     </Space>
-                    <Form.Item label="Описание здания">
-                        <TextArea/>
+                    <Form.Item
+                        name="buildingDescription"
+                        label="Описание здания"
+                    >
+                        <TextArea
+                            name="description"
+                            value={values.description}
+                            onChange={handleChange}
+                        />
                     </Form.Item>
                 </Form>
             </Drawer>
