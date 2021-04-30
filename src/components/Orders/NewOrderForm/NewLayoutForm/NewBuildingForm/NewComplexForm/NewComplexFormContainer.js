@@ -20,6 +20,8 @@ function NewComplexFormContainer(props) {
             complexDescription: values.description
         })
 
+        props.setComplex(values.name)
+
         complexFormik.resetForm()
     }
 

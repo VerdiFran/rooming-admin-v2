@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Button, Drawer, Space} from 'antd'
 import {Select, Input, AutoComplete, Form} from 'formik-antd'
 import {PlusSquareOutlined} from '@ant-design/icons'
@@ -20,6 +20,20 @@ const NewBuildingForm = (props) => {
 
     const [visible, setVisible] = useState(false)
     const [streetsByComplex, setStreetsByComplex] = useState([])
+
+    const [autoCompletedComplex, setAutoCompletedComplex] = useState(null)
+    const [selectedComplex, setSelectedComplex] = useState(null)
+
+    useEffect(() => {
+        if (autoCompletedComplex) {
+            const complex = complexes.find(complex => complex.label === autoCompletedComplex)
+            setSelectedComplex(complex?.value)
+            setFieldValue(`complexId`, complex?.value)
+            setFieldValue(`complexName`, complex?.label)
+        } else {
+            setSelectedComplex(null)
+        }
+    }, [autoCompletedComplex, complexes])
 
     const getStreetsByComplex = (complexId) =>
         setStreetsByComplex(streets.filter(street => street.complexId === complexId)
@@ -54,9 +68,10 @@ const NewBuildingForm = (props) => {
                         >
                             <Select
                                 name="complexId"
-                                value={values.complexName}
+                                value={selectedComplex || values.complexName}
                                 style={{width: '200px'}}
                                 onChange={(value, option) => {
+                                    setAutoCompletedComplex(null)
                                     setFieldValue(`complexId`, value)
                                     setFieldValue(`complexName`, option.children)
                                 }}
@@ -71,7 +86,10 @@ const NewBuildingForm = (props) => {
                         <Form.Item name="newComplex">
                             <div className={styles.orNewComplexContainer}>
                                 <span>или</span>
-                                <NewComplexFormContainer layoutIndex={layoutIndex}/>
+                                <NewComplexFormContainer
+                                    layoutIndex={layoutIndex}
+                                    setComplex={setAutoCompletedComplex}
+                                />
                             </div>
                         </Form.Item>
                     </Space>

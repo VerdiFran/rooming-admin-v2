@@ -266,7 +266,7 @@ export const getLayoutsInfo = (state) => {
 }
 
 export const getStreets = (state) => {
-    return state.orders.addresses.map(addr => ({
+    return state.orders.addresses.concat(state.orders.newAddresses).map(addr => ({
         streetName: addr.street,
         complexId: addr.complexId
     }))
