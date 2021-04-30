@@ -4,7 +4,7 @@ import { companiesAPI } from "../../api/companiesAPI"
 const SET_COMPANIES = 'SET-COMPANIES'
 const SET_SELECTED_COMPANY = 'SET-SELECTED-COMPANY'
 
-type UserType = {
+export type UserType = {
     id: number
     firstname: string
     lastName: string

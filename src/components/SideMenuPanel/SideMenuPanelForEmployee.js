@@ -19,6 +19,10 @@ const SideMenuPanelForEmployee = ({location}) => {
                     key: '/buildings',
                     title: 'Планировки'
                 },
+                {
+                    key: '/sessions',
+                    title: 'Сессии'
+                }
             ]
         },
     ]

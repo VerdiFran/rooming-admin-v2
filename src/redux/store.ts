@@ -6,6 +6,7 @@ import ordersReducer from './reducers/ordersReducer'
 import buildingsReducer from './reducers/buildingsReducer'
 import companiesReducer from './reducers/companiesReducer'
 import addRequestsReducer from './reducers/addRequestsReducer'
+import sessionsReducer from "./reducers/sessionsReducer";
 
 const reducers = combineReducers({
     auth: authReducer,
@@ -13,7 +14,8 @@ const reducers = combineReducers({
     orders: ordersReducer,
     buildings: buildingsReducer,
     companies: companiesReducer,
-    addRequests: addRequestsReducer
+    addRequests: addRequestsReducer,
+    sessions: sessionsReducer
 })
 
 const store = createStore(reducers, applyMiddleware(thunk))

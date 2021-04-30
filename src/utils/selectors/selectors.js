@@ -344,3 +344,33 @@ export const getSelectedLayout = (state) => {
 
     return null
 }
+
+/**
+ * Get sessions from state.
+ * @param state State.
+ */
+export const getSessions = (state) => {
+    const sessionIterator = IdGenerator()
+    const layoutIterator = IdGenerator()
+
+    return state.sessions.sessions.map(session => (
+        {
+            ...session,
+            layouts: session.layouts.map(layout => ({
+                ...layout,
+                createdAt: new Date(layout.createdAt),
+                key: layoutIterator.next().value
+            })),
+            createdAt: new Date(session.createdAt),
+            key: sessionIterator.next().value
+        }
+    ))
+}
+
+/**
+ * Returns total pages of sessions.
+ * @param state State.
+ */
+export const getSessionsTotal = (state) => {
+  return state.sessions.totalSessions
+}
