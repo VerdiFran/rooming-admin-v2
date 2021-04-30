@@ -58,4 +58,20 @@ export const downloadSessions = (pagination: SimplePaginationArgs) => async (dis
     }
 }
 
+/**
+ * Delete session by id.
+ * @param sessionId Session id.
+ */
+export const deleteSession = (sessionId: number) => async (dispatch: Dispatch) => {
+    try {
+        await sessionsApi.deleteSession(sessionId)
+    } catch (error) {
+        message.error('Не удалось удалить сессию')
+        return
+    }
+
+    await downloadSessions(new SimplePaginationArgs())(dispatch)
+    message.success('Сессия успешно удалена')
+}
+
 export default sessionsReducer

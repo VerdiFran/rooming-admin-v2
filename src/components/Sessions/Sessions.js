@@ -1,11 +1,27 @@
 import {Table} from "antd";
 import styles from "../Sessions/Sessions.module.scss";
 import React from "react";
+import ActionButton from "../common/ActionButton/ActionButton";
+import {DELETE_SESSION_ACTION} from "../../utils/actions/sessionsActions";
 
 /**
  * Component with sessions list.
  */
-const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage}) => {
+const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSession}) => {
+
+    const getSessionActions = (action, record) => {
+        switch (action.type) {
+            case DELETE_SESSION_ACTION.type:
+                return <ActionButton
+                    title={action.title}
+                    handleClick={() => {
+                        deleteSession(record.id)
+                    }}
+                />
+            default:
+                return null
+        }
+    }
 
     const columns = [
         {
@@ -31,6 +47,15 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage}) => {
             dataIndex: 'name',
             key: 'name',
         },
+        {
+            title: 'Действия',
+            dataIndex: 'actions',
+            key: 'actions',
+            align: 'center',
+            width: '15%',
+            render: ((actions, session) => session.actions.map(action =>
+                getSessionActions(action, session)))
+        }
     ]
 
     const expandedSessionRowRender = (record) => {
@@ -74,7 +99,7 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage}) => {
                 pagination={{defaultPageSize: pageSize, total: totalSessions * pageSize, onChange: changePage}}
                 size="small"
                 tableLayout="auto"
-                expandable={{expandedRowRender: expandedSessionRowRender, expandRowByClick: true}}
+                expandable={{expandedRowRender: expandedSessionRowRender, expandRowByClick: false}}
                 scroll={{x: 900}}
             />
         </div>

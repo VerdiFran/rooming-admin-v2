@@ -3,6 +3,9 @@ import {IdGenerator} from '../generators/generators'
 import {EXECUTE_ORDER_ACTION, REMOVE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
 import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 import {GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
+import {DELETE_SESSION_ACTION} from "../actions/sessionsActions";
+
+const idIterator = IdGenerator()
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -350,8 +353,6 @@ export const getSelectedLayout = (state) => {
  * @param state State.
  */
 export const getSessions = (state) => {
-    const sessionIterator = IdGenerator()
-    const layoutIterator = IdGenerator()
 
     return state.sessions.sessions.map(session => (
         {
@@ -359,10 +360,11 @@ export const getSessions = (state) => {
             layouts: session.layouts.map(layout => ({
                 ...layout,
                 createdAt: new Date(layout.createdAt),
-                key: layoutIterator.next().value
+                key: idIterator.next().value
             })),
+            actions: [DELETE_SESSION_ACTION],
             createdAt: new Date(session.createdAt),
-            key: sessionIterator.next().value
+            key: idIterator.next().value
         }
     ))
 }

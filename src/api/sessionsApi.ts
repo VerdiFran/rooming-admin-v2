@@ -15,5 +15,13 @@ export const sessionsApi = {
             params: { pageNumber, pageSize }
         }
         return instance.get('company/sessions', config)
+    },
+
+    /**
+     * Delete session by id.
+     * @param sessionId Session id.
+     */
+    deleteSession(sessionId: number) {
+        return instance.delete(`company/sessions/${sessionId}`)
     }
 }
