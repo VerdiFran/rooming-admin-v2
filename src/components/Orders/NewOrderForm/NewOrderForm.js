@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {DatePicker} from 'formik-antd'
 import {Input, Button, Divider, Drawer, Form} from 'antd'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
@@ -8,6 +8,10 @@ import styles from './NewOrderForm.module.scss'
 import DrawerFooter from '../../common/FormControls/DrawerFooter'
 
 const NewOrderForm = ({visible, formik, onClose, handleSubmit}) => {
+    const [drawerVisible, setDrawerVisible] = useState(!visible)
+
+    setTimeout(() => {setDrawerVisible(visible)}, 50)
+
     return (
         <FormikProvider value={formik}>
             <Form
@@ -19,7 +23,7 @@ const NewOrderForm = ({visible, formik, onClose, handleSubmit}) => {
                     title="Создание нового заказа"
                     width={820}
                     onClose={onClose}
-                    visible={visible}
+                    visible={drawerVisible}
                     bodyStyle={{paddingBottom: 80}}
                     footer={
                         <DrawerFooter

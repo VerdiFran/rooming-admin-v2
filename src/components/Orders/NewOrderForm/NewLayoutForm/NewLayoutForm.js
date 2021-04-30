@@ -12,19 +12,22 @@ const NewLayoutForm = (props) => {
         formik: {setFieldValue, values},
         citiesOptions,
         addresses,
+        cityIsSelected,
         getAddresses,
         setSearchTerm,
         remove,
         setSelectedCity
     } = props
 
+    useEffect(() => {
+        console.log(cityIsSelected)
+    }, [cityIsSelected])
+
     const [previewVisible, setPreviewVisible] = useState(false)
     const [previewImage, setPreviewImage] = useState('')
     const [previewTitle, setPreviewTitle] = useState('')
 
     const [currentComplexName, setCurrentComplexName] = useState('')
-
-    const [cityIsSelected, setCityIsSelected] = useState(false)
 
     const [autoCompletedAddress, setAutoCompletedAddress] = useState(null)
     const [selectedAddress, setSelectedAddress] = useState(null)
@@ -48,7 +51,10 @@ const NewLayoutForm = (props) => {
 
         if (house) {
             setSelectedAddress([complexGroup.value, streetGroup.value, house.value])
-            setFieldValue(`layouts.${layoutIndex}.building.addressOption`, selectedAddress)
+            setFieldValue(
+                `layouts.${layoutIndex}.building.addressOption`,
+                [complexGroup.value, streetGroup.value, house.value]
+            )
             setFieldValue(`layouts.${layoutIndex}.buildingId`, house.value)
             setFieldValue(`layouts.${layoutIndex}.building.complexId`, complexGroup.value)
         } else {
@@ -153,15 +159,12 @@ const NewLayoutForm = (props) => {
 
                                 if (citiesOptions.some(option => option.value === value)) {
                                     setSelectedCity(value)
-                                    setCityIsSelected(true)
                                 } else {
                                     setSelectedCity('')
-                                    setCityIsSelected(false)
                                 }
                             })}
                             onSelect={(value) => {
                                 setSelectedCity(value)
-                                setCityIsSelected(true)
                             }}
                             onClick={(e => {
                                 if (e.target.value) {

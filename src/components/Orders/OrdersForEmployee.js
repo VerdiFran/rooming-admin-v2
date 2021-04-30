@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Popover, List, Table, Button, Space, Badge} from 'antd'
 import styles from './Orders.module.scss'
 import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
-import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
+import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
 
 const OrdersForEmployee = ({ordersData, handleChange}) => {
     const [visible, setVisible] = useState(false)
@@ -23,7 +23,7 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
             align: 'center',
             render: (date) => {
                 const newDate = new Date(date)
-                return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0,5)}`
+                return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0, 5)}`
             }
         },
         {
@@ -64,7 +64,7 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                     ? <Badge status="default" text="Создан"/>
                     : value === IN_PROGRESS
                         ? <Badge status="processing" text="В процессе" color="yellow"/>
-                        : <Badge status="success" text="Выполнен" />
+                        : <Badge status="success" text="Выполнен"/>
             },
             {
                 title: 'Контакт исполнителя',
@@ -113,11 +113,13 @@ const OrdersForEmployee = ({ordersData, handleChange}) => {
                 }}
                 scroll={{x: 900}}
             />
-            <NewOrderFormContainer
-                visible={visible}
-                showDrawer={showDrawer}
-                onClose={onClose}
-            />
+            {
+                visible && <NewOrderFormContainer
+                    visible={visible}
+                    showDrawer={showDrawer}
+                    onClose={onClose}
+                />
+            }
         </div>
     )
 }

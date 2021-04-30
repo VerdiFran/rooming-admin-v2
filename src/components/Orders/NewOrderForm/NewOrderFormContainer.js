@@ -75,8 +75,9 @@ const NewOrderFormContainer = (props) => {
 
     return <NewOrderForm
         formik={formik}
+        visible={props.visible}
         handleSubmit={handleSubmit}
-        {...props}
+        onClose={props.onClose}
     />
 }
 
