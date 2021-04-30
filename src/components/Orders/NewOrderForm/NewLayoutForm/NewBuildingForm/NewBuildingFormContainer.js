@@ -19,6 +19,7 @@ const NewBuildingFormContainer = (props) => {
         complexes,
         streets,
         layoutIndex,
+        cityIsSelected,
         getAddressesByCityName,
         addAddress
     } = props
@@ -65,6 +66,7 @@ const NewBuildingFormContainer = (props) => {
     }
 
     return <NewBuildingForm
+        cityIsSelected={cityIsSelected}
         buildingFormik={buildingFormik}
         cities={cities}
         complexes={cityComplexes}

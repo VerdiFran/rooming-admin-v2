@@ -13,6 +13,7 @@ const NewBuildingForm = (props) => {
         layoutIndex,
         complexes,
         streets,
+        cityIsSelected,
         handleSubmit
     } = props
 
@@ -26,7 +27,7 @@ const NewBuildingForm = (props) => {
 
     useEffect(() => {
         if (autoCompletedComplex) {
-            const complex = complexes.find(complex => complex.label === autoCompletedComplex)
+            const complex = complexes?.find(complex => complex.label === autoCompletedComplex)
             setSelectedComplex(complex?.value)
             setFieldValue(`complexId`, complex?.value)
             setFieldValue(`complexName`, complex?.label)
@@ -46,6 +47,7 @@ const NewBuildingForm = (props) => {
         <>
             <Button
                 type="dashed"
+                disabled={!cityIsSelected}
                 className={styles.newBuildingButton}
                 onClick={() => setVisible(true)}
             ><PlusSquareOutlined/>новое здание</Button>

@@ -24,6 +24,8 @@ const NewLayoutForm = (props) => {
 
     const [currentComplexName, setCurrentComplexName] = useState('')
 
+    const [cityIsSelected, setCityIsSelected] = useState(false)
+
     const handlePreview = async file => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj)
@@ -83,8 +85,6 @@ const NewLayoutForm = (props) => {
         // onPreview: handlePreview
     }
 
-    console.log(values.layouts[layoutIndex].city)
-
     return (
         <Card
             hoverable
@@ -123,12 +123,15 @@ const NewLayoutForm = (props) => {
 
                                 if (citiesOptions.some(option => option.value === value)) {
                                     setSelectedCity(value)
+                                    setCityIsSelected(true)
                                 } else {
                                     setSelectedCity('')
+                                    setCityIsSelected(false)
                                 }
                             })}
                             onSelect={(value) => {
                                 setSelectedCity(value)
+                                setCityIsSelected(true)
                             }}
                             onClick={(e => {
                                 if (e.target.value) {
@@ -146,6 +149,7 @@ const NewLayoutForm = (props) => {
                             name={`layouts.${layoutIndex}.building.addressOption`}
                             options={addresses}
                             placeholder="Комплекс / Улица / Дом"
+                            disabled={!cityIsSelected}
                             displayRender={(label, selectedOptions) => {
                                 if (selectedOptions[0]) {
                                     setCurrentComplexName(selectedOptions[0]?.label)
@@ -163,7 +167,10 @@ const NewLayoutForm = (props) => {
                     <Form.Item name={`layouts.${layoutIndex}.building`}>
                         <div className={styles.orNewBuildingContainer}>
                             <span>или</span>
-                            <NewBuildingFormContainer layoutIndex={layoutIndex}/>
+                            <NewBuildingFormContainer
+                                layoutIndex={layoutIndex}
+                                cityIsSelected={cityIsSelected}
+                            />
                         </div>
                     </Form.Item>
                 </Space>
