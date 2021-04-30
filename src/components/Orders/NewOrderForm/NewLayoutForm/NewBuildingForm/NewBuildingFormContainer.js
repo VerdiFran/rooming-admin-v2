@@ -21,7 +21,8 @@ const NewBuildingFormContainer = (props) => {
         layoutIndex,
         cityIsSelected,
         getAddressesByCityName,
-        addAddress
+        addAddress,
+        setAutoCompletedAddress
     } = props
 
     const buildingFormik = useFormik({
@@ -58,6 +59,8 @@ const NewBuildingFormContainer = (props) => {
         }
 
         await addAddress(address)
+
+        setAutoCompletedAddress([address.complexId, address.street, address.house])
 
         buildingFormik.resetForm()
 

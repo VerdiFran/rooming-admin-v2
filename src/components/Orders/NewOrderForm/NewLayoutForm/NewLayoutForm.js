@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Button, Card, message, Modal, Space, Upload} from 'antd'
 import {AutoComplete, Cascader, Form, Input} from 'formik-antd'
 import {CloseOutlined} from '@ant-design/icons'
@@ -25,6 +25,36 @@ const NewLayoutForm = (props) => {
     const [currentComplexName, setCurrentComplexName] = useState('')
 
     const [cityIsSelected, setCityIsSelected] = useState(false)
+
+    const [autoCompletedAddress, setAutoCompletedAddress] = useState(null)
+    const [selectedAddress, setSelectedAddress] = useState(null)
+
+    useEffect(() => {
+        let complexGroup
+        let streetGroup
+        let house
+
+        if (autoCompletedAddress) {
+            complexGroup = addresses?.find(address => address.value === autoCompletedAddress[0])
+        }
+
+        if (complexGroup) {
+            streetGroup = complexGroup?.children.find(street => street.value === autoCompletedAddress[1])
+        }
+
+        if (streetGroup) {
+            house = streetGroup?.children.find(house => house.label === autoCompletedAddress[2])
+        }
+
+        if (house) {
+            setSelectedAddress([complexGroup.value, streetGroup.value, house.value])
+            setFieldValue(`layouts.${layoutIndex}.building.addressOption`, selectedAddress)
+            setFieldValue(`layouts.${layoutIndex}.buildingId`, house.value)
+            setFieldValue(`layouts.${layoutIndex}.building.complexId`, complexGroup.value)
+        } else {
+            setSelectedAddress(null)
+        }
+    }, [autoCompletedAddress, addresses])
 
     const handlePreview = async file => {
         if (!file.url && !file.preview) {
@@ -147,6 +177,7 @@ const NewLayoutForm = (props) => {
                     >
                         <Cascader
                             name={`layouts.${layoutIndex}.building.addressOption`}
+                            value={selectedAddress || values.layouts[layoutIndex].building.addressOption}
                             options={addresses}
                             placeholder="Комплекс / Улица / Дом"
                             disabled={!cityIsSelected}
@@ -158,6 +189,7 @@ const NewLayoutForm = (props) => {
                                 return label[1] ? `${currentComplexName} / ${label[1]} / ${label[2]}` : ''
                             }}
                             onChange={((value) => {
+                                setAutoCompletedAddress(null)
                                 setFieldValue(`layouts.${layoutIndex}.buildingId`, value[2])
                                 setFieldValue(`layouts.${layoutIndex}.building.complexId`, value[0])
                             })}
@@ -170,6 +202,7 @@ const NewLayoutForm = (props) => {
                             <NewBuildingFormContainer
                                 layoutIndex={layoutIndex}
                                 cityIsSelected={cityIsSelected}
+                                setAutoCompletedAddress={setAutoCompletedAddress}
                             />
                         </div>
                     </Form.Item>
