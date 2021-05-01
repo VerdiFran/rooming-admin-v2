@@ -2,6 +2,9 @@ import {connect} from "react-redux";
 import {getSelectedLayout} from "../../../utils/selectors/selectors";
 import LayoutInfo from "./LayoutInfo";
 import {buildingsAPI} from "../../../api/buildingsAPI";
+import {sessionsApi} from "../../../api/sessionsApi";
+import React from 'react'
+import {addLayoutsToSessions} from "../../../redux/reducers/sessionsReducer";
 
 const mapStateToProps = (state => ({
     selectedLayout: getSelectedLayout(state)
@@ -13,7 +16,9 @@ const LayoutInfoContainer = (props) => {
         visible={props.visible}
         selectedLayout={props.selectedLayout}
         handleDownload={buildingsAPI.downloadFile}
+        downloadSessions={sessionsApi.downloadSessions}
+        addToSession={props.addLayoutsToSessions}
     />
 }
 
-export default connect(mapStateToProps)(LayoutInfoContainer)
+export default connect(mapStateToProps, {addLayoutsToSessions})(LayoutInfoContainer)

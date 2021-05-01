@@ -6,34 +6,6 @@ import {login} from '../../redux/reducers/authReducer'
 import {Redirect} from 'react-router-dom'
 import {getIsAuth} from '../../utils/selectors/selectors'
 
-/**
- * Login page component
- * @returns {JSX.Element}
- * @constructor
- */
-
-/*class Login extends React.Component {
-    onSubmit = (formData) => {
-        const {login, password, rememberMe} = formData
-
-        this.props.login(login, password, rememberMe)
-            .catch(error => {
-
-            })
-    }
-
-    render() {
-        const {isAuth} = this.props
-
-        if (isAuth) return <Redirect to='/home'/>
-
-        return (
-            <div className={styles.container}>
-                <LoginCard onSubmit={this.onSubmit}/>
-            </div>
-        )
-    }
-}*/
 
 const Login = (props) => {
     const handleSubmit = (formData) => {

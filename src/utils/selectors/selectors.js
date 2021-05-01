@@ -2,7 +2,10 @@ import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
 import {EXECUTE_ORDER_ACTION, REMOVE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
 import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
-import {GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
+import {ADD_TO_SESSION, GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
+import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION, START_SESSION} from "../actions/sessionsActions";
+
+const idIterator = IdGenerator()
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -201,7 +204,7 @@ export const getFinishedBuildings = (state) => {
         layouts: building.layouts.map(layout => ({
             ...layout,
             key: layoutsIdIterator.next().value,
-            actions: [GET_LAYOUT_INFO_ACTION]
+            actions: [GET_LAYOUT_INFO_ACTION, ADD_TO_SESSION]
         })),
         key: buildingsIdIterator.next().value
     }))
@@ -343,4 +346,35 @@ export const getSelectedLayout = (state) => {
     }
 
     return null
+}
+
+/**
+ * Get sessions from state.
+ * @param state State.
+ */
+export const getSessions = (state) => {
+
+    return state.sessions.sessions.map(session => (
+        {
+            ...session,
+            layouts: session.layouts.map(layout => ({
+                ...layout,
+                createdAt: new Date(layout.createdAt),
+                key: idIterator.next().value,
+                sessionId: session.id,
+                actions: [DELETE_SESSION_LAYOUT_ACTION]
+            })),
+            actions: [DELETE_SESSION_ACTION, START_SESSION],
+            createdAt: new Date(session.createdAt),
+            key: idIterator.next().value
+        }
+    ))
+}
+
+/**
+ * Returns total pages of sessions.
+ * @param state State.
+ */
+export const getSessionsTotal = (state) => {
+  return state.sessions.totalSessions
 }
