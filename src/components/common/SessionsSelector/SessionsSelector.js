@@ -10,7 +10,7 @@ import {SearchOutlined} from "@ant-design/icons";
  * @param updatingTime Sleeping time before send request.
  * @param handleSelection Option selection handler.
  */
-const SessionsSelector = ({handleOptionsUpdate, updatingTime, handleSelection}) => {
+const SessionsSelector = ({handleOptionsUpdate, updatingTime, handleSelection   }) => {
 
     const [options, setOptions] = useState([])
     const [namePart, setNamePart] = useState('')

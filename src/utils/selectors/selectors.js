@@ -3,7 +3,7 @@ import {IdGenerator} from '../generators/generators'
 import {EXECUTE_ORDER_ACTION, REMOVE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
 import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 import {ADD_TO_SESSION, GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
-import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION} from "../actions/sessionsActions";
+import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION, START_SESSION} from "../actions/sessionsActions";
 
 const idIterator = IdGenerator()
 
@@ -364,7 +364,7 @@ export const getSessions = (state) => {
                 sessionId: session.id,
                 actions: [DELETE_SESSION_LAYOUT_ACTION]
             })),
-            actions: [DELETE_SESSION_ACTION],
+            actions: [DELETE_SESSION_ACTION, START_SESSION],
             createdAt: new Date(session.createdAt),
             key: idIterator.next().value
         }

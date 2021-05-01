@@ -9,6 +9,7 @@ const SET_SESSIONS = 'SET-SESSIONS'
 
 type Session = {
     layouts: Array<LayoutType>
+    isCurrent: boolean
 }
 
 type SessionsState = {
@@ -51,8 +52,8 @@ const setSessions = (sessions: Array<Session>, total: number) => ({type: SET_SES
  */
 export const downloadSessions = (pagination: SimplePaginationArgs) => async (dispatch: Dispatch) => {
     try {
-        const response = await sessionsApi.downloadSessions(pagination.pageNumber, pagination.pageSize)
-        dispatch(setSessions(response.data.content, response.data.total))
+        const sessionsResponse = await sessionsApi.downloadSessions(pagination.pageNumber, pagination.pageSize)
+        dispatch(setSessions(sessionsResponse.data.content, sessionsResponse.data.total))
     } catch (error) {
         message.error('Не удалось загрузить сессии')
     }
@@ -109,6 +110,18 @@ export const addLayoutsToSessions = (sessionId: number, layouts: Array<number>) 
     const messageText = layouts.length === 1 ? 'Планировка успешно добавлена в сессию'
         : 'Планировки успешно добавлены в сессию'
     message.success(messageText)
+}
+
+export const startSession = (sessionId: number) => async (dispatch: Dispatch) => {
+    try {
+        await sessionsApi.startSession(sessionId)
+    } catch (error) {
+        message.error('Не удалось начать сессию')
+        return
+    }
+
+    await downloadSessions(new SimplePaginationArgs())(dispatch)
+    message.success(`Сессия начата`)
 }
 
 export default sessionsReducer

@@ -2,12 +2,13 @@ import {Table} from "antd";
 import styles from "../Sessions/Sessions.module.scss";
 import React from "react";
 import ActionButton from "../common/ActionButton/ActionButton";
-import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION} from "../../utils/actions/sessionsActions";
+import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION, START_SESSION} from "../../utils/actions/sessionsActions";
+import flame from '../../assets/images/flame.png'
 
 /**
  * Component with sessions list.
  */
-const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSession, deleteSessionLayout}) => {
+const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSession, deleteSessionLayout, startSession}) => {
 
     const getSessionActions = (action, record) => {
         switch (action.type) {
@@ -16,6 +17,13 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
                     title={action.title}
                     handleClick={() => {
                         deleteSession(record.id)
+                    }}
+                />
+            case START_SESSION.type:
+                return <ActionButton
+                    title={action.title}
+                    handleClick={() => {
+                        startSession(record.id)
                     }}
                 />
             default:
@@ -30,8 +38,16 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
             key: 'createdAt',
             align: 'center',
             width: "15%",
-            render: (date) => {
-                return `${date.toLocaleDateString()}, ${date.toLocaleTimeString()?.slice(0, 5)}`
+            render: (date, record) => {
+                const creationDate = `${date.toLocaleDateString()}, ${date.toLocaleTimeString()?.slice(0, 5)}`
+                if (record.isCurrent) {
+                    return <div className={styles.currentSessionCell}>
+                            <img className={styles.currentSessionImage} src={flame} alt='current' width='20px' height='20px'/>
+                            <div className={styles.currentSessionDate}>{creationDate}</div>
+                        </div>
+                }
+
+                return creationDate
             }
         },
         {
@@ -52,7 +68,7 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
             dataIndex: 'actions',
             key: 'actions',
             align: 'center',
-            width: '15%',
+            width: '20%',
             render: ((actions, session) => session.actions.map(action =>
                 getSessionActions(action, session)))
         }

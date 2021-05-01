@@ -13,7 +13,7 @@ export const sessionsApi = {
      */
     downloadSessions(pageNumber: number, pageSize: number, namePart?: string) {
         const config = {
-            params: { pageNumber, pageSize, namePart }
+            params: {pageNumber, pageSize, namePart}
         }
         return instance.get('company/sessions', config)
     },
@@ -44,6 +44,21 @@ export const sessionsApi = {
      * @param layouts Ids of layouts.
      */
     addToSession(sessionId: number, layouts: Array<number>) {
-        return instance.post(`company/sessions/${sessionId}/layouts`, { layouts })
+        return instance.post(`company/sessions/${sessionId}/layouts`, {layouts})
+    },
+
+    /**
+     * Start session request.
+     * @param sessionId Session id.
+     */
+    startSession(sessionId: number) {
+        const config = {
+            params: {sessionId}
+        }
+        return instance.put(`company/sessions/current`, null, config)
+    },
+
+    getCurrentSession() {
+        return instance.get(`company/sessions/current`)
     }
 }
