@@ -36,6 +36,14 @@ export const ordersAPI = {
     },
 
     /**
+     * DELETE request for order removing.
+     * @param orderId Id of order to remove.
+     */
+    removeOrder(orderId: number) {
+        return instance.delete(`company/orders/${orderId}`)
+    },
+
+    /**
      * POST request for image adding.
      * @param formData Image data.
      */
@@ -49,9 +57,9 @@ export const ordersAPI = {
 
     /**
      * POST request for layout model file sending.
-     * @param orderId
-     * @param layoutId
-     * @param formData
+     * @param orderId Order id.
+     * @param layoutId Layout order id.
+     * @param formData Form data.
      */
     sendModelFiles(orderId: number, layoutId: number, formData: FormData) {
         return instance.post(`orders/${orderId}/layouts/${layoutId}`, formData, {
@@ -60,6 +68,7 @@ export const ordersAPI = {
             }
         })
     },
+
     /**
      * PUT request for set order executor.
      * @param orderId Id of order layout order from.

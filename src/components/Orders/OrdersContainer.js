@@ -11,7 +11,8 @@ import {
     getAllOrders,
     getCompanyOrders,
     setCurrentLayoutIds,
-    takeLayoutOrderOnExecute
+    takeLayoutOrderOnExecute,
+    removeOrder
 } from '../../redux/reducers/ordersReducer'
 
 const mapStateToProps = (state) => ({
@@ -55,6 +56,7 @@ const OrdersContainer = (props) => {
             ordersData={props.ordersData}
             handleChange={() => {
             }}
+            handleRemove={props.removeOrder}
             setCurrentPage={setCurrentPage}
             totalPages={props.totalPages}
             pageSize={pageSize}
@@ -67,5 +69,6 @@ const OrdersContainer = (props) => {
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, {getCompanyOrders, getAllOrders, setCurrentLayoutIds, takeLayoutOrderOnExecute})
+    connect(mapStateToProps, {getCompanyOrders, getAllOrders, setCurrentLayoutIds, takeLayoutOrderOnExecute,
+        removeOrder})
 )(OrdersContainer)

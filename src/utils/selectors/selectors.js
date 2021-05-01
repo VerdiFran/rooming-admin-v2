@@ -1,8 +1,11 @@
 import {ADMIN, DEVELOPER, EMPLOYEE} from '../../redux/userRoles'
 import {IdGenerator} from '../generators/generators'
-import {GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions"
-import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from '../actions/orderActions'
-import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
+import {EXECUTE_ORDER_ACTION, REMOVE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../actions/orderActions";
+import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
+import {ADD_TO_SESSION, GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
+import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION, START_SESSION} from "../actions/sessionsActions";
+
+const idIterator = IdGenerator()
 
 export const getIsAuth = (state) => {
     return state.auth.isAuth
@@ -39,12 +42,17 @@ export const getOrdersData = (state) => {
     const layoutIdIterator = IdGenerator()
     const userRoles = getUserRoles(state)
 
-    const actionsSelection = (userRoles, status) => {
+    const orderActionsSelection = (userRoles) => {
         if (userRoles.includes(EMPLOYEE)) {
-            return ['посмотреть']
+            return [REMOVE_ORDER_ACTION]
         }
 
-        if (userRoles.includes(DEVELOPER)) {
+        return []
+    }
+
+    const layoutActionsSelection = (userRoles, status) => {
+
+        if (userRoles.includes(DEVELOPER) || userRoles.includes(ADMIN)) {
             if (status === READY_FOR_DEVELOPMENT) {
                 return [TAKE_ON_EXECUTE_ACTION, EXECUTE_ORDER_ACTION]
             }
@@ -58,14 +66,11 @@ export const getOrdersData = (state) => {
             }
         }
 
-        if (userRoles.includes(ADMIN)) {
-            return ['посмотреть']
-        }
-
         return []
     }
 
     return state.orders.orders.map(order => ({
+        id: order.id,
         key: orderIdIterator.next().value,
         description: order.orderDescription,
         deadline: order.deadline,
@@ -85,15 +90,13 @@ export const getOrdersData = (state) => {
             status: layout.layoutOrderStatus,
             createdAt: layout.createdAt,
             executor: layout.executor,
-            actions: actionsSelection(userRoles, layout.layoutOrderStatus)
+            actions: layoutActionsSelection(userRoles, layout.layoutOrderStatus)
         })),
         createdAt: order.createdAt,
         createdBy: order.createdBy.company
             ? `${order.createdBy.company.name} (${order.createdBy.firstName} ${order.createdBy.lastName})`
             : `${order.createdBy.firstName} ${order.createdBy.lastName}`,
-        actions: userRoles.includes(EMPLOYEE) ? []
-            : userRoles.includes(DEVELOPER) ? []
-                : userRoles.includes(ADMIN) ? [] : []
+        actions: orderActionsSelection(userRoles)
     }))
 }
 
@@ -159,19 +162,6 @@ export const getAddresses = (state) => {
                             return groupedAddresses
                         }
                     } else {
-                        /*return [...groupedAddresses, {
-                            value: currAddr.complexId || -1,
-                            label: currAddr.complexName || 'Отдельные здания',
-                            children: [{
-                                value: currAddr.street,
-                                label: currAddr.street,
-                                children: [{
-                                    value: currAddr.buildingId,
-                                    label: currAddr.house
-                                }]
-                            }]
-                        }]*/
-
                         groupedAddresses[city] = [...groupedAddresses[city], {
                             value: currAddr.complexId || -1,
                             label: currAddr.complexName || 'Отдельные здания',
@@ -294,7 +284,7 @@ export const getFinishedBuildings = (state) => {
         layouts: building.layouts.map(layout => ({
             ...layout,
             key: layoutsIdIterator.next().value,
-            actions: [GET_LAYOUT_INFO_ACTION]
+            actions: [GET_LAYOUT_INFO_ACTION, ADD_TO_SESSION]
         })),
         key: buildingsIdIterator.next().value
     }))
@@ -436,4 +426,35 @@ export const getSelectedLayout = (state) => {
     }
 
     return null
+}
+
+/**
+ * Get sessions from state.
+ * @param state State.
+ */
+export const getSessions = (state) => {
+
+    return state.sessions.sessions.map(session => (
+        {
+            ...session,
+            layouts: session.layouts.map(layout => ({
+                ...layout,
+                createdAt: new Date(layout.createdAt),
+                key: idIterator.next().value,
+                sessionId: session.id,
+                actions: [DELETE_SESSION_LAYOUT_ACTION]
+            })),
+            actions: [DELETE_SESSION_ACTION, START_SESSION],
+            createdAt: new Date(session.createdAt),
+            key: idIterator.next().value
+        }
+    ))
+}
+
+/**
+ * Returns total pages of sessions.
+ * @param state State.
+ */
+export const getSessionsTotal = (state) => {
+  return state.sessions.totalSessions
 }

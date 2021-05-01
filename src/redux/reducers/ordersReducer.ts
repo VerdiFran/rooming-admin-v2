@@ -245,7 +245,7 @@ export const getCitiesByNamePrefix = (prefix: string) => async (dispatch: Dispat
  * @param pageNumber Page number.
  * @param pageSize Page size.
  */
-export const getCompanyOrders = (pageNumber: number, pageSize: number) => async (dispatch: Dispatch) => {
+export const getCompanyOrders = (pageNumber: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getOrders(pageNumber, pageSize)
     dispatch(setOrders(response.data.content, response.data.total))
 }
@@ -255,7 +255,7 @@ export const getCompanyOrders = (pageNumber: number, pageSize: number) => async 
  * @param pageNumber Page number.
  * @param pageSize Page size.
  */
-export const getAllOrders = (pageNumber: number, pageSize: number) => async (dispatch: Dispatch) => {
+export const getAllOrders = (pageNumber: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
     const response = await ordersAPI.getAllOrders(pageNumber, pageSize)
     dispatch(setOrders(response.data.content, response.data.total))
 }
@@ -316,6 +316,22 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
     } catch (e) {
         message.error('При отправке заказа что-то пошло не так.')
     }
+}
+
+/**
+ * Removes order and download actual orders.
+ * @param orderId Id of order to remove.
+ */
+export const removeOrder = (orderId: number) => async (dispatch: Dispatch) => {
+    try {
+        await ordersAPI.removeOrder(orderId)
+    } catch (error) {
+        message.error('Не удалось удалить заказ, попробуйте позже.')
+        return
+    }
+
+    message.success('Заказ успешно удалён!')
+    await getCompanyOrders()(dispatch)
 }
 
 const sendOrderFiles = async (files: Array<File> | undefined) => {

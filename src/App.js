@@ -16,6 +16,7 @@ import CompaniesContainer from './components/Companies/CompaniesContainer'
 import CompanyAddRequestsContainer from './components/CompanyAddRequests/CompanyAddRequestsContainer'
 import './App.less'
 import Preloader from './components/common/Preloader/Preloader'
+import SessionsContainer from "./components/Sessions/SessionsContainer";
 
 const App = (props) => {
     const {
@@ -84,6 +85,10 @@ const App = (props) => {
                         <Route
                             path="/add-requests"
                             render={() => <CompanyAddRequestsContainer/>}
+                        />
+                        <Route
+                            path="/sessions"
+                            render={() => <SessionsContainer/>}
                         />
                         <Redirect from="/" to="/home"/>
                     </Switch>
