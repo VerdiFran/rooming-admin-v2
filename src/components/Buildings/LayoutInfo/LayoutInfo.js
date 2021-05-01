@@ -1,8 +1,21 @@
-import {Button, Descriptions, Drawer, Space} from "antd";
-import React from "react";
+import {Button, Descriptions, Drawer, Modal, Space} from "antd";
+import React, {useState} from "react";
+import SessionsSelector from "../../common/SessionsSelector/SessionsSelector";
 
 
-const LayoutInfo = ({setVisible, visible, selectedLayout, handleDownload}) => {
+const LayoutInfo = ({setVisible, visible, selectedLayout, handleDownload, downloadSessions, addToSession}) => {
+
+    const [sessionSelectorVisibility, setSelectorVisibility] = useState(false)
+
+    const handleSessionsUpdate = async (maxSessions, namePart) => {
+        const response = await downloadSessions(1, maxSessions, namePart)
+        return response.data.content.map(session => ({id: session.id, name: session.name}))
+    }
+
+    const handleSessionSelection = (sessionId) => {
+        addToSession(sessionId, [selectedLayout.id])
+        setSelectorVisibility(false)
+    }
 
     return <Drawer
         title="Информация о планировке"
@@ -13,9 +26,23 @@ const LayoutInfo = ({setVisible, visible, selectedLayout, handleDownload}) => {
         footer={
             <div style={{textAlign: 'right'}}>
                 <Button onClick={() => handleDownload(selectedLayout?.buildingId, selectedLayout?.id)} style={{marginRight: 8}}>Скачать модель планировки</Button>
+                <Button onClick={() => setSelectorVisibility(true)} style={{marginRight: 8}}>Добавить в сессию</Button>
                 <Button onClick={() => setVisible(false)} style={{marginRight: 8}}>
                     Закрыть
                 </Button>
+                <Modal
+                    title={'Выберете сессию'}
+                    visible={sessionSelectorVisibility}
+                    onCancel={() => setSelectorVisibility(false)}
+                    footer={false}
+                    width={'25%'}
+                    centred
+                >
+                    <SessionsSelector
+                        handleOptionsUpdate={handleSessionsUpdate}
+                        updatingTime={750}
+                        handleSelection={handleSessionSelection}/>
+                </Modal>
             </div>
         }
     >

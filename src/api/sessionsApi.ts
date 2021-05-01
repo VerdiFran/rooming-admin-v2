@@ -9,10 +9,11 @@ export const sessionsApi = {
      * Download company viewing sessions.
      * @param pageNumber Page number.
      * @param pageSize Page size.
+     * @param namePart Part of session name for filtration.
      */
-    downloadSessions(pageNumber: number, pageSize: number) {
+    downloadSessions(pageNumber: number, pageSize: number, namePart?: string) {
         const config = {
-            params: { pageNumber, pageSize }
+            params: { pageNumber, pageSize, namePart }
         }
         return instance.get('company/sessions', config)
     },
@@ -35,5 +36,14 @@ export const sessionsApi = {
             data: {layouts: [layoutId]}
         }
         return instance.delete(`company/sessions/${sessionId}/layouts`, config)
+    },
+
+    /**
+     * Add layouts to session.
+     * @param sessionId Session id.
+     * @param layouts Ids of layouts.
+     */
+    addToSession(sessionId: number, layouts: Array<number>) {
+        return instance.post(`company/sessions/${sessionId}/layouts`, { layouts })
     }
 }

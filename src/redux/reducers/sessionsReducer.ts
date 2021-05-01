@@ -91,4 +91,24 @@ export const deleteLayoutFromSession = (sessionId: number, layoutId: number) => 
     message.success('Планировка успешно удалена из сессии')
 }
 
+/**
+ * Add layouts to session.
+ * @param sessionId Session id.
+ * @param layouts Layout for adding to session.
+ */
+export const addLayoutsToSessions = (sessionId: number, layouts: Array<number>) => async (dispatch: Dispatch) => {
+    try {
+        await sessionsApi.addToSession(sessionId, layouts)
+    } catch (error) {
+        message.error('Не удалось добавить планировки в сессию')
+        return
+    }
+
+    await downloadSessions(new SimplePaginationArgs())(dispatch)
+
+    const messageText = layouts.length === 1 ? 'Планировка успешно добавлена в сессию'
+        : 'Планировки успешно добавлены в сессию'
+    message.success(messageText)
+}
+
 export default sessionsReducer
