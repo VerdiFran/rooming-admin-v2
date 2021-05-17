@@ -15,7 +15,7 @@ export const sessionsApi = {
         const config = {
             params: {pageNumber, pageSize, namePart}
         }
-        return instance.get('company/sessions', config)
+        return instance.get('sessions', config)
     },
 
     /**
@@ -23,7 +23,7 @@ export const sessionsApi = {
      * @param sessionId Session id.
      */
     deleteSession(sessionId: number) {
-        return instance.delete(`company/sessions/${sessionId}`)
+        return instance.delete(`sessions/${sessionId}`)
     },
 
     /**
@@ -35,7 +35,7 @@ export const sessionsApi = {
         const config = {
             data: {layouts: [layoutId]}
         }
-        return instance.delete(`company/sessions/${sessionId}/layouts`, config)
+        return instance.delete(`sessions/${sessionId}/layouts`, config)
     },
 
     /**
@@ -44,7 +44,7 @@ export const sessionsApi = {
      * @param layouts Ids of layouts.
      */
     addToSession(sessionId: number, layouts: Array<number>) {
-        return instance.post(`company/sessions/${sessionId}/layouts`, {layouts})
+        return instance.post(`sessions/${sessionId}/layouts`, {layouts})
     },
 
     /**
@@ -55,10 +55,10 @@ export const sessionsApi = {
         const config = {
             params: {sessionId}
         }
-        return instance.put(`company/sessions/current`, null, config)
+        return instance.put(`sessions/current`, null, config)
     },
 
     getCurrentSession() {
-        return instance.get(`company/sessions/current`)
+        return instance.get(`sessions/current`)
     }
 }
