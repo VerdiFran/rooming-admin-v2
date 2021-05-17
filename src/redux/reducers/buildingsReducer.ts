@@ -1,5 +1,6 @@
 import { Dispatch } from 'redux'
 import {buildingsAPI} from "../../api/buildingsAPI";
+import {message} from "antd";
 
 const SET_COMPLETED_LAYOUTS = 'SET_COMPLETED_LAYOUTS'
 const SET_SELECTED_LAYOUT_ID = 'SET-SELECTED-LAYOUT-ID'
@@ -85,9 +86,32 @@ export const setSelectedLayoutId = (selectedLayoutId: number) => ({
     selectedLayoutId: selectedLayoutId
 })
 
+/**
+ * Downloads company buildings and pass it in state.
+ * @param page Page number.
+ * @param pageSize Page size.
+ */
 export const getBuildingsWithCompletedLayouts = (page: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
-    const response = await buildingsAPI.getBuildingsWithCompletedLayouts(page, pageSize)
-    dispatch(setBuildingsWithCompletedLayouts(response.data.content, response.data.total))
+    try {
+        const response = await buildingsAPI.getBuildingsWithCompletedLayouts(page, pageSize)
+        dispatch(setBuildingsWithCompletedLayouts(response.data.content, response.data.total))
+    } catch (error) {
+        message.error('Не удалось загрузить планировки')
+    }
+}
+
+/**
+ * Downloads buildings and pass it in state.
+ * @param page Page number.
+ * @param pageSize Page size.
+ */
+export const getBoundBuildings = (page: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
+    try {
+        const response = await buildingsAPI.getBoundBuildings(page, pageSize)
+        dispatch(setBuildingsWithCompletedLayouts(response.data.content, response.data.total))
+    } catch (error) {
+        message.error('Не удалось загрузить планировки')
+    }
 }
 
 export default buildingsReducer

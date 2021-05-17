@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import Buildings from './Buildings'
-import { getFinishedBuildings, getTotalPages } from '../../utils/selectors/selectors'
+import {getFinishedBuildings, getTotalPages, getUserRoles} from '../../utils/selectors/selectors'
 import { compose } from 'redux'
 import { withAuthRedirect } from '../../hoc/withAuthRedirect'
-import { getBuildingsWithCompletedLayouts, setSelectedLayoutId } from '../../redux/reducers/buildingsReducer'
+import { getBuildingsWithCompletedLayouts, getBoundBuildings, setSelectedLayoutId } from '../../redux/reducers/buildingsReducer'
+import {USER} from '../../redux/userRoles'
 
 const mapStateToProps = (state) => ({
+    userRoles: getUserRoles(state),
     buildings: getFinishedBuildings(state),
     totalPages: getTotalPages(state)
 })
@@ -17,7 +19,11 @@ const BuildingsContainer = (props) => {
     const [currentPage, setCurrentPage] = React.useState(1)
 
     useEffect(() => {
-        props.getBuildingsWithCompletedLayouts(currentPage, pageSize)
+        if (props.userRoles.includes(USER)){
+            props.getBoundBuildings(currentPage, pageSize)
+        } else {
+            props.getBuildingsWithCompletedLayouts(currentPage, pageSize)
+        }
     }, [currentPage])
 
     return <Buildings
@@ -32,5 +38,5 @@ const BuildingsContainer = (props) => {
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, { getBuildingsWithCompletedLayouts, setSelectedLayoutId })
+    connect(mapStateToProps, { getBuildingsWithCompletedLayouts, getBoundBuildings, setSelectedLayoutId })
 )(BuildingsContainer)
