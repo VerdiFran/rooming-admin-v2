@@ -64,6 +64,7 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                             layoutsInfo.map(layout => {
                                 const createdAt = new Date(layout.createdAt)
                                 const deadline = new Date(layout.deadline)
+                                const complexDescription = layout.building.complex ? `Комплекс "${layout.building.complex.name}":` : ''
 
                                 return <Space size="small" direction="vertical">
                                     <Title level={5}>Планировка</Title>
@@ -75,7 +76,9 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                         <Descriptions.Item
                                             label="Город">{layout.building.address.city}</Descriptions.Item>
                                         <Descriptions.Item label="Адрес" span="2">
-                                            {`Комплекс "${layout.building.complex.name}": ул. ${layout.building.address.street}, д. ${layout.building.address.house}`}
+                                            {
+                                                `${complexDescription} ул. ${layout.building.address.street}, д. ${layout.building.address.house}`
+                                            }
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Компания">Some Company</Descriptions.Item>
                                         <Descriptions.Item label="Создан">

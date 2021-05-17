@@ -79,7 +79,10 @@ const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds, take
                 dataIndex: 'layout',
                 key: 'layout',
                 width: '35%',
-                render: (layout) => `г. ${layout.city}, комплекс ${layout.complexName}: ул. ${layout.street}, д. ${layout.house}`
+                render: (layout) => {
+                    const complexTitle = layout.complexName !== 'Отдельные здания' ? `комплекс ${layout.complexName}:` : ''
+                    return `г. ${layout.city}, ${complexTitle} ул. ${layout.street}, д. ${layout.house}`
+                }
             },
             {
                 title: 'Статус',
