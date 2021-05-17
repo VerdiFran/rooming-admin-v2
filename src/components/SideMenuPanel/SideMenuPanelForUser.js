@@ -6,6 +6,20 @@ const SideMenuPanelForUser = ({location}) => {
         {
             key: '/home',
             title: 'Главная'
+        },
+        {
+            key: '/models',
+            title: 'Модели',
+            children: [
+                {
+                    key: '/buildings',
+                    title: 'Планировки'
+                },
+                {
+                    key: '/sessions',
+                    title: 'Сессии'
+                }
+            ]
         }
     ]
 
