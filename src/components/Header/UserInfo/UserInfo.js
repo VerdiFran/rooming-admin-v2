@@ -29,12 +29,15 @@ const UserInfo = ({userData, logout}) => {
             <div className={styles.userIcon}>
                 <Avatar size="large" shape="square" icon={<UserOutlined/>}/>
             </div>
-            <div className={styles.who}>
+            <div className={styles.info}>
                 <Dropdown overlay={menu} arrow>
                     <NavLink to="#">{userData.userName}</NavLink>
                 </Dropdown>
+                {
+                    userData.companyName &&
+                    <div>из <NavLink to="#">{userData.companyName}</NavLink></div>
+                }
             </div>
-            <div className={styles.from}>из <NavLink to="#">{userData.companyName}</NavLink></div>
         </div>
     )
 }
