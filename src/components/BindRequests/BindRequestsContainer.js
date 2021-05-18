@@ -3,7 +3,7 @@ import {compose} from 'redux'
 import {connect} from 'react-redux'
 import React from 'react'
 import {getBindRequests, getTotalBindRequests} from '../../utils/selectors/selectors'
-import {downloadBindRequests} from '../../redux/reducers/usersReducer'
+import {downloadBindRequests, bindToCompany} from '../../redux/reducers/usersReducer'
 import {usePagination} from '../../hooks/usePagination'
 import BindRequests from './BindRequests'
 
@@ -26,10 +26,11 @@ const BindRequestsContainer = (props) => {
         setPage={setPage}
         pageSize={pageSize}
         total={props.totalRequests}
+        bindToCompany={props.bindToCompany}
     />
 }
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, {downloadBindRequests})
+    connect(mapStateToProps, {downloadBindRequests, bindToCompany})
 )(BindRequestsContainer)

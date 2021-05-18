@@ -17,5 +17,13 @@ export const usersApi = {
         }
 
         return instance.get(`company/bind-requests`, config)
+    },
+
+    /**
+     * Bind user to company.
+     * @param ids Ids of bind-requests.
+     */
+    bindToCompany(ids: Array<number>) {
+        return instance.put('company/bind-requests', { ids })
     }
 }

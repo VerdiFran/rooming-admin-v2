@@ -1,11 +1,13 @@
-import {Table} from 'antd'
+import {Button, Space, Table} from 'antd'
 import styles from '../CompanyAddRequests/CompanyAddRequests.module.scss'
-import React from 'react'
+import React, {useState} from 'react'
 
 /**
  * Bind-user-to-company requests.
  */
-const BindRequests = ({bindRequests, setPage, total, pageSize}) => {
+const BindRequests = ({bindRequests, setPage, total, pageSize, bindToCompany}) => {
+    const [selectedRequests, setSelectedRequests] = useState([])
+    const [buttonDisabled, setButtonDisabled] = useState(true)
 
     const columns = [
         {
@@ -47,8 +49,30 @@ const BindRequests = ({bindRequests, setPage, total, pageSize}) => {
         setPage(page)
     }
 
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setButtonDisabled(selectedRows.length === 0)
+            setSelectedRequests(selectedRows)
+        }
+    }
+
     return (
         <div className={styles.contentContainer}>
+            <Space style={{marginBottom: 16}}>
+                <Button
+                    type="primary"
+                    onClick={() => {
+                        const ids = selectedRequests.map(request => request.id)
+                        bindToCompany(ids)
+                        setSelectedRequests([])
+                        setPage(1)
+                        setButtonDisabled(true)
+                    }}
+                    disabled={buttonDisabled}
+                >
+                    Добавить компании
+                </Button>
+            </Space>
             <Table
                 columns={columns}
                 dataSource={bindRequests}
@@ -57,6 +81,11 @@ const BindRequests = ({bindRequests, setPage, total, pageSize}) => {
                     total: total * pageSize,
                     onChange: changePage
                 }}
+                rowSelection={{
+                    type: 'checkbox',
+                    ...rowSelection,
+                }}
+                selection={selectedRequests}
                 bordered
                 size="small"
                 tableLayout="auto"

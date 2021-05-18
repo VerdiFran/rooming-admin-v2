@@ -57,4 +57,19 @@ export const downloadBindRequests = (paginationArgs: SimplePaginationArgs) => as
     }
 }
 
+/**
+ * Bind users to company.
+ * @param ids Ids of users.
+ */
+export const bindToCompany = (ids: Array<number>) => async (dispatch: Dispatch) => {
+    try {
+        await usersApi.bindToCompany(ids)
+        await downloadBindRequests(new SimplePaginationArgs())(dispatch)
+    } catch (error) {
+        message.error('Не удалось провести привязку')
+        return
+    }
+    message.success('Привязка прошла успешно')
+}
+
 export default usersReducer
