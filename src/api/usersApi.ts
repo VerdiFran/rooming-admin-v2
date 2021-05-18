@@ -10,10 +10,11 @@ export const usersApi = {
      * @param pageNumber Page number.
      * @param pageSize Page size.
      * @param isBound Bound or not bound requests needed.
+     * @param usernamePart Part of user name for searching.
      */
-    getBindRequests(pageNumber: number, pageSize: number, isBound: boolean) {
+    getBindRequests(pageNumber: number, pageSize: number, isBound: boolean, usernamePart: string | null) {
         const config = {
-            params: { pageNumber, pageSize, isBound }
+            params: { pageNumber, pageSize, isBound, usernamePart }
         }
 
         return instance.get(`company/bind-requests`, config)

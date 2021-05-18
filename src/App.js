@@ -18,6 +18,7 @@ import './App.less'
 import Preloader from './components/common/Preloader/Preloader'
 import SessionsContainer from "./components/Sessions/SessionsContainer";
 import BindRequestsContainer from './components/BindRequests/BindRequestsContainer'
+import BoundUsersContainer from './components/BoundUsers/BoundUsersContainer'
 
 const App = (props) => {
     const {
@@ -97,7 +98,7 @@ const App = (props) => {
                         />
                         <Route
                             path="/bound-users"
-                            render={() => <BindRequestsContainer/>}
+                            render={() => <BoundUsersContainer/>}
                         />
                         <Redirect from="/" to="/home"/>
                     </Switch>

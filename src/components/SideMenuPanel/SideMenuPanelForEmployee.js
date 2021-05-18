@@ -35,7 +35,7 @@ const SideMenuPanelForEmployee = ({location}) => {
                 },
                 {
                     key: '/bound-users',
-                    title: 'Привязанные пользователи'
+                    title: 'Имеющие досуп'
                 }
             ]
         }

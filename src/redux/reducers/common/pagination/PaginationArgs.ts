@@ -1,7 +1,7 @@
 /**
  * Describes interface that should provide pagination arguments class.
  */
-interface PaginationArgs {
+export interface PaginationArgs {
     pageSize: number,
     pageNumber: number
 }

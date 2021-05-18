@@ -2,7 +2,7 @@ import {LayoutType} from "./buildingsReducer";
 import {Dispatch} from "redux";
 import {sessionsApi} from "../../api/sessionsApi";
 import {message} from "antd";
-import {SimplePaginationArgs} from "./common/PaginationArgs";
+import {SimplePaginationArgs} from "./common/pagination/PaginationArgs";
 import {UserType} from "./companiesReducer";
 
 const SET_SESSIONS = 'SET-SESSIONS'

@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import PaginationArgs, {SimplePaginationArgs} from "../redux/reducers/common/PaginationArgs";
+import PaginationArgs, {SimplePaginationArgs} from "../redux/reducers/common/pagination/PaginationArgs";
 
 /**
  * Hook for pagination using.

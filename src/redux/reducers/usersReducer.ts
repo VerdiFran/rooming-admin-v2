@@ -2,7 +2,7 @@ import {UserType} from './companiesReducer'
 import {Dispatch} from 'redux'
 import {usersApi} from '../../api/usersApi'
 import {message} from 'antd'
-import {SimplePaginationArgs} from './common/PaginationArgs'
+import {BindRequestsPaginationArgs} from './common/pagination/BindRequestsPaginationArgs'
 
 const SET_BIND_REQUESTS = 'SET-BIND-REQUESTS'
 
@@ -47,9 +47,10 @@ const setBindRequests = (bindRequests: Array<BindRequest>, total: number) => ({t
  * Download bind-users-to-company requests.
  * @param paginationArgs Pagination arguments.
  */
-export const downloadBindRequests = (paginationArgs: SimplePaginationArgs) => async (dispatch: Dispatch) => {
+export const downloadBindRequests = (paginationArgs: BindRequestsPaginationArgs) => async (dispatch: Dispatch) => {
     try {
-        const response = await usersApi.getBindRequests(paginationArgs.pageNumber, paginationArgs.pageSize, false)
+        const response = await usersApi.getBindRequests(paginationArgs.pageNumber, paginationArgs.pageSize,
+            paginationArgs.isBound, paginationArgs.usernamePart)
         dispatch(setBindRequests(response.data.content, response.data.total))
     } catch (error) {
         message.error('Не удалось загрузить запросы на привязку пользователей')
@@ -64,7 +65,7 @@ export const downloadBindRequests = (paginationArgs: SimplePaginationArgs) => as
 export const bindToCompany = (ids: Array<number>) => async (dispatch: Dispatch) => {
     try {
         await usersApi.bindToCompany(ids)
-        await downloadBindRequests(new SimplePaginationArgs())(dispatch)
+        await downloadBindRequests(new BindRequestsPaginationArgs())(dispatch)
     } catch (error) {
         message.error('Не удалось провести привязку')
         return
