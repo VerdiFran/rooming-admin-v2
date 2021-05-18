@@ -17,6 +17,7 @@ import CompanyAddRequestsContainer from './components/CompanyAddRequests/Company
 import './App.less'
 import Preloader from './components/common/Preloader/Preloader'
 import SessionsContainer from "./components/Sessions/SessionsContainer";
+import BindRequestsContainer from './components/BindRequests/BindRequestsContainer'
 
 const App = (props) => {
     const {
@@ -89,6 +90,14 @@ const App = (props) => {
                         <Route
                             path="/sessions"
                             render={() => <SessionsContainer/>}
+                        />
+                        <Route
+                            path="/bind-requests"
+                            render={() => <BindRequestsContainer/>}
+                        />
+                        <Route
+                            path="/bound-users"
+                            render={() => <BindRequestsContainer/>}
                         />
                         <Redirect from="/" to="/home"/>
                     </Switch>

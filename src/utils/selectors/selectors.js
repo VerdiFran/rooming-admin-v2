@@ -458,3 +458,23 @@ export const getSessions = (state) => {
 export const getSessionsTotal = (state) => {
   return state.sessions.totalSessions
 }
+
+/**
+ * Get bin-user-to-company requests.
+ * @param state Users state.
+ */
+export const getBindRequests = (state) => {
+
+    return state.users.bindRequests.map(request => ({
+        ...request,
+        key: idIterator.next().value
+    }))
+}
+
+/**
+ * Get total pages of bind-user-to-company requests.
+ * @param state Users state.
+ */
+export const getTotalBindRequests = (state) => {
+    return state.users.totalRequests
+}

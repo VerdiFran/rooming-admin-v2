@@ -9,6 +9,7 @@ export type UserType = {
     firstname: string
     lastName: string
     email: string
+    city: string
     phoneNumber: string
 }
 

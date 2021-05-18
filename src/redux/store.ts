@@ -7,6 +7,7 @@ import buildingsReducer from './reducers/buildingsReducer'
 import companiesReducer from './reducers/companiesReducer'
 import addRequestsReducer from './reducers/addRequestsReducer'
 import sessionsReducer from "./reducers/sessionsReducer";
+import usersReducer from './reducers/usersReducer'
 
 const reducers = combineReducers({
     auth: authReducer,
@@ -15,6 +16,7 @@ const reducers = combineReducers({
     buildings: buildingsReducer,
     companies: companiesReducer,
     addRequests: addRequestsReducer,
+    users: usersReducer,
     sessions: sessionsReducer
 })
 
