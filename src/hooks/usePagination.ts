@@ -18,7 +18,7 @@ export const usePagination = (action: (pagination: PaginationArgs) => void, pagi
 
     useEffect(() => {
         action(initializedPagination)
-    }, [currentPage])
+    }, [pagination])
 
     return [pageSize, setCurrentPage]
 }

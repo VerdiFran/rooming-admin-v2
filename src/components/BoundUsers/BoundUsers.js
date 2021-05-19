@@ -4,11 +4,39 @@ import styles from '../CompanyAddRequests/CompanyAddRequests.module.scss'
 import React from 'react'
 import {UNBIND_USER} from '../../utils/actions/usersActions'
 import {getActionByType} from '../../utils/actions/getActionByType'
+import FilterDropdown from '../common/FilterDropdown/FilterDropdown'
+import {SearchOutlined} from '@ant-design/icons'
 
 /**
  * Bound requests component.
  */
-const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest}) => {
+const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, setNamePart, namePart}) => {
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm()
+        setNamePart(selectedKeys[0])
+        console.log(namePart)
+        setPage(1)
+    };
+
+    const handleReset = clearFilters => {
+        clearFilters()
+        setNamePart('')
+        setPage(1)
+    };
+
+    const columnSearchProps = dataIndex => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (<FilterDropdown
+            setSelectedKeys={setSelectedKeys}
+            selectedKeys={selectedKeys}
+            confirm={confirm}
+            clearFilters={clearFilters}
+            handleSearch={handleSearch}
+            handleReset={handleReset}
+            placeholder={dataIndex}
+        />),
+        filterIcon: filtered => <SearchOutlined />,
+    })
 
     const handleUnbind = (record) => {
         unbindRequest(record.id)
@@ -36,7 +64,8 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest}) 
             key: 'username',
             width: '15%',
             align: 'center',
-            render: (user) => `${user.firstName} ${user.lastName}`
+            render: (user) => `${user.firstName} ${user.lastName}`,
+            ...columnSearchProps('Имя пользователя')
         },
         {
             title: 'Город',
