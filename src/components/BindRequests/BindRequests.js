@@ -70,7 +70,7 @@ const BindRequests = ({bindRequests, setPage, total, pageSize, bindToCompany}) =
                     }}
                     disabled={buttonDisabled}
                 >
-                    Добавить компании
+                    Дать доступ к базе
                 </Button>
             </Space>
             <Table

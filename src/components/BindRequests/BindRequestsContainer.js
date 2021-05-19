@@ -14,9 +14,6 @@ const mapStateToProps = (state) => ({
 
 /**
  * Container for bind-user-to-company component.
- * @param props
- * @return {JSX.Element}
- * @constructor
  */
 const BindRequestsContainer = (props) => {
     const [pageSize, setPage] = usePagination(props.downloadBindRequests)
