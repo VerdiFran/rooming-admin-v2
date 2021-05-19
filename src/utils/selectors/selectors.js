@@ -4,6 +4,7 @@ import {EXECUTE_ORDER_ACTION, REMOVE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from 
 import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 import {ADD_TO_SESSION, GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
 import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION, START_SESSION} from "../actions/sessionsActions";
+import {UNBIND_USER} from '../actions/usersActions'
 
 const idIterator = IdGenerator()
 
@@ -457,4 +458,25 @@ export const getSessions = (state) => {
  */
 export const getSessionsTotal = (state) => {
   return state.sessions.totalSessions
+}
+
+/**
+ * Get bin-user-to-company requests.
+ * @param state Users state.
+ */
+export const getBindRequests = (state) => {
+
+    return state.users.bindRequests.map(request => ({
+        ...request,
+        key: idIterator.next().value,
+        actions: [UNBIND_USER]
+    }))
+}
+
+/**
+ * Get total pages of bind-user-to-company requests.
+ * @param state Users state.
+ */
+export const getTotalBindRequests = (state) => {
+    return state.users.totalRequests
 }

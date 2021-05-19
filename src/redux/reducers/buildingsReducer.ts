@@ -28,7 +28,7 @@ export type BuildingType = {
     layouts: Array<LayoutType>
 }
 
-type AddressType = {
+export type AddressType = {
     city: string
     street: string
     house: string

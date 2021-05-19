@@ -25,6 +25,20 @@ const SideMenuPanelForEmployee = ({location}) => {
                 }
             ]
         },
+        {
+            key: '/users',
+            title: 'Пользователи',
+            children: [
+                {
+                    key: '/bind-requests',
+                    title: 'Привязки к базе'
+                },
+                {
+                    key: '/bound-users',
+                    title: 'Имеющие досуп'
+                }
+            ]
+        }
     ]
 
     return <SideMenuPanel menuItems={menuItems} location={location}/>

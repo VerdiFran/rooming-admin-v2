@@ -1,0 +1,24 @@
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center
+}
+
+.company {
+    display: flex;
+    flex-direction: row;
+}
+
+.logoContainer {
+    margin-right: 14px;
+    max-width: 44px;
+    max-height: 44px;
+}
+
+.companyInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
