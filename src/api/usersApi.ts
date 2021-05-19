@@ -28,8 +28,19 @@ export const usersApi = {
         return instance.put('company/bind-requests', { ids })
     },
 
+    /**
+     * Unbind request from company.
+     * @param id Bind request id.
+     */
     unbindRequest(id: number) {
         return instance.delete(`company/bind-requests/${id}`)
-    }
+    },
 
+    /**
+     * Add new bind requests.
+     * @param companyIds Company ids for binding.
+     */
+    addNewRequests(companyIds: Array<number>) {
+        return instance.post('users/bind-requests', { companyIds })
+    }
 }

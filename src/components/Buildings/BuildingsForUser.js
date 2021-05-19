@@ -1,20 +1,45 @@
 import React, {useState} from 'react'
-import {Table} from 'antd'
+import {Button, message, Space, Table} from 'antd'
 import styles from './Buildings.module.scss'
-import ActionButton from "../common/ActionButton/ActionButton";
-import {GET_LAYOUT_INFO_ACTION} from "../../utils/actions/layoutActions";
-import LayoutInfoContainer from "./LayoutInfo/LayoutInfoContainer";
+import ActionButton from '../common/ActionButton/ActionButton'
+import {GET_LAYOUT_INFO_ACTION} from '../../utils/actions/layoutActions'
+import LayoutInfoContainer from './LayoutInfo/LayoutInfoContainer'
+import AddBindRequestsForm from './AddBindRequestsForm/AddBindRequestsForm'
+import {useFormik} from 'formik'
+import {usersApi} from '../../api/usersApi'
 
-const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelectedLayoutId}) => {
+/**
+ * Component with buildings list for simple user role.
+ */
+const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage, setSelectedLayoutId}) => {
 
-    const [visible, setVisible] = useState(false)
+    const [layoutInfoVisible, setLayoutInfoVisible] = useState(false)
+    const [addRequestsVisible, setAddRequestsVisible] = useState(false)
+
+    const formik = useFormik({
+        initialValues: {
+            companyIds: []
+        },
+        onSubmit: values => handleSubmit(values)
+    })
+
+    const handleSubmit = (values) => {
+        usersApi.addNewRequests(values.companyIds)
+            .then(() => {
+                setAddRequestsVisible(false)
+                message.success('Запрос успешно отправлен')
+            })
+            .error(() => {
+                message.error('Не удалось отправить запрос')
+            })
+    }
 
     const columns = [
         {
             title: 'Адрес здания',
             dataIndex: 'address',
             key: 'address',
-            width: "25%",
+            width: '25%',
             ellipsis: false,
             render: (addr) => `г. ${addr.city} ул. ${addr.street}-${addr.house}`
         },
@@ -29,7 +54,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
             dataIndex: 'complex',
             key: 'complex',
             align: 'center',
-            width: "20%",
+            width: '20%',
             ellipsis: false,
             render: (complex) => complex.name
         }
@@ -41,8 +66,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
                 return <ActionButton
                     title={action.title}
                     handleClick={() => {
-                        setSelectedLayoutId(record.id)
-                        setVisible(true)
+
                     }}
                 />
             default:
@@ -57,7 +81,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
                 dataIndex: 'createdAt',
                 key: 'createdAt',
                 align: 'center',
-                width: "15%",
+                width: '15%',
                 render: (date) => {
                     return `${date.toLocaleDateString()}, ${date.toLocaleTimeString()?.slice(0, 5)}`
                 }
@@ -86,11 +110,11 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
         }))
 
         return <Table
-                bordered
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-            />
+            bordered
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+        />
     }
 
     const changePage = (page) => {
@@ -99,6 +123,11 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
 
     return (
         <div className={styles.contentContainer}>
+            <Space style={{marginBottom: 16}}>
+                <Button type="primary" onClick={() => {
+                    setAddRequestsVisible(true)
+                }}>Запросить новые планировки</Button>
+            </Space>
             <Table
                 bordered
                 columns={columns}
@@ -110,11 +139,17 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
                 scroll={{x: 900}}
             />
             <LayoutInfoContainer
-                setVisible={setVisible}
-                visible={visible}
+                setVisible={setLayoutInfoVisible}
+                visible={layoutInfoVisible}
+            />
+            <AddBindRequestsForm
+                setVisible={setAddRequestsVisible}
+                visible={addRequestsVisible}
+                handleSubmit={handleSubmit}
+                formik={formik}
             />
         </div>
     )
 }
 
-export default Buildings
+export default BuildingsForUser

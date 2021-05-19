@@ -1,5 +1,6 @@
 import { Dispatch } from "redux"
 import { companiesAPI } from "../../api/companiesAPI"
+import {AddressType} from './buildingsReducer'
 
 const SET_COMPANIES = 'SET-COMPANIES'
 const SET_SELECTED_COMPANY = 'SET-SELECTED-COMPANY'
@@ -19,6 +20,8 @@ type CompanyType = {
     email: string
     contactPhone: string
     employees: Array<UserType>
+    offices: Array<AddressType>
+    layoutsCount: number
 }
 
 export type CompaniesStateType = {

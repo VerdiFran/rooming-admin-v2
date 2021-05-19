@@ -4,9 +4,11 @@ import PaginationArgs, {SimplePaginationArgs} from "../redux/reducers/common/pag
 /**
  * Hook for pagination using.
  * @param action Action that occurs when changing the current page
- * @param pagination Pagination object.Ad
+ * @param pagination Pagination object.
+ * @param deps Dependencies for update.
  */
-export const usePagination = (action: (pagination: PaginationArgs) => void, pagination: PaginationArgs = new SimplePaginationArgs()) => {
+export const usePagination = (action: (pagination: PaginationArgs) => void, pagination: PaginationArgs = new SimplePaginationArgs(),
+                              deps: Array<any> = []) => {
     const [pageSize] = useState(10)
     const [currentPage, setCurrentPage] = useState(1)
 
@@ -18,7 +20,7 @@ export const usePagination = (action: (pagination: PaginationArgs) => void, pagi
 
     useEffect(() => {
         action(initializedPagination)
-    }, [pagination])
+    }, [currentPage, ...deps])
 
     return [pageSize, setCurrentPage]
 }

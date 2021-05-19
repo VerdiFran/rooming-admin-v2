@@ -19,7 +19,8 @@ const mapStateToProps = (state) => ({
 const BoundUsersContainer = (props) => {
     const [namePart, setNamePart] = useState('')
     const [pageSize, setPage] = usePagination(props.downloadBindRequests,
-        new BindRequestsPaginationArgs(1, 10, namePart, true)
+        new BindRequestsPaginationArgs(1, 10, namePart, true),
+        [namePart]
     )
 
     return <BoundRequests

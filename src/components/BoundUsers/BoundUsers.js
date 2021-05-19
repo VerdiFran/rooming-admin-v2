@@ -15,7 +15,6 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, s
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm()
         setNamePart(selectedKeys[0])
-        console.log(namePart)
         setPage(1)
     };
 
