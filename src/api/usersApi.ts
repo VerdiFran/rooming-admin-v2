@@ -26,5 +26,10 @@ export const usersApi = {
      */
     bindToCompany(ids: Array<number>) {
         return instance.put('company/bind-requests', { ids })
+    },
+
+    unbindRequest(id: number) {
+        return instance.delete(`company/bind-requests/${id}`)
     }
+
 }

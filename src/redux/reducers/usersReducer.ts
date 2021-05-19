@@ -73,4 +73,19 @@ export const bindToCompany = (ids: Array<number>) => async (dispatch: Dispatch) 
     message.success('Привязка прошла успешно')
 }
 
+/**
+ * Unbind user from company.
+ * @param id Bind-request id.
+ */
+export const unbindRequest = (id: number) => async (dispatch: Dispatch) => {
+    try {
+        await usersApi.unbindRequest(id)
+        await downloadBindRequests(new BindRequestsPaginationArgs(1, 10, null, true))(dispatch)
+    } catch (error) {
+        message.error('Не удалось открепить пользователя от базы')
+        return
+    }
+    message.success('Пользователь успешно откреплен от вашей базы')
+}
+
 export default usersReducer

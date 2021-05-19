@@ -2,8 +2,21 @@
 import {Table} from 'antd'
 import styles from '../CompanyAddRequests/CompanyAddRequests.module.scss'
 import React from 'react'
+import {UNBIND_USER} from '../../utils/actions/usersActions'
+import {getActionByType} from '../../utils/actions/getActionByType'
 
-const BoundRequests = ({bindRequests, setPage, total, pageSize}) => {
+/**
+ * Bound requests component.
+ */
+const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest}) => {
+
+    const handleUnbind = (record) => {
+        unbindRequest(record.id)
+    }
+
+    const actionsWithHandlers = new Map([
+        [UNBIND_USER, handleUnbind]
+    ])
 
     const columns = [
         {
@@ -21,7 +34,7 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize}) => {
             title: 'Пользователь',
             dataIndex: 'user',
             key: 'username',
-            width: '20%',
+            width: '15%',
             align: 'center',
             render: (user) => `${user.firstName} ${user.lastName}`
         },
@@ -29,7 +42,7 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize}) => {
             title: 'Город',
             dataIndex: 'user',
             key: 'city',
-            width: '20%',
+            width: '10%',
             align: 'center',
             render: (user) => user.city
         },
@@ -37,7 +50,16 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize}) => {
             title: 'Контакты пользователя',
             dataIndex: 'user',
             key: 'contact',
+            width: '25%',
+            align: 'center',
             render: (user) => `${user.phoneNumber} | ${user.email}`
+        },
+        {
+            title: 'Действия',
+            dataIndex: 'actions',
+            key: 'actions',
+            align: 'center',
+            render: (actions, record) => getActionByType(record, actions, actionsWithHandlers)
         }
     ]
 

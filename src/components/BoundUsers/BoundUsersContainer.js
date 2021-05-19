@@ -3,7 +3,7 @@ import {compose} from 'redux'
 import {connect} from 'react-redux'
 import React from 'react'
 import {getBindRequests, getTotalBindRequests} from '../../utils/selectors/selectors'
-import {downloadBindRequests} from '../../redux/reducers/usersReducer'
+import {downloadBindRequests, unbindRequest} from '../../redux/reducers/usersReducer'
 import {usePagination} from '../../hooks/usePagination'
 import BoundRequests from './BoundUsers'
 import {BindRequestsPaginationArgs} from '../../redux/reducers/common/pagination/BindRequestsPaginationArgs'
@@ -13,6 +13,9 @@ const mapStateToProps = (state) => ({
     totalRequests: getTotalBindRequests(state)
 })
 
+/**
+ * Container for bound requests component.
+ */
 const BoundUsersContainer = (props) => {
     const [pageSize, setPage] = usePagination(() => props.downloadBindRequests(
         new BindRequestsPaginationArgs(1, 10, null, true))
@@ -23,10 +26,11 @@ const BoundUsersContainer = (props) => {
         setPage={setPage}
         pageSize={pageSize}
         total={props.totalRequests}
+        unbindRequest={props.unbindRequest}
     />
 }
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, {downloadBindRequests})
+    connect(mapStateToProps, {downloadBindRequests, unbindRequest})
 )(BoundUsersContainer)
