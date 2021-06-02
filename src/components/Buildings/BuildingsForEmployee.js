@@ -35,7 +35,7 @@ const BuildingsForEmployee = ({buildings, pageSize, totalPages, setCurrentPage, 
             align: 'center',
             width: "20%",
             ellipsis: false,
-            render: (complex) => complex?.name ?? 'Без комплекса'
+            render: (complex) => complex?.name ?? 'Отдельное здание'
         }
     ]
 
@@ -76,7 +76,6 @@ const BuildingsForEmployee = ({buildings, pageSize, totalPages, setCurrentPage, 
                 dataIndex: 'actions',
                 key: 'actions',
                 align: 'center',
-                width: '15%',
                 render: ((text, layoutRecord) => layoutRecord.actions.map(action =>
                     getButtonByActionType(action, layoutRecord)))
             }

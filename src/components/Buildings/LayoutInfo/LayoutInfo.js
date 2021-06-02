@@ -1,9 +1,9 @@
-import {Button, Descriptions, Drawer, Modal, Space} from "antd";
+import {Button, Descriptions, Drawer, message, Modal, Space} from 'antd'
 import React, {useState} from "react";
 import SessionsSelector from "../../common/SessionsSelector/SessionsSelector";
 
 
-const LayoutInfo = ({setVisible, visible, selectedLayout, handleDownload, downloadSessions, addToSession}) => {
+const LayoutInfo = ({setVisible, visible, selectedLayout, handleDownload, downloadSessions, addToSession, addSession}) => {
 
     const [sessionSelectorVisibility, setSelectorVisibility] = useState(false)
 
@@ -14,6 +14,13 @@ const LayoutInfo = ({setVisible, visible, selectedLayout, handleDownload, downlo
 
     const handleSessionSelection = (sessionId) => {
         addToSession(sessionId, [selectedLayout.id])
+        setSelectorVisibility(false)
+    }
+
+    const handleAddSession = (name) => {
+        addSession(name, [selectedLayout.id])
+            .then(() => message.success('Сессия создана!'))
+            .catch(() => message.error('Не удалось создать сессию'))
         setSelectorVisibility(false)
     }
 
@@ -30,19 +37,24 @@ const LayoutInfo = ({setVisible, visible, selectedLayout, handleDownload, downlo
                 <Button onClick={() => setVisible(false)} style={{marginRight: 8}}>
                     Закрыть
                 </Button>
-                <Modal
-                    title={'Выберете сессию'}
-                    visible={sessionSelectorVisibility}
-                    onCancel={() => setSelectorVisibility(false)}
-                    footer={false}
-                    width={'25%'}
-                    centred
-                >
-                    <SessionsSelector
-                        handleOptionsUpdate={handleSessionsUpdate}
-                        updatingTime={750}
-                        handleSelection={handleSessionSelection}/>
-                </Modal>
+                {
+                    <Modal
+                        title={'Выберете сессию'}
+                        visible={sessionSelectorVisibility}
+                        onCancel={() => setSelectorVisibility(false)}
+                        destroyOnClose={true}
+                        footer={false}
+                        width={'25%'}
+                        centred
+                    >
+                        <SessionsSelector
+                            handleOptionsUpdate={handleSessionsUpdate}
+                            updatingTime={750}
+                            handleSelection={handleSessionSelection}
+                            handleAddSession={handleAddSession}
+                        />
+                    </Modal>
+                }
             </div>
         }
     >
