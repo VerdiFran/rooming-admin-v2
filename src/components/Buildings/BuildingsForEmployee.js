@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Table} from 'antd'
+import {Space, Table} from 'antd'
 import styles from './Buildings.module.scss'
 import ActionButton from "../common/ActionButton/ActionButton";
 import {GET_LAYOUT_INFO_ACTION} from "../../utils/actions/layoutActions";
@@ -17,9 +17,10 @@ const BuildingsForEmployee = ({buildings, pageSize, totalPages, setCurrentPage, 
             title: 'Адрес здания',
             dataIndex: 'address',
             key: 'address',
-            width: "25%",
+            width: "20%",
             ellipsis: false,
-            render: (addr) => `г. ${addr.city} ул. ${addr.street}-${addr.house}`
+            align: 'center',
+            render: (addr) => <Space align="center">{`г. ${addr.city} ул. ${addr.street}-${addr.house}`}</Space>
         },
         {
             title: 'Описание здания',
@@ -34,7 +35,7 @@ const BuildingsForEmployee = ({buildings, pageSize, totalPages, setCurrentPage, 
             align: 'center',
             width: "20%",
             ellipsis: false,
-            render: (complex) => complex.name
+            render: (complex) => complex?.name ?? 'Без комплекса'
         }
     ]
 
@@ -75,6 +76,7 @@ const BuildingsForEmployee = ({buildings, pageSize, totalPages, setCurrentPage, 
                 dataIndex: 'actions',
                 key: 'actions',
                 align: 'center',
+                width: '15%',
                 render: ((text, layoutRecord) => layoutRecord.actions.map(action =>
                     getButtonByActionType(action, layoutRecord)))
             }

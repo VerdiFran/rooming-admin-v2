@@ -11,7 +11,7 @@ import {usersApi} from '../../api/usersApi'
 /**
  * Component with buildings list for simple user role.
  */
-const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage, setSelectedLayoutId}) => {
+const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage}) => {
 
     const [layoutInfoVisible, setLayoutInfoVisible] = useState(false)
     const [addRequestsVisible, setAddRequestsVisible] = useState(false)
@@ -60,7 +60,7 @@ const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage, setS
         }
     ]
 
-    const getButtonByActionType = (action, record) => {
+    const getButtonByActionType = (action) => {
         switch (action.type) {
             case GET_LAYOUT_INFO_ACTION.type:
                 return <ActionButton
@@ -96,6 +96,7 @@ const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage, setS
                 dataIndex: 'actions',
                 key: 'actions',
                 align: 'center',
+                width: '15%',
                 render: ((text, layoutRecord) => layoutRecord.actions.map(action =>
                     getButtonByActionType(action, layoutRecord)))
             }

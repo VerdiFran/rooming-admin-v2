@@ -10,9 +10,9 @@ import {SearchOutlined} from '@ant-design/icons'
 /**
  * Bound requests component.
  */
-const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, setNamePart, namePart}) => {
+const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, setNamePart}) => {
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    const handleSearch = (selectedKeys, confirm) => {
         confirm()
         setNamePart(selectedKeys[0])
         setPage(1)
@@ -34,7 +34,7 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, s
             handleReset={handleReset}
             placeholder={dataIndex}
         />),
-        filterIcon: filtered => <SearchOutlined />,
+        filterIcon: () => <SearchOutlined />,
     })
 
     const handleUnbind = (record) => {
@@ -78,7 +78,6 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, s
             title: 'Контакты пользователя',
             dataIndex: 'user',
             key: 'contact',
-            width: '25%',
             align: 'center',
             render: (user) => `${user.phoneNumber} | ${user.email}`
         },
@@ -87,6 +86,7 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, s
             dataIndex: 'actions',
             key: 'actions',
             align: 'center',
+            width: '15%',
             render: (actions, record) => getActionByType(record, actions, actionsWithHandlers)
         }
     ]

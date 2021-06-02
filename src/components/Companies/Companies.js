@@ -1,4 +1,4 @@
-import {Button, Table} from 'antd'
+import {Button, List, Popover, Space, Table} from 'antd'
 import styles from './Companies.module.scss'
 import FilterDropdown from '../common/FilterDropdown/FilterDropdown'
 import { SearchOutlined } from '@ant-design/icons';
@@ -10,7 +10,7 @@ import CompanyInfo from "./CompanyInfo/CompanyInfo";
  */
 const Companies = (props) => {
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    const handleSearch = (selectedKeys, confirm) => {
         confirm();
         props.setNamePart(selectedKeys[0]);
     };
@@ -30,7 +30,7 @@ const Companies = (props) => {
             handleReset={handleReset}
             placeholder={dataIndex}
         />),
-        filterIcon: filtered => <SearchOutlined />,
+        filterIcon: () => <SearchOutlined />,
     })
 
     const columns = [
@@ -38,20 +38,38 @@ const Companies = (props) => {
             title: 'Название компании',
             dataIndex: 'name',
             key: 'name',
-            elepsis: false,
             ...columnSearchProps('Название компании')
+        },
+        {
+            title: 'Офисы',
+            dataIndex: 'offices',
+            key: 'offices',
+            align: 'center',
+            width: '30%',
+            render: (addresses) => {
+                return addresses &&
+                    <Space align="center">
+                        <List size="small">
+                            {addresses.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
+                            {addresses.length > 2 && <Popover content={<List size="small">{addresses.map(addr =>
+                                <List.Item>{addr}</List.Item>)}</List>}>
+                                <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
+                            </Popover>}
+                        </List>
+                    </Space>
+            }
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-            elepsis: false
+            align: 'center',
         },
         {
             title: 'Дата создания',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            elepsis: false,
+            align: 'center',
             render: (date) => {
                 const newDate = new Date(date)
                 return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0, 5)}`
@@ -75,7 +93,7 @@ const Companies = (props) => {
         }
     ]
 
-    const changePage = (page, pageSize) => {
+    const changePage = (page) => {
         props.setCurrentPage(page)
     }
 
@@ -88,6 +106,7 @@ const Companies = (props) => {
                 size="small"
                 tableLayout="auto"
                 scroll={{ x: 900 }}
+                bordered
             />
             {props.selectedCompany && <CompanyInfo
                 visible={props.visible}

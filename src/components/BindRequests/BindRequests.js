@@ -41,6 +41,7 @@ const BindRequests = ({bindRequests, setPage, total, pageSize, bindToCompany}) =
             title: 'Контакты пользователя',
             dataIndex: 'user',
             key: 'contact',
+            align: 'center',
             render: (user) => `${user.phoneNumber} | ${user.email}`
         }
     ]

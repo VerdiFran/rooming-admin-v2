@@ -1,17 +1,19 @@
 import React, {useState} from 'react'
-import {Badge, Table, List, Popover} from 'antd'
+import {Badge, Table, List, Popover, Space} from 'antd'
 import styles from './Orders.module.scss'
 import OrderFulfillmentContainer from './OrderFulfillment/OrderFulfillmentContainer'
 import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
-import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from "../../utils/actions/orderActions";
-import ActionButton from "../common/ActionButton/ActionButton";
+import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from '../../utils/actions/orderActions'
+import ActionButton from '../common/ActionButton/ActionButton'
 
 /**
  * Component for developer presentation of orders.
  * @return Table with all orders.
  */
-const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds, takeLayoutOrderOnExecute, getLoggedUser,
-                                setCurrentPage, totalPages, pageSize}) => {
+const OrdersForDeveloper = ({
+                                ordersData, handleChange, setCurrentLayoutIds, takeLayoutOrderOnExecute, getLoggedUser,
+                                setCurrentPage, totalPages, pageSize
+                            }) => {
     const [visible, setVisible] = useState(false)
 
     const columns = [
@@ -39,14 +41,17 @@ const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds, take
             key: 'addresses',
             ellipsis: false,
             width: '30%',
-            align: "center",
-            render: (addresses => <List size="small">
-                {addresses.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
-                {addresses.length > 2 && <Popover content={<List size="small">{addresses.map(addr =>
-                    <List.Item>{addr}</List.Item>)}</List>}>
-                    <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
-                </Popover>}
-            </List>)
+            align: 'center',
+            render: (addresses =>
+                <Space align="center">
+                    <List size="small">
+                        {addresses.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
+                        {addresses.length > 2 && <Popover content={<List size="small">{addresses.map(addr =>
+                            <List.Item>{addr}</List.Item>)}</List>}>
+                            <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
+                        </Popover>}
+                    </List>
+                </Space>)
         }
     ]
 
@@ -133,7 +138,7 @@ const OrdersForDeveloper = ({ordersData, handleChange, setCurrentLayoutIds, take
             <Table
                 columns={columns}
                 dataSource={ordersData}
-                pagination={{ defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage }}
+                pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
                 size="small"
                 tableLayout="auto"
                 bordered
