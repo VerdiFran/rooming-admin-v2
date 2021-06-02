@@ -1,7 +1,7 @@
-import {Button, Space, Table} from "antd"
+import {Button, List, Popover, Space, Table} from 'antd'
 import styles from './CompanyAddRequests.module.scss'
-import AddRequestFulfilmentContainer from "./AddRequestFulfillment/AddRequestFulfilmentContainer";
-import React, {useState} from "react";
+import AddRequestFulfilmentContainer from './AddRequestFulfillment/AddRequestFulfilmentContainer'
+import React, {useState} from 'react'
 
 /**
  * Component for company-add requests management.
@@ -16,19 +16,39 @@ const CompanyAddRequests = (props) => {
             title: 'Название компании',
             dataIndex: 'name',
             key: 'name',
-            elepsis: false
+        },
+        {
+            title: 'Офисы',
+            dataIndex: 'offices',
+            key: 'offices',
+            align: 'center',
+            width: '30%',
+            render: (addresses) => {
+                return addresses &&
+                <Space align="center">
+                    <List size="small">
+                        {addresses.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
+                        {addresses.length > 2 && <Popover content={<List size="small">{addresses.map(addr =>
+                            <List.Item>{addr}</List.Item>)}</List>}>
+                            <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
+                        </Popover>}
+                    </List>
+                </Space>
+            }
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-            elepsis: false
+            width: '15%',
+            align: 'center'
         },
         {
             title: 'Дата создания',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            elepsis: false,
+            width: '15%',
+            align: 'center',
             render: (date) => {
                 const newDate = new Date(date)
                 return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0, 5)}`
@@ -97,6 +117,7 @@ const CompanyAddRequests = (props) => {
                 size="small"
                 tableLayout="auto"
                 scroll={{x: 900}}
+                bordered
             />
             <AddRequestFulfilmentContainer
                 setVisible={setVisible}

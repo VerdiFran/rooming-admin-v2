@@ -16,20 +16,17 @@ const AddRequestFulfillment = ({selectedRequest, handleSubmit, setVisible, visib
         {
             title: 'Имя',
             dataIndex: 'userName',
-            key: 'userName',
-            elepsis: false
+            key: 'userName'
         },
         {
             title: 'Email',
             dataIndex: 'email',
-            key: 'email',
-            elepsis: false
+            key: 'email'
         },
         {
             title: 'Контактный телефон',
             dataIndex: 'phoneNumber',
-            key: 'phoneNumber',
-            elepsis: false
+            key: 'phoneNumber'
         }
     ]
 
@@ -53,7 +50,7 @@ const AddRequestFulfillment = ({selectedRequest, handleSubmit, setVisible, visib
                        </div>
                    }
     >
-        <Descriptions title="Описание компании" layout="vertical" bordered>
+        <Descriptions size="small" title="Описание компании" layout="vertical" bordered>
             <Descriptions.Item label="Название">{selectedRequest?.name}</Descriptions.Item>
             <Descriptions.Item label="Email">{selectedRequest?.email}</Descriptions.Item>
             <Descriptions.Item label="Контактный телефон">{selectedRequest?.contactPhone}</Descriptions.Item>
@@ -66,6 +63,7 @@ const AddRequestFulfillment = ({selectedRequest, handleSubmit, setVisible, visib
             pagination={false}
             size="small"
             tableLayout="auto"
+            bordered
         />
     </Drawer>
 }

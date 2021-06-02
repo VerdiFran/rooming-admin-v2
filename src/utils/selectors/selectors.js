@@ -308,6 +308,8 @@ export const getUploadedCompanies = (state) => {
 
     return state.companies.companies.map(company => ({
         ...company,
+        offices: company?.offices
+            ?.map(office => `г. ${office.city}, ул. ${office.street}, д.${office.house}`) ?? [],
         actions: ['Подробнее'],
         key: companiesIdIterator.next().value
     }))
@@ -330,6 +332,8 @@ export const getCompaniesAddRequests = (state) => {
 
     return state.addRequests.companiesAddRequests.map(companyRequest => ({
         ...companyRequest,
+        offices: companyRequest?.offices
+            ?.map(office => `г. ${office.city}, ул. ${office.street}, д.${office.house}`) ?? [],
         employees: companyRequest.employees.map(userRequest => ({
             ...userRequest,
             userName: `${userRequest.firstName} ${userRequest.lastName}`,
