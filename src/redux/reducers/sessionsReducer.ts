@@ -107,8 +107,8 @@ export const addLayoutsToSessions = (sessionId: number, layouts: Array<number>) 
 
     await downloadSessions(new SimplePaginationArgs())(dispatch)
 
-    const messageText = layouts.length === 1 ? 'Планировка успешно добавлена в сессию'
-        : 'Планировки успешно добавлены в сессию'
+    const messageText = layouts.length === 1 ? 'Планировка успешно добавлена в сессию!'
+        : 'Планировки успешно добавлены в сессию!'
     message.success(messageText)
 }
 

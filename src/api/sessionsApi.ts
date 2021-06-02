@@ -58,7 +58,22 @@ export const sessionsApi = {
         return instance.put(`sessions/current`, null, config)
     },
 
+    /**
+     * Returns current session.
+     */
     getCurrentSession() {
         return instance.get(`sessions/current`)
+    },
+
+    /**
+     * Add new session.
+     * @param name Session name.
+     * @param layouts Layouts to add to session.
+     */
+    addNewSession(name: string, layouts: Array<number>) {
+        return instance.post('sessions', {
+            name,
+            layouts
+        })
     }
 }

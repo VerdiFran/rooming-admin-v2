@@ -34,7 +34,7 @@ const BuildingsForEmployee = ({buildings, pageSize, totalPages, setCurrentPage, 
             align: 'center',
             width: "20%",
             ellipsis: false,
-            render: (complex) => complex.name
+            render: (complex) => complex?.name ?? 'Отдельное здание'
         }
     ]
 
