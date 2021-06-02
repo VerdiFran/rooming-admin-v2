@@ -15,19 +15,16 @@ const CompanyInfo = ({setVisible, visible, selectedCompany}) => {
             title: 'Имя',
             dataIndex: 'userName',
             key: 'userName',
-            elepsis: false
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-            elepsis: false
         },
         {
             title: 'Контактный телефон',
             dataIndex: 'phoneNumber',
             key: 'phoneNumber',
-            elepsis: false
         }
     ]
 
@@ -45,7 +42,7 @@ const CompanyInfo = ({setVisible, visible, selectedCompany}) => {
                        </div>
                    }
     >
-        <Descriptions title="Описание компании" layout="vertical" bordered>
+        <Descriptions size="small" title="Описание компании" layout="vertical" bordered>
             <Descriptions.Item label="Название">{selectedCompany?.name}</Descriptions.Item>
             <Descriptions.Item label="Email">{selectedCompany?.email}</Descriptions.Item>
             <Descriptions.Item label="Контактный телефон">{selectedCompany?.contactPhone}</Descriptions.Item>
@@ -58,6 +55,7 @@ const CompanyInfo = ({setVisible, visible, selectedCompany}) => {
             pagination={false}
             size="small"
             tableLayout="auto"
+            bordered
         />
     </Drawer>
 }
