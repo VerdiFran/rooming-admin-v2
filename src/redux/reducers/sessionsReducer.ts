@@ -6,6 +6,7 @@ import {SimplePaginationArgs} from "./common/pagination/PaginationArgs";
 import {UserType} from "./companiesReducer";
 
 const SET_SESSIONS = 'SET-SESSIONS'
+const SET_SESSIONS_IN_LOADING = 'SET-SESSIONS-IN-LOADING'
 
 type Session = {
     layouts: Array<LayoutType>
@@ -16,14 +17,16 @@ type SessionsState = {
     sessions: Array<Session>,
     totalSessions: number,
     createdAt?: Date
-    employee?: UserType
+    employee?: UserType,
+    sessionsInLoading: boolean
 }
 
 const initialState: SessionsState = {
     sessions: [],
     totalSessions: 0,
     createdAt: undefined,
-    employee: undefined
+    employee: undefined,
+    sessionsInLoading: false
 }
 
 /**
@@ -39,12 +42,18 @@ const sessionsReducer = (state: SessionsState = initialState, action: any) => {
                 sessions: action.sessions,
                 totalSessions: action.total
             }
+        case SET_SESSIONS_IN_LOADING:
+            return {
+                ...state,
+                sessionsInLoading: action.sessionsInLoading
+            }
         default:
             return state
     }
 }
 
 const setSessions = (sessions: Array<Session>, total: number) => ({type: SET_SESSIONS, sessions, total})
+const setSessionsInLoading = (sessionsInLoading: boolean) => ({type: SET_SESSIONS_IN_LOADING, sessionsInLoading})
 
 /**
  * Download company viewing sessions.
@@ -52,8 +61,10 @@ const setSessions = (sessions: Array<Session>, total: number) => ({type: SET_SES
  */
 export const downloadSessions = (pagination: SimplePaginationArgs) => async (dispatch: Dispatch) => {
     try {
+        dispatch(setSessionsInLoading(true))
         const sessionsResponse = await sessionsApi.downloadSessions(pagination.pageNumber, pagination.pageSize)
         dispatch(setSessions(sessionsResponse.data.content, sessionsResponse.data.total))
+        dispatch(setSessionsInLoading(false))
     } catch (error) {
         message.error('Не удалось загрузить сессии')
     }

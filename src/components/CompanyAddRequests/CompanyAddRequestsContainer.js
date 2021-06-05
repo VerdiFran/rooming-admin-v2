@@ -7,13 +7,18 @@ import {
     setSelectedCompanyAddRequest
 } from '../../redux/reducers/addRequestsReducer'
 import CompanyAddRequests from './CompanyAddRequests'
-import { getCompaniesAddRequests, getCompaniesAddRequestsTotalPages } from '../../utils/selectors/selectors'
+import {
+    getCompaniesAddRequests,
+    getCompaniesAddRequestsInLoading,
+    getCompaniesAddRequestsTotalPages
+} from '../../utils/selectors/selectors'
 import React, {useEffect} from 'react'
 
 
 const mapStateToProps = (state) => ({
     addRequests: getCompaniesAddRequests(state),
-    totalPages: getCompaniesAddRequestsTotalPages(state)
+    totalPages: getCompaniesAddRequestsTotalPages(state),
+    requestsInLoading: getCompaniesAddRequestsInLoading(state)
 })
 
 /**
@@ -31,6 +36,7 @@ const CompanyAddRequestsContainer = (props) => {
     }, [currentPage])
 
     return <CompanyAddRequests
+        requestsInLoading={props.requestsInLoading}
         addRequests={props.addRequests}
         totalPages={props.totalPages}
         pageSize={pageSize}

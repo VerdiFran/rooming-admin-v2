@@ -4,6 +4,7 @@ import {message} from "antd";
 
 const SET_COMPLETED_LAYOUTS = 'SET_COMPLETED_LAYOUTS'
 const SET_SELECTED_LAYOUT_ID = 'SET-SELECTED-LAYOUT-ID'
+const SET_BUILDINGS_IN_LOADING = 'SET-BUILDINGS-IN-LOADING'
 
 type User = {
     id: number,
@@ -44,12 +45,14 @@ export type InitialStateType = {
     buildings: Array<BuildingType>
     totalPages: number
     selectedLayoutId: number
+    buildingsInLoading: boolean
 }
 
 const initialState: InitialStateType = {
     buildings: [],
     totalPages: 0,
-    selectedLayoutId: 0
+    selectedLayoutId: 0,
+    buildingsInLoading: false
 }
 
 
@@ -60,6 +63,11 @@ const buildingsReducer = (state = initialState, action: any) => {
                 ...state,
                 buildings: action.buildings,
                 totalPages: action.totalPages
+            }
+        case SET_BUILDINGS_IN_LOADING:
+            return {
+                ...state,
+                buildingsInLoading: action.buildingsInLoading
             }
         case SET_SELECTED_LAYOUT_ID:
             return {
@@ -86,6 +94,11 @@ export const setSelectedLayoutId = (selectedLayoutId: number) => ({
     selectedLayoutId: selectedLayoutId
 })
 
+const setBuildingsInLoading = (buildingsInLoading: boolean) => ({
+    type: SET_BUILDINGS_IN_LOADING,
+    buildingsInLoading
+})
+
 /**
  * Downloads company buildings and pass it in state.
  * @param page Page number.
@@ -93,8 +106,10 @@ export const setSelectedLayoutId = (selectedLayoutId: number) => ({
  */
 export const getBuildingsWithCompletedLayouts = (page: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
     try {
+        dispatch(setBuildingsInLoading(true))
         const response = await buildingsAPI.getBuildingsWithCompletedLayouts(page, pageSize)
         dispatch(setBuildingsWithCompletedLayouts(response.data.content, response.data.total))
+        dispatch(setBuildingsInLoading(false))
     } catch (error) {
         message.error('Не удалось загрузить планировки')
     }
@@ -107,8 +122,10 @@ export const getBuildingsWithCompletedLayouts = (page: number = 1, pageSize: num
  */
 export const getBoundBuildings = (page: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
     try {
+        dispatch(setBuildingsInLoading(true))
         const response = await buildingsAPI.getBoundBuildings(page, pageSize)
         dispatch(setBuildingsWithCompletedLayouts(response.data.content, response.data.total))
+        dispatch(setBuildingsInLoading(false))
     } catch (error) {
         message.error('Не удалось загрузить планировки')
     }

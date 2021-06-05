@@ -1,14 +1,24 @@
-import {Table} from "antd";
-import styles from "../Sessions/Sessions.module.scss";
-import React from "react";
-import ActionButton from "../common/ActionButton/ActionButton";
-import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION, START_SESSION} from "../../utils/actions/sessionsActions";
+import {Table} from 'antd'
+import styles from '../Sessions/Sessions.module.scss'
+import React from 'react'
+import ActionButton from '../common/ActionButton/ActionButton'
+import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION, START_SESSION} from '../../utils/actions/sessionsActions'
 import flame from '../../assets/images/flame.png'
+import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Component with sessions list.
  */
-const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSession, deleteSessionLayout, startSession}) => {
+const Sessions = ({
+                      sessions,
+                      totalSessions,
+                      pageSize,
+                      setCurrentPage,
+                      deleteSession,
+                      deleteSessionLayout,
+                      startSession,
+                      sessionsInLoading
+                  }) => {
 
     const getSessionActions = (action, record) => {
         switch (action.type) {
@@ -37,14 +47,15 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
             dataIndex: 'createdAt',
             key: 'createdAt',
             align: 'center',
-            width: "15%",
+            width: '15%',
             render: (date, record) => {
                 const creationDate = `${date.toLocaleDateString()}, ${date.toLocaleTimeString()?.slice(0, 5)}`
                 if (record.isCurrent) {
                     return <div className={styles.currentSessionCell}>
-                            <img className={styles.currentSessionImage} src={flame} alt='current' width='20px' height='20px'/>
-                            <div className={styles.currentSessionDate}>{creationDate}</div>
-                        </div>
+                        <img className={styles.currentSessionImage} src={flame} alt='current' width='20px'
+                             height='20px'/>
+                        <div className={styles.currentSessionDate}>{creationDate}</div>
+                    </div>
                 }
 
                 return creationDate
@@ -55,7 +66,7 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
             dataIndex: 'employee',
             key: 'employee',
             align: 'center',
-            width: "15%",
+            width: '15%',
             render: (employee) => `${employee.lastName} ${employee.firstName}`
         },
         {
@@ -96,7 +107,7 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
                 dataIndex: 'createdAt',
                 key: 'createdAt',
                 align: 'center',
-                width: "15%",
+                width: '15%',
                 render: (date) => {
                     return `${date.toLocaleDateString()}, ${date.toLocaleTimeString()?.slice(0, 5)}`
                 }
@@ -132,16 +143,22 @@ const Sessions = ({sessions, totalSessions, pageSize, setCurrentPage, deleteSess
 
     return (
         <div className={styles.contentContainer}>
-            <Table
-                bordered
-                columns={columns}
-                dataSource={sessions}
-                pagination={{defaultPageSize: pageSize, total: totalSessions * pageSize, onChange: changePage}}
-                size="small"
-                tableLayout="auto"
-                expandable={{expandedRowRender: expandedSessionRowRender, expandRowByClick: false}}
-                scroll={{x: 900}}
-            />
+            {
+                !sessionsInLoading ? (
+                    <Table
+                        bordered
+                        columns={columns}
+                        dataSource={sessions}
+                        pagination={{defaultPageSize: pageSize, total: totalSessions * pageSize, onChange: changePage}}
+                        size="small"
+                        tableLayout="auto"
+                        expandable={{expandedRowRender: expandedSessionRowRender, expandRowByClick: false}}
+                        scroll={{x: 900}}
+                    />
+                ) : (
+                    <img src={preloader} alt="preloader"/>
+                )
+            }
         </div>
     )
 }

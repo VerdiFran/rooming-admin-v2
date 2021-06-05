@@ -4,6 +4,7 @@ import {AddressType} from './buildingsReducer'
 
 const SET_COMPANIES = 'SET-COMPANIES'
 const SET_SELECTED_COMPANY = 'SET-SELECTED-COMPANY'
+const SET_IN_LOADING = 'SET-IN-LOADING'
 
 export type UserType = {
     id: number
@@ -28,11 +29,13 @@ export type CompaniesStateType = {
     selectedCompanyId: number
     companies: Array<CompanyType>
     totalPages: number
+    companiesInLoading: boolean
 }
 
 const initialState: CompaniesStateType = {
     selectedCompanyId: 0,
     companies: [],
+    companiesInLoading: false,
     totalPages: 0
 }
 
@@ -55,6 +58,11 @@ const companiesReducer = (state = initialState, action: any) => {
                 ...state,
                 selectedCompanyId: action.selectedCompanyId
             }
+        case SET_IN_LOADING:
+            return {
+                ...state,
+                companiesInLoading: action.inLoading
+            }
         default:
             return state
     }
@@ -64,6 +72,11 @@ const setCompanies = (companies: Array<CompanyType>, totalPages: number) => ({
     type: SET_COMPANIES,
     companies: companies,
     totalPages: totalPages
+})
+
+const setInLoading = (inLoading: boolean) => ({
+    type: SET_IN_LOADING,
+    inLoading
 })
 
 /**
@@ -82,7 +95,9 @@ export const setSelectedCompanyId = (id: number) => ({
  * @param name Part of company name.
  */
 export const uploadCompanies = (pageNumber: number = 1, pageSize: number = 10, name: string = '') => async (dispatch: Dispatch) => {
+    dispatch(setInLoading(true))
     const response = await companiesAPI.getCompanies(pageNumber, pageSize, name)
+    dispatch(setInLoading(false))
 
     const companies: Array<CompanyType> = response.data.content
     const total: number = response.data.total

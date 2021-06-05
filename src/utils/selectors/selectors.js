@@ -102,6 +102,12 @@ export const getOrdersData = (state) => {
 }
 
 /**
+ * Get orders InLoading status.
+ * @param state State.
+ */
+export const getOrdersInLoading = (state) => state.orders.ordersInLoading
+
+/**
  * Returns total pages of orders.
  * @param state State.
  */
@@ -296,6 +302,12 @@ export const getFinishedBuildings = (state) => {
 }
 
 /**
+ * Returns InLoading status.
+ * @param state State.
+ */
+export const getBuildingsInLoading = (state) => state.buildings.buildingsInLoading
+
+/**
  * Returns total pages of buildings.
  * @param state State.
  * @return Number of total page.
@@ -327,6 +339,12 @@ export const getUploadedCompanies = (state) => {
 export const getCompaniesTotalPages = (state) => state.companies.totalPages
 
 /**
+ * Get companiesInLoading status.
+ * @param state State.
+ */
+export const getCompaniesInLoading = (state) => state.companies.companiesInLoading
+
+/**
  * Gets companies add requests.
  * @param state State.
  */
@@ -353,6 +371,12 @@ export const getCompaniesAddRequests = (state) => {
  * @param state State.
  */
 export const getCompaniesAddRequestsTotalPages = (state) => state.addRequests.companiesRequestsTotalPages
+
+/**
+ * Get add-requests InLoading status.
+ * @param state State.
+ */
+export const getCompaniesAddRequestsInLoading = (state) => state.addRequests.addRequestsInLoading
 
 /**
  * Returns selected company-add request.
@@ -461,6 +485,12 @@ export const getSessions = (state) => {
 }
 
 /**
+ * Get sessions InLoading status.
+ * @param state State.
+ */
+export const getSessionsInLoading = (state) => state.sessions.sessionsInLoading
+
+/**
  * Returns total pages of sessions.
  * @param state State.
  */
@@ -480,6 +510,12 @@ export const getBindRequests = (state) => {
         actions: [UNBIND_USER]
     }))
 }
+
+/**
+ * Returns InLoading status.
+ * @param state State.
+ */
+export const getBindRequestsInLoading = (state) => state.users.requestsInLoading
 
 /**
  * Get total pages of bind-user-to-company requests.

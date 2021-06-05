@@ -2,7 +2,7 @@ import {withAuthRedirect} from '../../hoc/withAuthRedirect'
 import {compose} from 'redux'
 import {connect} from 'react-redux'
 import React, {useState} from 'react'
-import {getBindRequests, getTotalBindRequests} from '../../utils/selectors/selectors'
+import {getBindRequests, getBindRequestsInLoading, getTotalBindRequests} from '../../utils/selectors/selectors'
 import {downloadBindRequests, unbindRequest} from '../../redux/reducers/usersReducer'
 import {usePagination} from '../../hooks/usePagination'
 import BoundRequests from './BoundUsers'
@@ -10,7 +10,8 @@ import {BindRequestsPaginationArgs} from '../../redux/reducers/common/pagination
 
 const mapStateToProps = (state) => ({
     bindRequests: getBindRequests(state),
-    totalRequests: getTotalBindRequests(state)
+    totalRequests: getTotalBindRequests(state),
+    requestsInLoading: getBindRequestsInLoading(state)
 })
 
 /**
@@ -25,6 +26,7 @@ const BoundUsersContainer = (props) => {
 
     return <BoundRequests
         bindRequests={props.bindRequests}
+        requestsInLoading={props.requestsInLoading}
         setPage={setPage}
         pageSize={pageSize}
         total={props.totalRequests}

@@ -7,11 +7,13 @@ import LayoutInfoContainer from './LayoutInfo/LayoutInfoContainer'
 import AddBindRequestsForm from './AddBindRequestsForm/AddBindRequestsForm'
 import {useFormik} from 'formik'
 import {usersApi} from '../../api/usersApi'
+import {setSelectedLayoutId} from '../../redux/reducers/buildingsReducer'
+import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Component with buildings list for simple user role.
  */
-const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage}) => {
+const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage, buildingsInLoading}) => {
 
     const [layoutInfoVisible, setLayoutInfoVisible] = useState(false)
     const [addRequestsVisible, setAddRequestsVisible] = useState(false)
@@ -56,17 +58,18 @@ const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage}) => 
             align: 'center',
             width: '20%',
             ellipsis: false,
-            render: (complex) => complex.name
+            render: (complex) => complex?.name ?? 'Отдельное здание'
         }
     ]
 
-    const getButtonByActionType = (action) => {
+    const getButtonByActionType = (action, record) => {
         switch (action.type) {
             case GET_LAYOUT_INFO_ACTION.type:
                 return <ActionButton
                     title={action.title}
                     handleClick={() => {
-
+                        setSelectedLayoutId(record.id)
+                        setLayoutInfoVisible(true)
                     }}
                 />
             default:
@@ -124,21 +127,29 @@ const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage}) => 
 
     return (
         <div className={styles.contentContainer}>
-            <Space style={{marginBottom: 16}}>
-                <Button type="primary" onClick={() => {
-                    setAddRequestsVisible(true)
-                }}>Запросить новые планировки</Button>
-            </Space>
-            <Table
-                bordered
-                columns={columns}
-                dataSource={buildings}
-                pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
-                size="small"
-                tableLayout="auto"
-                expandable={{expandedRowRender: expandedBuildingRowRender, expandRowByClick: true}}
-                scroll={{x: 900}}
-            />
+            {
+                !buildingsInLoading ? (
+                    <div>
+                        <Space style={{marginBottom: 16}}>
+                            <Button type="primary" onClick={() => {
+                                setAddRequestsVisible(true)
+                            }}>Запросить новые планировки</Button>
+                        </Space>
+                        <Table
+                            bordered
+                            columns={columns}
+                            dataSource={buildings}
+                            pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
+                            size="small"
+                            tableLayout="auto"
+                            expandable={{expandedRowRender: expandedBuildingRowRender, expandRowByClick: true}}
+                            scroll={{x: 900}}
+                        />
+                    </div>
+                ) : (
+                    <img src={preloader} alt="preloader"/>
+                )
+            }
             <LayoutInfoContainer
                 setVisible={setLayoutInfoVisible}
                 visible={layoutInfoVisible}
