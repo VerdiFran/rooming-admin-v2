@@ -5,6 +5,7 @@ import {message} from 'antd'
 import {BindRequestsPaginationArgs} from './common/pagination/BindRequestsPaginationArgs'
 
 const SET_BIND_REQUESTS = 'SET-BIND-REQUESTS'
+const SET_REQUESTS_IN_LOADING = 'SET-REQUESTS-IN_LOADING'
 
 type BindRequest = {
     id: number
@@ -16,11 +17,13 @@ type BindRequest = {
 type UsersState = {
     bindRequests: Array<BindRequest>
     totalRequests: number
+    requestsInLoading: boolean
 }
 
 const initialState: UsersState = {
     bindRequests: [],
-    totalRequests: 0
+    totalRequests: 0,
+    requestsInLoading: false
 }
 
 /**
@@ -36,6 +39,11 @@ const usersReducer = (state: UsersState = initialState, action: any) => {
                 bindRequests: action.bindRequests,
                 totalRequests: action.total
             }
+        case SET_REQUESTS_IN_LOADING:
+            return {
+                ...state,
+                requestsInLoading: action.requestsInLoading
+            }
         default:
             return state
     }
@@ -43,15 +51,21 @@ const usersReducer = (state: UsersState = initialState, action: any) => {
 
 const setBindRequests = (bindRequests: Array<BindRequest>, total: number) => ({type: SET_BIND_REQUESTS, bindRequests, total})
 
+const setInLoading = (requestsInLoading: boolean) =>({
+    type: SET_REQUESTS_IN_LOADING,
+    requestsInLoading
+})
 /**
  * Download bind-users-to-company requests.
  * @param paginationArgs Pagination arguments.
  */
 export const downloadBindRequests = (paginationArgs: BindRequestsPaginationArgs) => async (dispatch: Dispatch) => {
     try {
+        dispatch(setInLoading(true))
         const response = await usersApi.getBindRequests(paginationArgs.pageNumber, paginationArgs.pageSize,
             paginationArgs.isBound, paginationArgs.usernamePart)
         dispatch(setBindRequests(response.data.content, response.data.total))
+        dispatch(setInLoading(false))
     } catch (error) {
         message.error('Не удалось загрузить запросы на привязку пользователей')
         return

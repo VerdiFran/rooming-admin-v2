@@ -4,12 +4,18 @@ import { compose } from "redux"
 import { withAuthRedirect } from '../../hoc/withAuthRedirect'
 import { uploadCompanies, setSelectedCompanyId } from '../../redux/reducers/companiesReducer'
 import Companies from './Companies'
-import {getUploadedCompanies, getCompaniesTotalPages, getSelectedCompany} from '../../utils/selectors/selectors'
+import {
+    getUploadedCompanies,
+    getCompaniesTotalPages,
+    getSelectedCompany,
+    getCompaniesInLoading
+} from '../../utils/selectors/selectors'
 
 const mapStateToProps = (state) => ({
     companies: getUploadedCompanies(state),
     totalPages: getCompaniesTotalPages(state),
-    selectedCompany: getSelectedCompany(state)
+    selectedCompany: getSelectedCompany(state),
+    companiesInLoading: getCompaniesInLoading(state)
 })
 
 /**
@@ -27,6 +33,7 @@ const CompaniesContainer = (props) => {
     }, [currentPage, namePart])
 
     return <Companies
+        companiesInLoading={props.companiesInLoading}
         companies={props.companies}
         totalPages={props.totalPages}
         pageSize={pageSize}

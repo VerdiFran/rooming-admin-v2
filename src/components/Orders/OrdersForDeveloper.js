@@ -5,6 +5,7 @@ import OrderFulfillmentContainer from './OrderFulfillment/OrderFulfillmentContai
 import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
 import {EXECUTE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from '../../utils/actions/orderActions'
 import ActionButton from '../common/ActionButton/ActionButton'
+import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Component for developer presentation of orders.
@@ -12,7 +13,7 @@ import ActionButton from '../common/ActionButton/ActionButton'
  */
 const OrdersForDeveloper = ({
                                 ordersData, handleChange, setCurrentLayoutIds, takeLayoutOrderOnExecute, getLoggedUser,
-                                setCurrentPage, totalPages, pageSize
+                                setCurrentPage, totalPages, pageSize, ordersInLoading
                             }) => {
     const [visible, setVisible] = useState(false)
 
@@ -135,20 +136,26 @@ const OrdersForDeveloper = ({
 
     return (
         <div className={styles.contentContainer}>
-            <Table
-                columns={columns}
-                dataSource={ordersData}
-                pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
-                size="small"
-                tableLayout="auto"
-                bordered
-                onChange={handleChange}
-                expandable={{
-                    expandedRowRender,
-                    expandRowByClick: true
-                }}
-                scroll={{x: 900}}
-            />
+            {
+                !ordersInLoading ? (
+                    <Table
+                        columns={columns}
+                        dataSource={ordersData}
+                        pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
+                        size="small"
+                        tableLayout="auto"
+                        bordered
+                        onChange={handleChange}
+                        expandable={{
+                            expandedRowRender,
+                            expandRowByClick: true
+                        }}
+                        scroll={{x: 900}}
+                    />
+                ) : (
+                    <img src={preloader} alt="preloader"/>
+                )
+            }
             <OrderFulfillmentContainer
                 visible={visible}
                 setVisible={setVisible}

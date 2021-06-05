@@ -1,8 +1,10 @@
-import {Dispatch} from "redux"
+import {Dispatch} from 'redux'
 import {addRequestsAPI} from '../../api/addRequestsApi'
+import {message} from 'antd'
 
 const SET_COMPANY_ADD_REQUESTS = 'SET-COMPANY-ADD-REQUESTS'
 const SET_SELECTED_ADD_REQUEST = 'SET-SELECTED-ADD-REQUEST'
+const SET_ADD_REQUESTS_IN_LOADING = 'SET-ADD-REQUESTS-IN-LOADING'
 
 type UserAddRequestType = {
     id: number
@@ -24,12 +26,14 @@ export type InitialStateType = {
     companiesAddRequests: Array<CompanyAddRequestType>
     selectedCompanyAddRequest: number
     totalPages: number
+    addRequestsInLoading: boolean
 }
 
 const initialState: InitialStateType = {
     companiesAddRequests: [],
     selectedCompanyAddRequest: 0,
-    totalPages: 0
+    totalPages: 0,
+    addRequestsInLoading: false
 }
 
 /**
@@ -51,7 +55,13 @@ const addRequestsReducer = (state = initialState, action: any) => {
                 ...state,
                 selectedCompanyAddRequest: action.selectedCompanyAddRequest
             }
-        default: return state
+        case SET_ADD_REQUESTS_IN_LOADING:
+            return {
+                ...state,
+                addRequestsInLoading: action.addRequestsInLoading
+            }
+        default:
+            return state
     }
 }
 
@@ -59,6 +69,11 @@ const setCompanyAddRequests = (addRequests: Array<CompanyAddRequestType>, totalP
     type: SET_COMPANY_ADD_REQUESTS,
     addRequests: addRequests,
     totalPages: totalPages
+})
+
+const setAddRequestsInLoading = (addRequestsInLoading: boolean) => ({
+    type: SET_ADD_REQUESTS_IN_LOADING,
+    addRequestsInLoading
 })
 
 /**
@@ -75,12 +90,19 @@ export const setSelectedCompanyAddRequest = (selectedRequest: number) => ({
  * @param ids List of company add requests for execute.
  */
 export const executeCompanyAddRequests = (ids: Array<number>) => async (dispatch: Dispatch) => {
-    try {
-        await addRequestsAPI.executeCompanyAddRequests(ids)
-        await downloadCompanyAddRequests(1, 10, true)(dispatch)
-    } catch (error) {
-        throw error
+    const response = await addRequestsAPI.executeCompanyAddRequests(ids)
+    const status = response.data.status
+
+    switch (status) {
+        case 'AllCompaniesAdded':
+            message.success('Все компании добавлены')
+            break
+        case 'SomeCompaniesNotAdded':
+            message.error('Что-то пошло не так, некоторые компании не были добавлены')
+            break
     }
+
+    await downloadCompanyAddRequests(1, 10, true)(dispatch)
 }
 
 /**
@@ -91,12 +113,14 @@ export const executeCompanyAddRequests = (ids: Array<number>) => async (dispatch
  * @returns
  */
 export const downloadCompanyAddRequests = (pageNumber: number, pageSize: number, onlyNotExecuted: boolean) => async (dispatch: Dispatch) => {
+    dispatch(setAddRequestsInLoading(true))
     const response = await addRequestsAPI.getCompanyAddRequests(pageNumber, pageSize, onlyNotExecuted)
 
     const content = response.data.content
     const totalPages = response.data.total
 
     dispatch(setCompanyAddRequests(content, totalPages))
+    dispatch(setAddRequestsInLoading(false))
 }
 
 export default addRequestsReducer

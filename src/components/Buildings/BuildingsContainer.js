@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import BuildingsForEmployee from './BuildingsForEmployee'
-import {getFinishedBuildings, getTotalPages, getUserRoles} from '../../utils/selectors/selectors'
+import {getBuildingsInLoading, getFinishedBuildings, getTotalPages, getUserRoles} from '../../utils/selectors/selectors'
 import { compose } from 'redux'
 import { withAuthRedirect } from '../../hoc/withAuthRedirect'
 import { getBuildingsWithCompletedLayouts, getBoundBuildings, setSelectedLayoutId } from '../../redux/reducers/buildingsReducer'
@@ -11,7 +11,8 @@ import BuildingsForUser from './BuildingsForUser'
 const mapStateToProps = (state) => ({
     userRoles: getUserRoles(state),
     buildings: getFinishedBuildings(state),
-    totalPages: getTotalPages(state)
+    totalPages: getTotalPages(state),
+    buildingsInLoading: getBuildingsInLoading(state)
 })
 
 const BuildingsContainer = (props) => {
@@ -29,6 +30,7 @@ const BuildingsContainer = (props) => {
 
     if (props.userRoles.includes(USER)){
         return <BuildingsForUser
+            buildingsInLoading={props.buildingsInLoading}
             buildings={props.buildings}
             totalPages={props.totalPages}
             pageSize={pageSize}
@@ -37,6 +39,7 @@ const BuildingsContainer = (props) => {
         />
     } else {
         return <BuildingsForEmployee
+            buildingsInLoading={props.buildingsInLoading}
             buildings={props.buildings}
             totalPages={props.totalPages}
             pageSize={pageSize}

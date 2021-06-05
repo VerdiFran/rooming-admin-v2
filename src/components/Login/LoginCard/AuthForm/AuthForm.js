@@ -1,11 +1,8 @@
 import React from 'react'
-import {Form, Alert, Button, Input, Checkbox} from 'antd'
+import {Form, Button, Input, Checkbox} from 'antd'
 import 'antd/dist/antd.css'
 import styles from './AuthForm.module.scss'
-import {required} from '../../../../utils/validators/validators'
-import {MyCheckbox, renderInput, renderPasswordInput} from '../../../common/FormControls/DrawerFooter'
 import QueueAnim from 'rc-queue-anim'
-import {purple} from '@ant-design/colors'
 import {Formik} from 'formik'
 
 /**
@@ -45,8 +42,6 @@ const AuthForm = ({onSubmit}) => {
             {
                 ({
                      handleChange,
-                     handleBlur,
-                     setFieldValue,
                      handleSubmit,
                      values
                  }) => (

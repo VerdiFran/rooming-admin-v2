@@ -1,11 +1,12 @@
 import {Button, Space, Table} from 'antd'
 import styles from '../CompanyAddRequests/CompanyAddRequests.module.scss'
 import React, {useState} from 'react'
+import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Bind-user-to-company requests.
  */
-const BindRequests = ({bindRequests, setPage, total, pageSize, bindToCompany}) => {
+const BindRequests = ({bindRequests, setPage, total, pageSize, bindToCompany, requestsInLoading}) => {
     const [selectedRequests, setSelectedRequests] = useState([])
     const [buttonDisabled, setButtonDisabled] = useState(true)
 
@@ -15,7 +16,7 @@ const BindRequests = ({bindRequests, setPage, total, pageSize, bindToCompany}) =
             dataIndex: 'createdAt',
             key: 'createdAt',
             align: 'center',
-            width: "15%",
+            width: '15%',
             render: (date) => {
                 const newDate = new Date(date)
                 return `${newDate.toLocaleDateString()}, ${newDate.toLocaleTimeString().slice(0, 5)}`
@@ -59,39 +60,49 @@ const BindRequests = ({bindRequests, setPage, total, pageSize, bindToCompany}) =
 
     return (
         <div className={styles.contentContainer}>
-            <Space style={{marginBottom: 16}}>
-                <Button
-                    type="primary"
-                    onClick={() => {
-                        const ids = selectedRequests.map(request => request.id)
-                        bindToCompany(ids)
-                        setSelectedRequests([])
-                        setPage(1)
-                        setButtonDisabled(true)
-                    }}
-                    disabled={buttonDisabled}
-                >
-                    Дать доступ к базе
-                </Button>
-            </Space>
-            <Table
-                columns={columns}
-                dataSource={bindRequests}
-                pagination={{
-                    defaultPageSize: pageSize,
-                    total: total * pageSize,
-                    onChange: changePage
-                }}
-                rowSelection={{
-                    type: 'checkbox',
-                    ...rowSelection,
-                }}
-                selection={selectedRequests}
-                bordered
-                size="small"
-                tableLayout="auto"
-                scroll={{x: 900}}
-            />
+            {
+                !requestsInLoading ? (
+                    <div>
+                        <Space style={{marginBottom: 16}}>
+                            <Button
+                                type="primary"
+                                onClick={() => {
+                                    const ids = selectedRequests.map(request => request.id)
+                                    bindToCompany(ids)
+                                    setSelectedRequests([])
+                                    setPage(1)
+                                    setButtonDisabled(true)
+                                }}
+                                disabled={buttonDisabled}
+                            >
+                                Дать доступ к базе
+                            </Button>
+                        </Space>
+
+
+                        <Table
+                            columns={columns}
+                            dataSource={bindRequests}
+                            pagination={{
+                                defaultPageSize: pageSize,
+                                total: total * pageSize,
+                                onChange: changePage
+                            }}
+                            rowSelection={{
+                                type: 'checkbox',
+                                ...rowSelection,
+                            }}
+                            selection={selectedRequests}
+                            bordered
+                            size="small"
+                            tableLayout="auto"
+                            scroll={{x: 900}}
+                        />
+                    </div>
+                ) : (
+                    <img src={preloader} alt="preloader"/>
+                )
+            }
         </div>
     )
 }

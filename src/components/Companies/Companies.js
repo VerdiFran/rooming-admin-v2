@@ -1,9 +1,10 @@
 import {Button, List, Popover, Space, Table} from 'antd'
 import styles from './Companies.module.scss'
 import FilterDropdown from '../common/FilterDropdown/FilterDropdown'
-import { SearchOutlined } from '@ant-design/icons';
-import React from "react";
-import CompanyInfo from "./CompanyInfo/CompanyInfo";
+import {SearchOutlined} from '@ant-design/icons'
+import React from 'react'
+import CompanyInfo from './CompanyInfo/CompanyInfo'
+import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Table with companies.
@@ -11,17 +12,17 @@ import CompanyInfo from "./CompanyInfo/CompanyInfo";
 const Companies = (props) => {
 
     const handleSearch = (selectedKeys, confirm) => {
-        confirm();
-        props.setNamePart(selectedKeys[0]);
-    };
+        confirm()
+        props.setNamePart(selectedKeys[0])
+    }
 
     const handleReset = clearFilters => {
-        clearFilters();
-        props.setNamePart('');
-    };
+        clearFilters()
+        props.setNamePart('')
+    }
 
     const columnSearchProps = dataIndex => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (<FilterDropdown
+        filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters}) => (<FilterDropdown
             setSelectedKeys={setSelectedKeys}
             selectedKeys={selectedKeys}
             confirm={confirm}
@@ -30,7 +31,7 @@ const Companies = (props) => {
             handleReset={handleReset}
             placeholder={dataIndex}
         />),
-        filterIcon: () => <SearchOutlined />,
+        filterIcon: () => <SearchOutlined/>,
     })
 
     const columns = [
@@ -99,20 +100,32 @@ const Companies = (props) => {
 
     return (
         <div className={styles.contentContainer}>
-            <Table
-                columns={columns}
-                dataSource={props.companies}
-                pagination={{ defaultPageSize: props.pageSize, total: props.totalPages * props.pageSize, onChange: changePage }}
-                size="small"
-                tableLayout="auto"
-                scroll={{ x: 900 }}
-                bordered
-            />
-            {props.selectedCompany && <CompanyInfo
-                visible={props.visible}
-                setVisible={props.setVisible}
-                selectedCompany={props.selectedCompany}
-            />}
+            {
+                !props.companiesInLoading ? (
+                        <Table
+                            columns={columns}
+                            dataSource={props.companies}
+                            pagination={{
+                                defaultPageSize: props.pageSize,
+                                total: props.totalPages * props.pageSize,
+                                onChange: changePage
+                            }}
+                            size="small"
+                            tableLayout="auto"
+                            scroll={{x: 900}}
+                            bordered
+                        />
+                    )
+                    : <img src={preloader} alt="preloader"/>
+            }
+            {
+                props.selectedCompany &&
+                <CompanyInfo
+                    visible={props.visible}
+                    setVisible={props.setVisible}
+                    selectedCompany={props.selectedCompany}
+                />
+            }
         </div>
     )
 }

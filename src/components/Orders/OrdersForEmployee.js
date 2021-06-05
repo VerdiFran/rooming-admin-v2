@@ -5,12 +5,21 @@ import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
 import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
 import {REMOVE_ORDER_ACTION} from '../../utils/actions/orderActions'
 import ActionButton from '../common/ActionButton/ActionButton'
+import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Component with employee presentation of orders.
  * @return Table with company orders.
  */
-const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages, pageSize, handleRemove}) => {
+const OrdersForEmployee = ({
+                               ordersData,
+                               handleChange,
+                               setCurrentPage,
+                               totalPages,
+                               pageSize,
+                               handleRemove,
+                               ordersInLoading
+                           }) => {
     const [visible, setVisible] = useState(false)
 
     const columns = [
@@ -137,25 +146,33 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
 
     return (
         <div className={styles.contentContainer}>
-            <Space style={{marginBottom: 16}}>
-                <Button type="primary" onClick={() => {
-                    showDrawer()
-                }}>Добавить заказ</Button>
-            </Space>
-            <Table
-                bordered
-                columns={columns}
-                dataSource={ordersData}
-                size="small"
-                tableLayout="auto"
-                onChange={handleChange}
-                pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
-                expandable={{
-                    expandedRowRender,
-                    expandRowByClick: false
-                }}
-                scroll={{x: 900}}
-            />
+            {
+                !ordersInLoading ? (
+                    <div>
+                        <Space style={{marginBottom: 16}}>
+                            <Button type="primary" onClick={() => {
+                                showDrawer()
+                            }}>Добавить заказ</Button>
+                        </Space>
+                        <Table
+                            bordered
+                            columns={columns}
+                            dataSource={ordersData}
+                            size="small"
+                            tableLayout="auto"
+                            onChange={handleChange}
+                            pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
+                            expandable={{
+                                expandedRowRender,
+                                expandRowByClick: false
+                            }}
+                            scroll={{x: 900}}
+                        />
+                    </div>
+                ) : (
+                    <img src={preloader} alt="preloader"/>
+                )
+            }
             {
                 visible && <NewOrderFormContainer
                     visible={visible}

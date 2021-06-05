@@ -6,11 +6,12 @@ import {UNBIND_USER} from '../../utils/actions/usersActions'
 import {getActionByType} from '../../utils/actions/getActionByType'
 import FilterDropdown from '../common/FilterDropdown/FilterDropdown'
 import {SearchOutlined} from '@ant-design/icons'
+import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Bound requests component.
  */
-const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, setNamePart}) => {
+const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, setNamePart, requestsInLoading}) => {
 
     const handleSearch = (selectedKeys, confirm) => {
         confirm()
@@ -97,19 +98,25 @@ const BoundRequests = ({bindRequests, setPage, total, pageSize, unbindRequest, s
 
     return (
         <div className={styles.contentContainer}>
-            <Table
-                columns={columns}
-                dataSource={bindRequests}
-                pagination={{
-                    defaultPageSize: pageSize,
-                    total: total * pageSize,
-                    onChange: changePage
-                }}
-                bordered
-                size="small"
-                tableLayout="auto"
-                scroll={{x: 900}}
-            />
+            {
+                !requestsInLoading ? (
+                <Table
+                    columns={columns}
+                    dataSource={bindRequests}
+                    pagination={{
+                        defaultPageSize: pageSize,
+                        total: total * pageSize,
+                        onChange: changePage
+                    }}
+                    bordered
+                    size="small"
+                    tableLayout="auto"
+                    scroll={{x: 900}}
+                />
+                ) : (
+                    <img src={preloader} alt="preloader"/>
+                )
+            }
         </div>
     )
 }
