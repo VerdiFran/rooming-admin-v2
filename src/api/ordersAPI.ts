@@ -1,4 +1,4 @@
-import {instance} from './instances'
+import {instance, instanceForDownloadFile} from './instances'
 
 export const ordersAPI = {
     /**
@@ -53,6 +53,14 @@ export const ordersAPI = {
                 'Content-Type': 'multipart/form-data'
             }
         })
+    },
+
+    /**
+     * GET request for image.
+     * @param id Id of resource.
+     */
+    getLayoutOrderImage(id: number) {
+        return instanceForDownloadFile.get(`resources/images/${id}`)
     },
 
     /**

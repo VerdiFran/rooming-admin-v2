@@ -253,6 +253,10 @@ export const getLayoutsInfo = (state) => {
     const currentOrder = state.orders.orders.filter(order =>
         order.layouts.some(layout => state.orders.currentLayoutIds.includes(layout.id)))[0]
 
+    if (!currentOrder) {
+        return []
+    }
+
     return currentOrder.layouts.map(layout => ({
         ...layout,
         orderDescription: currentOrder.orderDescription,
