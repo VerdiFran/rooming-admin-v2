@@ -4,6 +4,7 @@ import React, {useEffect, useState} from 'react'
 import {ordersAPI} from '../../../api/ordersAPI'
 import {getLayoutsInfo} from '../../../utils/selectors/selectors'
 import {getAllOrders} from '../../../redux/reducers/ordersReducer'
+import {message} from 'antd'
 
 const mapStateToProps = (state) => ({
     layoutsInfo: getLayoutsInfo(state)
@@ -21,7 +22,12 @@ const OrderFulfillmentContainer = (props) => {
 
                 formData.append('model', file)
 
-                await ordersAPI.sendModelFiles(orderId, layoutId, formData)
+                try {
+                    await ordersAPI.sendModelFiles(orderId, layoutId, formData)
+                    message.success('Заказ выполнен!')
+                } catch (error) {
+                    message.error('Что-то пощло не так, не удалось выполнить заказ')
+                }
                 props.getAllOrders()
             }
 

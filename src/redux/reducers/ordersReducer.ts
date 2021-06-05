@@ -326,6 +326,7 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
         dispatch(resetAddresses())
 
         await getCompanyOrders(1, 10)(dispatch)
+        message.success('Заказ отправлен')
     } catch (e) {
         message.error('При отправке заказа что-то пошло не так.')
     }

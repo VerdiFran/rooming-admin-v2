@@ -1,5 +1,6 @@
-import {Dispatch} from "redux"
+import {Dispatch} from 'redux'
 import {addRequestsAPI} from '../../api/addRequestsApi'
+import {message} from 'antd'
 
 const SET_COMPANY_ADD_REQUESTS = 'SET-COMPANY-ADD-REQUESTS'
 const SET_SELECTED_ADD_REQUEST = 'SET-SELECTED-ADD-REQUEST'
@@ -59,7 +60,8 @@ const addRequestsReducer = (state = initialState, action: any) => {
                 ...state,
                 addRequestsInLoading: action.addRequestsInLoading
             }
-        default: return state
+        default:
+            return state
     }
 }
 
@@ -88,12 +90,19 @@ export const setSelectedCompanyAddRequest = (selectedRequest: number) => ({
  * @param ids List of company add requests for execute.
  */
 export const executeCompanyAddRequests = (ids: Array<number>) => async (dispatch: Dispatch) => {
-    try {
-        await addRequestsAPI.executeCompanyAddRequests(ids)
-        await downloadCompanyAddRequests(1, 10, true)(dispatch)
-    } catch (error) {
-        throw error
+    const response = await addRequestsAPI.executeCompanyAddRequests(ids)
+    const status = response.data.status
+
+    switch (status) {
+        case 'AllCompaniesAdded':
+            message.success('Все компании добавлены')
+            break
+        case 'SomeCompaniesNotAdded':
+            message.error('Что-то пошло не так, некоторые компании не были добавлены')
+            break
     }
+
+    await downloadCompanyAddRequests(1, 10, true)(dispatch)
 }
 
 /**

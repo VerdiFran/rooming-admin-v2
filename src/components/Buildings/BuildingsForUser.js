@@ -7,14 +7,12 @@ import LayoutInfoContainer from './LayoutInfo/LayoutInfoContainer'
 import AddBindRequestsForm from './AddBindRequestsForm/AddBindRequestsForm'
 import {useFormik} from 'formik'
 import {usersApi} from '../../api/usersApi'
-import {setSelectedLayoutId} from '../../redux/reducers/buildingsReducer'
 import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Component with buildings list for simple user role.
  */
-const BuildingsForUser = ({buildings, pageSize, totalPages, setCurrentPage, buildingsInLoading}) => {
-
+const BuildingsForUser = ({buildings, pageSize, totalPages, setSelectedLayoutId, setCurrentPage, buildingsInLoading}) => {
     const [layoutInfoVisible, setLayoutInfoVisible] = useState(false)
     const [addRequestsVisible, setAddRequestsVisible] = useState(false)
 
