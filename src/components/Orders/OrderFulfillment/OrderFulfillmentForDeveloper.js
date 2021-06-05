@@ -1,9 +1,11 @@
 import React, {useState} from 'react'
-import {Space, Descriptions, Button, Drawer, Upload, message, Typography} from 'antd'
-import {InboxOutlined} from '@ant-design/icons'
+import {Space, Descriptions, Button, Drawer, Upload, message, Typography, Image} from 'antd'
+import preloader from '../../../assets/images/preloader.svg'
 import {Formik} from 'formik'
+import {InboxOutlined} from '@ant-design/icons'
+import styles from './OrderFulfillment.module.css'
 
-const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleSubmit}) => {
+const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleSubmit, images}) => {
     const {Dragger} = Upload
     const {Title} = Typography
 
@@ -36,7 +38,7 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
             initialValues={{}}
         >
             {
-                ({}) => (
+                () => (
                     <Drawer
                         title="Выполнение заказа"
                         width={590}
@@ -65,6 +67,7 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                 const createdAt = new Date(layout.createdAt)
                                 const deadline = new Date(layout.deadline)
                                 const complexDescription = layout.building.complex ? `Комплекс "${layout.building.complex.name}":` : ''
+                                const layoutOrderImages = images?.find(image => image.layoutId === layout.id)?.resources
 
                                 return <Space size="small" direction="vertical">
                                     <Title level={5}>Планировка</Title>
@@ -90,8 +93,29 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                         <Descriptions.Item label="Описание планировки" span="3">
                                             {layout.description}
                                         </Descriptions.Item>
-                                        <Descriptions.Item
-                                            label="Описание заказа">{layout.orderDescription}</Descriptions.Item>
+                                        <Descriptions.Item span="3"
+                                                           label="Описание заказа">{layout.orderDescription}</Descriptions.Item>
+                                        <Descriptions.Item span="3" label="Изображения планировок">
+                                            {
+                                                layoutOrderImages ?
+                                                    <Space className={styles.imageContainer}>
+                                                        {
+                                                            layoutOrderImages.map(image =>
+                                                                <Image
+                                                                    src={URL.createObjectURL(image)}
+                                                                    preview={true}
+                                                                    width={100}
+                                                                    height={100}
+                                                                />)
+                                                        }
+                                                    </Space>
+                                                    : (
+                                                        <div className={styles.preloaderContainer}>
+                                                            <img className={styles.preloader} src={preloader} alt="preloader"/>
+                                                        </div>
+                                                    )
+                                            }
+                                        </Descriptions.Item>
                                     </Descriptions>
                                     <br/>
                                     <Title level={5}>Файлы готовых моделей</Title>
@@ -109,12 +133,12 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                     </Dragger>
                                 </Space>
                             })
+                            }
+                            </Drawer>
+                            )
                         }
-                    </Drawer>
+                    </Formik>
                 )
             }
-        </Formik>
-    )
-}
 
-export default OrderFulfillmentForDeveloper
+            export default OrderFulfillmentForDeveloper
