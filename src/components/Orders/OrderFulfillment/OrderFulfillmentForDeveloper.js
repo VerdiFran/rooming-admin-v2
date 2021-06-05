@@ -4,12 +4,14 @@ import preloader from '../../../assets/images/preloader.svg'
 import {Formik} from 'formik'
 import {InboxOutlined} from '@ant-design/icons'
 import styles from './OrderFulfillment.module.css'
+import {COMPLETED} from '../../../redux/orderFulfillmentStatuses'
 
 const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleSubmit, images}) => {
     const {Dragger} = Upload
     const {Title} = Typography
 
-    const [files, setFiles] = useState(null)
+    const [files, setFiles] = useState([])
+    const [currentLayoutId, setCurrentLayoutId] = useState(0)
 
     const props = {
         name: 'file',
@@ -26,7 +28,13 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
             }
             if (status === 'done') {
                 message.success(`${info.file.name} успешно загружен`)
-                setFiles(info.fileList.map(file => file.originFileObj))
+                const currentFiles = files.find(it => it.layoutId === currentLayoutId)
+                if (currentFiles) {
+                    const filesWithoutCurrent = files.filter(it => it.layoutId !== currentLayoutId)
+                    setFiles([...filesWithoutCurrent, {layoutId: currentLayoutId, fileList: info.fileList.map(file => file.originFileObj)}])
+                } else {
+                    setFiles(prev => [...prev, {layoutId: currentLayoutId, fileList: info.fileList.map(file => file.originFileObj)}])
+                }
             } else if (status === 'error') {
                 message.error(`Не удалось загрузить ${info.file.name}`)
             }
@@ -52,8 +60,9 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                 </Button>
                                 <Button onClick={() => {
                                     if (files.length > 0) {
-                                        console.log(layoutsInfo[0].orderId)
-                                        handleSubmit(layoutsInfo[0].orderId, layoutsInfo[0].id, files)
+                                        files.forEach(it => {
+                                            handleSubmit(layoutsInfo[0].orderId, it.layoutId, it.fileList)
+                                        })
                                         setVisible(false)
                                     }
                                 }} type="primary">
@@ -63,7 +72,9 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                         }
                     >
                         {
-                            layoutsInfo.map(layout => {
+                            layoutsInfo
+                                .filter(layout => layout.layoutOrderStatus !== COMPLETED)
+                                .map(layout => {
                                 const createdAt = new Date(layout.createdAt)
                                 const deadline = new Date(layout.deadline)
                                 const complexDescription = layout.building.complex ? `Комплекс "${layout.building.complex.name}":` : ''
@@ -119,7 +130,12 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                     </Descriptions>
                                     <br/>
                                     <Title level={5}>Файлы готовых моделей</Title>
-                                    <Dragger  {...props}>
+                                    <Dragger
+                                        onClick={() => {
+                                            setCurrentLayoutId(layout.id)
+                                        }}
+                                        {...props}
+                                    >
                                         <p className="ant-upload-drag-icon">
                                             <InboxOutlined/>
                                         </p>
