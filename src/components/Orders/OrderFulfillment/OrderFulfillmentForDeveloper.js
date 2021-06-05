@@ -4,6 +4,7 @@ import preloader from '../../../assets/images/preloader.svg'
 import {Formik} from 'formik'
 import {InboxOutlined} from '@ant-design/icons'
 import styles from './OrderFulfillment.module.css'
+import {COMPLETED} from '../../../redux/orderFulfillmentStatuses'
 
 const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleSubmit, images}) => {
     const {Dragger} = Upload
@@ -63,7 +64,9 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                         }
                     >
                         {
-                            layoutsInfo.map(layout => {
+                            layoutsInfo
+                                .filter(layout => layout.layoutOrderStatus !== COMPLETED)
+                                .map(layout => {
                                 const createdAt = new Date(layout.createdAt)
                                 const deadline = new Date(layout.deadline)
                                 const complexDescription = layout.building.complex ? `Комплекс "${layout.building.complex.name}":` : ''
