@@ -13,8 +13,11 @@ const NewBuildingForm = (props) => {
         layoutIndex,
         complexes,
         streets,
-        cityIsSelected/*,
-        handleSubmit*/
+        cityIsSelected,
+        formik,
+        visible,
+        onOpen,
+        onClose
     } = props
 
     const setFieldValue = buildingFormik.setFieldValue
@@ -26,7 +29,6 @@ const NewBuildingForm = (props) => {
 
     const {Option} = Select
 
-    const [visible, setVisible] = useState(false)
     const [streetsByComplex, setStreetsByComplex] = useState([])
 
     const [autoCompletedComplex, setAutoCompletedComplex] = useState(null)
@@ -51,7 +53,7 @@ const NewBuildingForm = (props) => {
             }, []))
 
     const onSubmit = () => {
-        validateForm().then(error => console.log(error))
+        validateForm().then()
         handleSubmit()
     }
 
@@ -61,16 +63,16 @@ const NewBuildingForm = (props) => {
                 type="dashed"
                 disabled={!cityIsSelected}
                 className={styles.newBuildingButton}
-                onClick={() => setVisible(true)}
+                onClick={onOpen}
             ><PlusSquareOutlined/>новое здание</Button>
             <Drawer
                 title="Добавление нового здания"
                 width={440}
-                onClose={() => setVisible(false)}
+                onClose={onClose}
                 visible={visible}
                 bodyStyle={{paddingBottom: 80}}
                 footer={<DrawerFooter
-                    onCancel={[() => setVisible(false)]}
+                    onCancel={[onClose]}
                     onSubmit={[onSubmit]}
                 />}
             >
@@ -101,6 +103,7 @@ const NewBuildingForm = (props) => {
                             <div className={styles.orNewComplexContainer}>
                                 <span>или</span>
                                 <NewComplexFormContainer
+                                    formik={formik}
                                     layoutIndex={layoutIndex}
                                     setComplex={setAutoCompletedComplex}
                                 />
