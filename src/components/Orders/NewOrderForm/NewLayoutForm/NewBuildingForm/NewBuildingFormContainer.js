@@ -27,7 +27,6 @@ const NewBuildingFormContainer = (props) => {
     } = props
 
     const buildingSchema = yup.object().shape({
-        city: yup.string().required('Это поле обязательно для заполнения.'),
         street: yup.string().required('Это поле обязательно для заполнения.'),
         house: yup.string().required('Это поле обязательно для заполнения.'),
         buildingDescription: yup.string().required('Это поле обязательно для заполнения.')
@@ -41,6 +40,25 @@ const NewBuildingFormContainer = (props) => {
             house: '',
             complexId: null,
             complexName: ''
+        },
+        onSubmit: async (values) => {
+            const address = {
+                city: formik.values.layouts[layoutIndex].city,
+                street: values.street,
+                house: values.house,
+                complexId: values.complexId || -1,
+                complexName: values.complexName.length ? values.complexName : 'Отдельные здания',
+                description: values.buildingDescription
+            }
+
+            await addAddress(address)
+
+            setAutoCompletedAddress([address.complexId, address.street, address.house])
+
+            buildingFormik.resetForm()
+
+            setCityComplexes([])
+            setComplexStreets([])
         },
         validationSchema: buildingSchema
     })
@@ -58,7 +76,7 @@ const NewBuildingFormContainer = (props) => {
         setComplexStreets(streets)
     }, [streets])
 
-    const handleSubmit = async (values = buildingFormik.values) => {
+    /*const handleSubmit = async (values = buildingFormik.values) => {
         const address = {
             city: formik.values.layouts[layoutIndex].city,
             street: values.street,
@@ -76,7 +94,7 @@ const NewBuildingFormContainer = (props) => {
 
         setCityComplexes([])
         setComplexStreets([])
-    }
+    }*/
 
     return <NewBuildingForm
         cityIsSelected={cityIsSelected}
@@ -86,7 +104,7 @@ const NewBuildingFormContainer = (props) => {
         streets={complexStreets}
         layoutIndex={layoutIndex}
         getAddresses={getAddressesByCityName}
-        handleSubmit={handleSubmit}
+        /*handleSubmit={handleSubmit}*/
         formik={formik}
     />
 }

@@ -5,16 +5,24 @@ import {PlusSquareOutlined} from '@ant-design/icons'
 import NewComplexFormContainer from './NewComplexForm/NewComplexFormContainer'
 import styles from './NewBuildingForm.module.scss'
 import DrawerFooter from '../../../../common/FormControls/DrawerFooter'
+import {FormikProvider} from 'formik'
 
 const NewBuildingForm = (props) => {
     const {
-        buildingFormik: {values, setFieldValue, handleChange, validateForm},
+        buildingFormik,
         layoutIndex,
         complexes,
         streets,
-        cityIsSelected,
-        handleSubmit
+        cityIsSelected/*,
+        handleSubmit*/
     } = props
+
+    const setFieldValue = buildingFormik.setFieldValue
+    const values = buildingFormik.values
+    const validateForm = buildingFormik.validateForm
+    const errors = buildingFormik.errors
+    const handleChange = buildingFormik.handleChange
+    const handleSubmit = buildingFormik.handleSubmit
 
     const {Option} = Select
 
@@ -48,7 +56,7 @@ const NewBuildingForm = (props) => {
     }
 
     return (
-        <>
+        <FormikProvider value={buildingFormik}>
             <Button
                 type="dashed"
                 disabled={!cityIsSelected}
@@ -104,14 +112,14 @@ const NewBuildingForm = (props) => {
                             name="street"
                             label="Улица"
                             required
-                            hasFeedback
+                            validateStatus={errors.street && 'error'}
+                            help={errors.street}
                         >
                             <AutoComplete
                                 name="street"
-                                value={values.street}
                                 style={{width: '200px'}}
                                 options={streetsByComplex}
-                                onChange={(value => setFieldValue(`street`, value))}
+                                onChange={handleChange}
                             />
                         </Form.Item>
                         <Form.Item
@@ -119,6 +127,8 @@ const NewBuildingForm = (props) => {
                             label="Дом"
                             required
                             hasFeedback
+                            validateStatus={errors.house && 'error'}
+                            help={errors.house}
                         >
                             <Input
                                 name="house"
@@ -132,16 +142,17 @@ const NewBuildingForm = (props) => {
                         label="Описание здания"
                         required
                         hasFeedback
+                        validateStatus={errors.buildingDescription && 'error'}
+                        help={errors.buildingDescription}
                     >
                         <Input.TextArea
-                            name="description"
-                            value={values.description}
+                            name="buildingDescription"
                             onChange={handleChange}
                         />
                     </Form.Item>
                 </Form>
             </Drawer>
-        </>
+        </FormikProvider>
     )
 }
 
