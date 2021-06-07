@@ -4,6 +4,7 @@ import {EXECUTE_ORDER_ACTION, REMOVE_ORDER_ACTION, TAKE_ON_EXECUTE_ACTION} from 
 import {COMPLETED, IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
 import {ADD_TO_SESSION, GET_LAYOUT_INFO_ACTION} from "../actions/layoutActions";
 import {DELETE_SESSION_ACTION, DELETE_SESSION_LAYOUT_ACTION, START_SESSION} from "../actions/sessionsActions";
+import {UNBIND_USER} from '../actions/usersActions'
 
 const idIterator = IdGenerator()
 
@@ -99,6 +100,12 @@ export const getOrdersData = (state) => {
         actions: orderActionsSelection(userRoles)
     }))
 }
+
+/**
+ * Get orders InLoading status.
+ * @param state State.
+ */
+export const getOrdersInLoading = (state) => state.orders.ordersInLoading
 
 /**
  * Returns total pages of orders.
@@ -252,6 +259,10 @@ export const getLayoutsInfo = (state) => {
     const currentOrder = state.orders.orders.filter(order =>
         order.layouts.some(layout => state.orders.currentLayoutIds.includes(layout.id)))[0]
 
+    if (!currentOrder) {
+        return []
+    }
+
     return currentOrder.layouts.map(layout => ({
         ...layout,
         orderDescription: currentOrder.orderDescription,
@@ -291,6 +302,12 @@ export const getFinishedBuildings = (state) => {
 }
 
 /**
+ * Returns InLoading status.
+ * @param state State.
+ */
+export const getBuildingsInLoading = (state) => state.buildings.buildingsInLoading
+
+/**
  * Returns total pages of buildings.
  * @param state State.
  * @return Number of total page.
@@ -307,6 +324,8 @@ export const getUploadedCompanies = (state) => {
 
     return state.companies.companies.map(company => ({
         ...company,
+        offices: company?.offices
+            ?.map(office => `г. ${office.city}, ул. ${office.street}, д.${office.house}`) ?? [],
         actions: ['Подробнее'],
         key: companiesIdIterator.next().value
     }))
@@ -320,6 +339,12 @@ export const getUploadedCompanies = (state) => {
 export const getCompaniesTotalPages = (state) => state.companies.totalPages
 
 /**
+ * Get companiesInLoading status.
+ * @param state State.
+ */
+export const getCompaniesInLoading = (state) => state.companies.companiesInLoading
+
+/**
  * Gets companies add requests.
  * @param state State.
  */
@@ -329,6 +354,8 @@ export const getCompaniesAddRequests = (state) => {
 
     return state.addRequests.companiesAddRequests.map(companyRequest => ({
         ...companyRequest,
+        offices: companyRequest?.offices
+            ?.map(office => `г. ${office.city}, ул. ${office.street}, д.${office.house}`) ?? [],
         employees: companyRequest.employees.map(userRequest => ({
             ...userRequest,
             userName: `${userRequest.firstName} ${userRequest.lastName}`,
@@ -344,6 +371,12 @@ export const getCompaniesAddRequests = (state) => {
  * @param state State.
  */
 export const getCompaniesAddRequestsTotalPages = (state) => state.addRequests.companiesRequestsTotalPages
+
+/**
+ * Get add-requests InLoading status.
+ * @param state State.
+ */
+export const getCompaniesAddRequestsInLoading = (state) => state.addRequests.addRequestsInLoading
 
 /**
  * Returns selected company-add request.
@@ -452,9 +485,42 @@ export const getSessions = (state) => {
 }
 
 /**
+ * Get sessions InLoading status.
+ * @param state State.
+ */
+export const getSessionsInLoading = (state) => state.sessions.sessionsInLoading
+
+/**
  * Returns total pages of sessions.
  * @param state State.
  */
 export const getSessionsTotal = (state) => {
   return state.sessions.totalSessions
+}
+
+/**
+ * Get bin-user-to-company requests.
+ * @param state Users state.
+ */
+export const getBindRequests = (state) => {
+
+    return state.users.bindRequests.map(request => ({
+        ...request,
+        key: idIterator.next().value,
+        actions: [UNBIND_USER]
+    }))
+}
+
+/**
+ * Returns InLoading status.
+ * @param state State.
+ */
+export const getBindRequestsInLoading = (state) => state.users.requestsInLoading
+
+/**
+ * Get total pages of bind-user-to-company requests.
+ * @param state Users state.
+ */
+export const getTotalBindRequests = (state) => {
+    return state.users.totalRequests
 }

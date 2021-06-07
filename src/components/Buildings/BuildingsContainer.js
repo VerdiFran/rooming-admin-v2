@@ -1,14 +1,18 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import Buildings from './Buildings'
-import { getFinishedBuildings, getTotalPages } from '../../utils/selectors/selectors'
+import BuildingsForEmployee from './BuildingsForEmployee'
+import {getBuildingsInLoading, getFinishedBuildings, getTotalPages, getUserRoles} from '../../utils/selectors/selectors'
 import { compose } from 'redux'
 import { withAuthRedirect } from '../../hoc/withAuthRedirect'
-import { getBuildingsWithCompletedLayouts, setSelectedLayoutId } from '../../redux/reducers/buildingsReducer'
+import { getBuildingsWithCompletedLayouts, getBoundBuildings, setSelectedLayoutId } from '../../redux/reducers/buildingsReducer'
+import {USER} from '../../redux/userRoles'
+import BuildingsForUser from './BuildingsForUser'
 
 const mapStateToProps = (state) => ({
+    userRoles: getUserRoles(state),
     buildings: getFinishedBuildings(state),
-    totalPages: getTotalPages(state)
+    totalPages: getTotalPages(state),
+    buildingsInLoading: getBuildingsInLoading(state)
 })
 
 const BuildingsContainer = (props) => {
@@ -17,20 +21,36 @@ const BuildingsContainer = (props) => {
     const [currentPage, setCurrentPage] = React.useState(1)
 
     useEffect(() => {
-        props.getBuildingsWithCompletedLayouts(currentPage, pageSize)
+        if (props.userRoles.includes(USER)){
+            props.getBoundBuildings(currentPage, pageSize)
+        } else {
+            props.getBuildingsWithCompletedLayouts(currentPage, pageSize)
+        }
     }, [currentPage])
 
-    return <Buildings
-        buildings={props.buildings}
-        totalPages={props.totalPages}
-        pageSize={pageSize}
-        setCurrentPage={setCurrentPage}
-        setSelectedLayoutId={props.setSelectedLayoutId}
-    />
+    if (props.userRoles.includes(USER)){
+        return <BuildingsForUser
+            buildingsInLoading={props.buildingsInLoading}
+            buildings={props.buildings}
+            totalPages={props.totalPages}
+            pageSize={pageSize}
+            setCurrentPage={setCurrentPage}
+            setSelectedLayoutId={props.setSelectedLayoutId}
+        />
+    } else {
+        return <BuildingsForEmployee
+            buildingsInLoading={props.buildingsInLoading}
+            buildings={props.buildings}
+            totalPages={props.totalPages}
+            pageSize={pageSize}
+            setCurrentPage={setCurrentPage}
+            setSelectedLayoutId={props.setSelectedLayoutId}
+        />
+    }
 
 }
 
 export default compose(
     withAuthRedirect,
-    connect(mapStateToProps, { getBuildingsWithCompletedLayouts, setSelectedLayoutId })
+    connect(mapStateToProps, { getBuildingsWithCompletedLayouts, getBoundBuildings, setSelectedLayoutId })
 )(BuildingsContainer)

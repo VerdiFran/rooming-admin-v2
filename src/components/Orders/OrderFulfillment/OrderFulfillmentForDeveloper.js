@@ -1,13 +1,17 @@
 import React, {useState} from 'react'
-import {Space, Descriptions, Button, Drawer, Upload, message, Typography} from 'antd'
-import {InboxOutlined} from '@ant-design/icons'
+import {Space, Descriptions, Button, Drawer, Upload, message, Typography, Image} from 'antd'
+import preloader from '../../../assets/images/preloader.svg'
 import {Formik} from 'formik'
+import {InboxOutlined} from '@ant-design/icons'
+import styles from './OrderFulfillment.module.css'
+import {COMPLETED} from '../../../redux/orderFulfillmentStatuses'
 
-const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleSubmit}) => {
+const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleSubmit, images}) => {
     const {Dragger} = Upload
     const {Title} = Typography
 
-    const [files, setFiles] = useState(null)
+    const [files, setFiles] = useState([])
+    const [currentLayoutId, setCurrentLayoutId] = useState(0)
 
     const props = {
         name: 'file',
@@ -24,7 +28,13 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
             }
             if (status === 'done') {
                 message.success(`${info.file.name} успешно загружен`)
-                setFiles(info.fileList.map(file => file.originFileObj))
+                const currentFiles = files.find(it => it.layoutId === currentLayoutId)
+                if (currentFiles) {
+                    const filesWithoutCurrent = files.filter(it => it.layoutId !== currentLayoutId)
+                    setFiles([...filesWithoutCurrent, {layoutId: currentLayoutId, fileList: info.fileList.map(file => file.originFileObj)}])
+                } else {
+                    setFiles(prev => [...prev, {layoutId: currentLayoutId, fileList: info.fileList.map(file => file.originFileObj)}])
+                }
             } else if (status === 'error') {
                 message.error(`Не удалось загрузить ${info.file.name}`)
             }
@@ -36,7 +46,7 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
             initialValues={{}}
         >
             {
-                ({}) => (
+                () => (
                     <Drawer
                         title="Выполнение заказа"
                         width={590}
@@ -50,8 +60,9 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                 </Button>
                                 <Button onClick={() => {
                                     if (files.length > 0) {
-                                        console.log(layoutsInfo[0].orderId)
-                                        handleSubmit(layoutsInfo[0].orderId, layoutsInfo[0].id, files)
+                                        files.forEach(it => {
+                                            handleSubmit(layoutsInfo[0].orderId, it.layoutId, it.fileList)
+                                        })
                                         setVisible(false)
                                     }
                                 }} type="primary">
@@ -61,9 +72,13 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                         }
                     >
                         {
-                            layoutsInfo.map(layout => {
+                            layoutsInfo
+                                .filter(layout => layout.layoutOrderStatus !== COMPLETED)
+                                .map(layout => {
                                 const createdAt = new Date(layout.createdAt)
                                 const deadline = new Date(layout.deadline)
+                                const complexDescription = layout.building.complex ? `Комплекс "${layout.building.complex.name}":` : ''
+                                const layoutOrderImages = images?.find(image => image.layoutId === layout.id)?.resources
 
                                 return <Space size="small" direction="vertical">
                                     <Title level={5}>Планировка</Title>
@@ -75,7 +90,9 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                         <Descriptions.Item
                                             label="Город">{layout.building.address.city}</Descriptions.Item>
                                         <Descriptions.Item label="Адрес" span="2">
-                                            {`Комплекс "${layout.building.complex.name}": ул. ${layout.building.address.street}, д. ${layout.building.address.house}`}
+                                            {
+                                                `${complexDescription} ул. ${layout.building.address.street}, д. ${layout.building.address.house}`
+                                            }
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Компания">Some Company</Descriptions.Item>
                                         <Descriptions.Item label="Создан">
@@ -87,12 +104,38 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                         <Descriptions.Item label="Описание планировки" span="3">
                                             {layout.description}
                                         </Descriptions.Item>
-                                        <Descriptions.Item
-                                            label="Описание заказа">{layout.orderDescription}</Descriptions.Item>
+                                        <Descriptions.Item span="3"
+                                                           label="Описание заказа">{layout.orderDescription}</Descriptions.Item>
+                                        <Descriptions.Item span="3" label="Изображения планировок">
+                                            {
+                                                layoutOrderImages ?
+                                                    <Space className={styles.imageContainer}>
+                                                        {
+                                                            layoutOrderImages.map(image =>
+                                                                <Image
+                                                                    src={URL.createObjectURL(image)}
+                                                                    preview={true}
+                                                                    width={100}
+                                                                    height={100}
+                                                                />)
+                                                        }
+                                                    </Space>
+                                                    : (
+                                                        <div className={styles.preloaderContainer}>
+                                                            <img className={styles.preloader} src={preloader} alt="preloader"/>
+                                                        </div>
+                                                    )
+                                            }
+                                        </Descriptions.Item>
                                     </Descriptions>
                                     <br/>
                                     <Title level={5}>Файлы готовых моделей</Title>
-                                    <Dragger  {...props}>
+                                    <Dragger
+                                        onClick={() => {
+                                            setCurrentLayoutId(layout.id)
+                                        }}
+                                        {...props}
+                                    >
                                         <p className="ant-upload-drag-icon">
                                             <InboxOutlined/>
                                         </p>
@@ -106,12 +149,12 @@ const OrderFulfillmentForDeveloper = ({visible, layoutsInfo, setVisible, handleS
                                     </Dragger>
                                 </Space>
                             })
+                            }
+                            </Drawer>
+                            )
                         }
-                    </Drawer>
+                    </Formik>
                 )
             }
-        </Formik>
-    )
-}
 
-export default OrderFulfillmentForDeveloper
+            export default OrderFulfillmentForDeveloper

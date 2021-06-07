@@ -8,7 +8,7 @@ import Home from './components/Home/Home'
 import {initializeApp} from './redux/reducers/appReducer'
 import {getInitialized, getIsAuth, getLogoutIsFinished} from './utils/selectors/selectors'
 import HeaderContainer from './components/Header/HeaderContainer'
-import {Layout, PageHeader} from 'antd'
+import {Layout} from 'antd'
 import OrdersContainer from './components/Orders/OrdersContainer'
 import SideMenuPanelContainer from './components/SideMenuPanel/SideMenuPanelContainer'
 import BuildingsContainer from './components/Buildings/BuildingsContainer'
@@ -17,13 +17,14 @@ import CompanyAddRequestsContainer from './components/CompanyAddRequests/Company
 import './App.less'
 import Preloader from './components/common/Preloader/Preloader'
 import SessionsContainer from "./components/Sessions/SessionsContainer";
+import BindRequestsContainer from './components/BindRequests/BindRequestsContainer'
+import BoundUsersContainer from './components/BoundUsers/BoundUsersContainer'
 
 const App = (props) => {
     const {
         initialized,
         isAuth,
         logoutIsFinished,
-        history,
         location,
         initializeApp
     } = props
@@ -56,11 +57,7 @@ const App = (props) => {
                 <Sider style={{backgroundColor: 'transparent'}}>
                     <SideMenuPanelContainer location={location}/>
                 </Sider>
-                <Content>
-                    <PageHeader
-                        title="Title"
-                        onBack={() => history.goBack()}
-                    />
+                <Content style={{paddingTop: '10px'}}>
                     <Switch>
                         <Route
                             path="/home"
@@ -89,6 +86,14 @@ const App = (props) => {
                         <Route
                             path="/sessions"
                             render={() => <SessionsContainer/>}
+                        />
+                        <Route
+                            path="/bind-requests"
+                            render={() => <BindRequestsContainer/>}
+                        />
+                        <Route
+                            path="/bound-users"
+                            render={() => <BoundUsersContainer/>}
                         />
                         <Redirect from="/" to="/home"/>
                     </Switch>

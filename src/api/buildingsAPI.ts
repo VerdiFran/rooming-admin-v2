@@ -12,6 +12,15 @@ export const buildingsAPI = {
     },
 
     /**
+     * Returns buildings with completed layouts.
+     * @param page Page number.
+     * @param pageSize Page size.
+     */
+    getBoundBuildings(page: number, pageSize: number) {
+        return instance.get(`user/buildings?pageNumber=${page}&pageSize=${pageSize}`)
+    },
+
+    /**
      * Downloads file with layout model.
      * @param buildingId Id of building that contains required layout.
      * @param layoutId Id of required layout.

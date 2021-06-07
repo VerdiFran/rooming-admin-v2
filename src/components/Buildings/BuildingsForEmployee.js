@@ -1,11 +1,22 @@
 import React, {useState} from 'react'
-import {Table} from 'antd'
+import {Space, Table} from 'antd'
 import styles from './Buildings.module.scss'
-import ActionButton from "../common/ActionButton/ActionButton";
-import {GET_LAYOUT_INFO_ACTION} from "../../utils/actions/layoutActions";
-import LayoutInfoContainer from "./LayoutInfo/LayoutInfoContainer";
+import ActionButton from '../common/ActionButton/ActionButton'
+import {GET_LAYOUT_INFO_ACTION} from '../../utils/actions/layoutActions'
+import LayoutInfoContainer from './LayoutInfo/LayoutInfoContainer'
+import preloader from '../../assets/images/preloader.svg'
 
-const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelectedLayoutId}) => {
+/**
+ * Component for buildings list for employee role.
+ */
+const BuildingsForEmployee = ({
+                                  buildings,
+                                  pageSize,
+                                  totalPages,
+                                  setCurrentPage,
+                                  setSelectedLayoutId,
+                                  buildingsInLoading
+                              }) => {
 
     const [visible, setVisible] = useState(false)
 
@@ -14,9 +25,10 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
             title: 'Адрес здания',
             dataIndex: 'address',
             key: 'address',
-            width: "25%",
+            width: '20%',
             ellipsis: false,
-            render: (addr) => `г. ${addr.city} ул. ${addr.street}-${addr.house}`
+            align: 'center',
+            render: (addr) => <Space align="center">{`г. ${addr.city} ул. ${addr.street}-${addr.house}`}</Space>
         },
         {
             title: 'Описание здания',
@@ -29,9 +41,9 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
             dataIndex: 'complex',
             key: 'complex',
             align: 'center',
-            width: "20%",
+            width: '20%',
             ellipsis: false,
-            render: (complex) => complex.name
+            render: (complex) => complex?.name ?? 'Отдельное здание'
         }
     ]
 
@@ -57,7 +69,7 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
                 dataIndex: 'createdAt',
                 key: 'createdAt',
                 align: 'center',
-                width: "15%",
+                width: '15%',
                 render: (date) => {
                     return `${date.toLocaleDateString()}, ${date.toLocaleTimeString()?.slice(0, 5)}`
                 }
@@ -86,11 +98,11 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
         }))
 
         return <Table
-                bordered
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-            />
+            bordered
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+        />
     }
 
     const changePage = (page) => {
@@ -99,16 +111,22 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
 
     return (
         <div className={styles.contentContainer}>
-            <Table
-                bordered
-                columns={columns}
-                dataSource={buildings}
-                pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
-                size="small"
-                tableLayout="auto"
-                expandable={{expandedRowRender: expandedBuildingRowRender, expandRowByClick: true}}
-                scroll={{x: 900}}
-            />
+            {
+                !buildingsInLoading ? (
+                    <Table
+                        bordered
+                        columns={columns}
+                        dataSource={buildings}
+                        pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
+                        size="small"
+                        tableLayout="auto"
+                        expandable={{expandedRowRender: expandedBuildingRowRender, expandRowByClick: true}}
+                        scroll={{x: 900}}
+                    />
+                ) : (
+                    <img src={preloader} alt="preloader"/>
+                )
+            }
             <LayoutInfoContainer
                 setVisible={setVisible}
                 visible={visible}
@@ -117,4 +135,4 @@ const Buildings = ({buildings, pageSize, totalPages, setCurrentPage, setSelected
     )
 }
 
-export default Buildings
+export default BuildingsForEmployee

@@ -1,16 +1,21 @@
 import {instance, instanceForDownloadFile} from './instances'
+import {message} from 'antd'
 
 let token
 
 export const authAPI = {
     async login(email, password, rememberMe = false) {
-        const response = await instance.post('auth', {email, password, rememberMe})
+        try {
+            const response = await instance.post('auth', {email, password, rememberMe})
 
-        token = response.data.accessToken
-        instance.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        instanceForDownloadFile.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            token = response.data.accessToken
+            instance.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            instanceForDownloadFile.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
-        return response
+            return response
+        } catch (error) {
+            message.error('Неправильный логин или пароль')
+        }
     },
     me() {
         return instance.get('auth')

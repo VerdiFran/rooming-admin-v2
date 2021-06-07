@@ -18,6 +18,7 @@ const LayoutInfoContainer = (props) => {
         handleDownload={buildingsAPI.downloadFile}
         downloadSessions={sessionsApi.downloadSessions}
         addToSession={props.addLayoutsToSessions}
+        addSession={sessionsApi.addNewSession}
     />
 }
 

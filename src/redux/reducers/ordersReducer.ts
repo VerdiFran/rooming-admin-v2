@@ -14,6 +14,7 @@ const SET_CURRENT_LAYOUTS_ID = 'SET-CURRENT-LAYOUTS-ID'
 const SET_LAYOUT_ORDER_EXECUTOR = 'SET-LAYOUT-ORDER-EXECUTOR'
 const RESET_CITIES = 'RESET-CITIES'
 const RESET_ADDRESSES = 'RESET-ADDRESSES'
+const SET_ORDERS_IN_LOADING = 'SET-ORDER-IN-LOADING'
 
 const complexIdIterator = IdGenerator()
 const buildingIdIterator = IdGenerator()
@@ -120,6 +121,7 @@ export type InitialStateType = {
     cities: Array<string>
     newComplexes: Array<ComplexType>
     currentLayoutIds: Array<number>
+    ordersInLoading: boolean
 }
 
 const initialState: InitialStateType = {
@@ -129,7 +131,8 @@ const initialState: InitialStateType = {
     cities: [],
     newAddresses: [],
     newComplexes: [],
-    currentLayoutIds: []
+    currentLayoutIds: [],
+    ordersInLoading: false
 }
 
 const ordersReducer = (state = initialState, action: any) => {
@@ -188,6 +191,11 @@ const ordersReducer = (state = initialState, action: any) => {
                 newAddresses: [],
                 newComplexes: []
             }
+        case SET_ORDERS_IN_LOADING:
+            return {
+                ...state,
+                ordersInLoading: action.ordersInLoading
+            }
         default:
             return state
     }
@@ -198,6 +206,7 @@ const setAddresses = (addresses: Array<BuildingType>) => ({type: SET_ADDRESSES, 
 const resetCities = () => ({type: RESET_CITIES})
 const resetAddresses = () => ({type: RESET_ADDRESSES})
 const setOrders = (orders: Array<OrderType>, total: number) => ({type: SET_ORDERS, orders, total})
+const setOrdersInLoading = (ordersInLoading: boolean) => ({type: SET_ORDERS_IN_LOADING, ordersInLoading})
 
 export const addAddress = (address: BuildingType) => ({type: ADD_ADDRESS, address})
 export const addComplex = (complex: ComplexType) => ({type: ADD_COMPLEX, complex})
@@ -246,8 +255,10 @@ export const getCitiesByNamePrefix = (prefix: string) => async (dispatch: Dispat
  * @param pageSize Page size.
  */
 export const getCompanyOrders = (pageNumber: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
+    dispatch(setOrdersInLoading(true))
     const response = await ordersAPI.getOrders(pageNumber, pageSize)
     dispatch(setOrders(response.data.content, response.data.total))
+    dispatch(setOrdersInLoading(false))
 }
 
 /**
@@ -256,8 +267,10 @@ export const getCompanyOrders = (pageNumber: number = 1, pageSize: number = 10) 
  * @param pageSize Page size.
  */
 export const getAllOrders = (pageNumber: number = 1, pageSize: number = 10) => async (dispatch: Dispatch) => {
+    dispatch(setOrdersInLoading(true))
     const response = await ordersAPI.getAllOrders(pageNumber, pageSize)
     dispatch(setOrders(response.data.content, response.data.total))
+    dispatch(setOrdersInLoading(false))
 }
 
 export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
@@ -313,6 +326,7 @@ export const addNewOrder = (order: OrderType) => async (dispatch: Dispatch) => {
         dispatch(resetAddresses())
 
         await getCompanyOrders(1, 10)(dispatch)
+        message.success('Заказ отправлен')
     } catch (e) {
         message.error('При отправке заказа что-то пошло не так.')
     }

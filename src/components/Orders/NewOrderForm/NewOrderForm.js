@@ -1,16 +1,25 @@
 import React, {useState} from 'react'
-import {DatePicker} from 'formik-antd'
-import {Input, Button, Divider, Drawer, Form} from 'antd'
+import {Input, DatePicker, Form} from 'formik-antd'
+import {Button, Divider, Drawer} from 'antd'
 import NewLayoutFormContainer from './NewLayoutForm/NewLayoutFormContainer'
 import {FieldArray, FormikProvider} from 'formik'
 import {PlusSquareOutlined} from '@ant-design/icons'
 import styles from './NewOrderForm.module.scss'
 import DrawerFooter from '../../common/FormControls/DrawerFooter'
 
-const NewOrderForm = ({visible, formik, onClose, handleSubmit}) => {
+const NewOrderForm = ({visible, formik, onClose}) => {
     const [drawerVisible, setDrawerVisible] = useState(!visible)
 
-    setTimeout(() => {setDrawerVisible(visible)}, 50)
+    setTimeout(() => {
+        setDrawerVisible(visible)
+    }, 50)
+
+    const {validateForm, handleSubmit, handleChange} = formik
+
+    const onSubmit = () => {
+        validateForm().then(errors => console.log(errors))
+        handleSubmit()
+    }
 
     return (
         <FormikProvider value={formik}>
@@ -28,17 +37,27 @@ const NewOrderForm = ({visible, formik, onClose, handleSubmit}) => {
                     footer={
                         <DrawerFooter
                             onCancel={[onClose]}
-                            onSubmit={[handleSubmit, onClose]}
+                            onSubmit={[onSubmit]}
                         />
                     }
                 >
-                    <Form.Item label="Описание заказа">
+                    <Form.Item
+                        name="orderDescription"
+                        label="Описание заказа"
+                        required
+                        hasFeedback
+                    >
                         <Input.TextArea
-                            value={formik.values.orderDescription}
-                            onChange={(e => formik.setFieldValue('orderDescription', e.currentTarget.value))}
+                            name="orderDescription"
+                            onChange={handleChange}
                         />
                     </Form.Item>
-                    <Form.Item label="Крайний срок">
+                    <Form.Item
+                        name="deadline"
+                        label="Крайний срок"
+                        required
+                        hasFeedback
+                    >
                         <DatePicker
                             name="deadline"
                             id="order-deadline"

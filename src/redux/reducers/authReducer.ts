@@ -87,7 +87,7 @@ export const downloadUserData = () => async (dispatch: Dispatch) => {
 
     const preparedUserData = {
         ...data,
-        company: data.company || {name: 'Наша компания'},
+        company: data.company || {name: null},
         roles: userRoles.filter(role => data.roles.map((r: string) => r.toUpperCase()).includes(role))
     }
 

@@ -4,6 +4,7 @@ import {getBuildings, getNewComplexes} from '../../../utils/selectors/selectors'
 import NewOrderForm from './NewOrderForm'
 import {addNewOrder, getAddressesByCityName} from '../../../redux/reducers/ordersReducer'
 import {useFormik} from 'formik'
+import * as yup from 'yup'
 
 const mapStateToProps = (state) => ({
     buildings: getBuildings(state),
@@ -11,34 +12,25 @@ const mapStateToProps = (state) => ({
 })
 
 const NewOrderFormContainer = (props) => {
-    const formik = useFormik({
-        initialValues: {
-            orderDescription: '',
-            deadline: null,
-            layouts: [
-                {
-                    description: '',
-                    buildingId: null,
-                    building: {
-                        description: '',
-                        addressOption: [],
-                        address: {
-                            city: '',
-                            street: '',
-                            house: ''
-                        },
-                        complexId: null,
-                        complex: {
-                            name: '',
-                            description: ''
-                        }
-                    },
-                    files: [],
-                    resources: []
-                }
-            ]
-        },
-        validateOnChange: false
+    const newOrderSchema = yup.object().shape({
+        orderDescription: yup.string().required('Это поле обязательно для заполнения.'),
+        deadline: yup.date().min(new Date(), 'Крайний срок должен быть позже текущего времени')
+            .required('Это поле обязательно для заполнения.')
+            .typeError('Это поле обязательно для заполнения.'),
+        layouts: yup.array().of(yup.object().shape({
+            description: yup.string().required('Это поле обязательно для заполнения.'),
+            city: yup.string().required('Это поле обязательно для заполнения.'),
+            building: yup.object().shape({
+                addressOption: yup.array()
+                    .of(yup.mixed().required('Это поле обязательно для заполнения.'))
+                    .length(3, 'Это поле обязательно для заполнения.'),
+                address: yup.object().shape({
+                    city: yup.string().required('Это поле обязательно для заполнения.'),
+                    street: yup.string().required('Это поле обязательно для заполнения.'),
+                    house: yup.string().required('Это поле обязательно для заполнения.')
+                })
+            })
+        }))
     })
 
     const handleSubmit = async (values = formik.values) => {
@@ -72,6 +64,39 @@ const NewOrderFormContainer = (props) => {
 
         formik.resetForm()
     }
+
+    const formik = useFormik({
+        initialValues: {
+            orderDescription: '',
+            deadline: null,
+            layouts: [
+                {
+                    description: '',
+                    buildingId: null,
+                    city: '',
+                    building: {
+                        description: '',
+                        addressOption: [],
+                        address: {
+                            city: '',
+                            street: '',
+                            house: ''
+                        },
+                        complexId: null,
+                        complex: {
+                            name: '',
+                            description: ''
+                        }
+                    },
+                    files: [],
+                    resources: []
+                }
+            ]
+        },
+        onSubmit: handleSubmit,
+        validateOnChange: false,
+        validationSchema: newOrderSchema
+    })
 
     return <NewOrderForm
         formik={formik}

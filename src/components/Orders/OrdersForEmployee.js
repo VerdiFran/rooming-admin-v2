@@ -2,15 +2,24 @@ import React, {useState} from 'react'
 import {Popover, List, Table, Button, Space, Badge} from 'antd'
 import styles from './Orders.module.scss'
 import NewOrderFormContainer from './NewOrderForm/NewOrderFormContainer'
-import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from "../../redux/orderFulfillmentStatuses";
-import {REMOVE_ORDER_ACTION} from "../../utils/actions/orderActions";
-import ActionButton from "../common/ActionButton/ActionButton";
+import {IN_PROGRESS, READY_FOR_DEVELOPMENT} from '../../redux/orderFulfillmentStatuses'
+import {REMOVE_ORDER_ACTION} from '../../utils/actions/orderActions'
+import ActionButton from '../common/ActionButton/ActionButton'
+import preloader from '../../assets/images/preloader.svg'
 
 /**
  * Component with employee presentation of orders.
  * @return Table with company orders.
  */
-const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages, pageSize, handleRemove}) => {
+const OrdersForEmployee = ({
+                               ordersData,
+                               handleChange,
+                               setCurrentPage,
+                               totalPages,
+                               pageSize,
+                               handleRemove,
+                               ordersInLoading
+                           }) => {
     const [visible, setVisible] = useState(false)
 
     const columns = [
@@ -18,7 +27,7 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
             title: 'Описание заказа',
             dataIndex: 'description',
             key: 'description',
-            width: '40%',
+            width: '35%',
             ellipsis: false
         },
         {
@@ -37,19 +46,22 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
             dataIndex: 'addresses',
             key: 'addresses',
             align: 'center',
-            width: "20%",
+            width: '25%',
             ellipsis: false,
-            render: (addrs => <List size="small">
-                {addrs.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
-                {
-                    addrs.length > 2 &&
-                    <Popover content={<List size="small">
-                        {addrs.map(addr => <List.Item>{addr}</List.Item>)}
-                    </List>}>
-                        <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
-                    </Popover>
-                }
-            </List>)
+            render: (addrs =>
+                <Space align="center">
+                    <List size="small">
+                        {addrs.slice(0, 2).map(addr => <List.Item>{addr}</List.Item>)}
+                        {
+                            addrs.length > 2 &&
+                            <Popover content={<List size="small">
+                                {addrs.map(addr => <List.Item>{addr}</List.Item>)}
+                            </List>}>
+                                <List.Item style={{fontStyle: 'italic'}}>все адреса</List.Item>
+                            </Popover>
+                        }
+                    </List>
+                </Space>)
         },
         {
             title: 'Действия',
@@ -75,6 +87,7 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
                 title: 'Статус',
                 dataIndex: 'status',
                 key: 'status',
+                align: 'center',
                 render: (value) => value === READY_FOR_DEVELOPMENT
                     ? <Badge status="default" text="Создан"/>
                     : value === IN_PROGRESS
@@ -133,25 +146,33 @@ const OrdersForEmployee = ({ordersData, handleChange, setCurrentPage, totalPages
 
     return (
         <div className={styles.contentContainer}>
-            <Space style={{marginBottom: 16}}>
-                <Button type="primary" onClick={() => {
-                    showDrawer()
-                }}>Добавить заказ</Button>
-            </Space>
-            <Table
-                bordered
-                columns={columns}
-                dataSource={ordersData}
-                size="small"
-                tableLayout="auto"
-                onChange={handleChange}
-                pagination={{ defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage }}
-                expandable={{
-                    expandedRowRender,
-                    expandRowByClick: false
-                }}
-                scroll={{x: 900}}
-            />
+            {
+                !ordersInLoading ? (
+                    <div>
+                        <Space style={{marginBottom: 16}}>
+                            <Button type="primary" onClick={() => {
+                                showDrawer()
+                            }}>Добавить заказ</Button>
+                        </Space>
+                        <Table
+                            bordered
+                            columns={columns}
+                            dataSource={ordersData}
+                            size="small"
+                            tableLayout="auto"
+                            onChange={handleChange}
+                            pagination={{defaultPageSize: pageSize, total: totalPages * pageSize, onChange: changePage}}
+                            expandable={{
+                                expandedRowRender,
+                                expandRowByClick: false
+                            }}
+                            scroll={{x: 900}}
+                        />
+                    </div>
+                ) : (
+                    <img src={preloader} alt="preloader"/>
+                )
+            }
             {
                 visible && <NewOrderFormContainer
                     visible={visible}
