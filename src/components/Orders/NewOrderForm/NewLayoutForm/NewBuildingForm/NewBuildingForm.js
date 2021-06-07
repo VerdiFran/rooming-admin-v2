@@ -5,11 +5,10 @@ import {PlusSquareOutlined} from '@ant-design/icons'
 import NewComplexFormContainer from './NewComplexForm/NewComplexFormContainer'
 import styles from './NewBuildingForm.module.scss'
 import DrawerFooter from '../../../../common/FormControls/DrawerFooter'
-import TextArea from 'antd/es/input/TextArea'
 
 const NewBuildingForm = (props) => {
     const {
-        buildingFormik: {values, setFieldValue, handleChange},
+        buildingFormik: {values, setFieldValue, handleChange, validateForm},
         layoutIndex,
         complexes,
         streets,
@@ -43,6 +42,11 @@ const NewBuildingForm = (props) => {
                 return acc.some(street => street.value === currStreet.value) ? acc : [...acc, currStreet]
             }, []))
 
+    const onSubmit = () => {
+        validateForm().then(error => console.log(error))
+        handleSubmit()
+    }
+
     return (
         <>
             <Button
@@ -59,7 +63,7 @@ const NewBuildingForm = (props) => {
                 bodyStyle={{paddingBottom: 80}}
                 footer={<DrawerFooter
                     onCancel={[() => setVisible(false)]}
-                    onSubmit={[handleSubmit, () => setVisible(false)]}
+                    onSubmit={[onSubmit]}
                 />}
             >
                 <Form layout="vertical" style={{width: '100%'}}>
@@ -99,6 +103,8 @@ const NewBuildingForm = (props) => {
                         <Form.Item
                             name="street"
                             label="Улица"
+                            required
+                            hasFeedback
                         >
                             <AutoComplete
                                 name="street"
@@ -111,6 +117,8 @@ const NewBuildingForm = (props) => {
                         <Form.Item
                             name="house"
                             label="Дом"
+                            required
+                            hasFeedback
                         >
                             <Input
                                 name="house"
@@ -122,8 +130,10 @@ const NewBuildingForm = (props) => {
                     <Form.Item
                         name="buildingDescription"
                         label="Описание здания"
+                        required
+                        hasFeedback
                     >
-                        <TextArea
+                        <Input.TextArea
                             name="description"
                             value={values.description}
                             onChange={handleChange}

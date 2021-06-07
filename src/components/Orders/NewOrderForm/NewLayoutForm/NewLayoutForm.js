@@ -9,7 +9,7 @@ import DraggerContent from '../../../common/FormControls/DraggerContent'
 const NewLayoutForm = (props) => {
     const {
         layoutIndex,
-        formik: {setFieldValue, values},
+        formik: {setFieldValue, values, errors, validateForm},
         citiesOptions,
         addresses,
         cityIsSelected,
@@ -148,6 +148,7 @@ const NewLayoutForm = (props) => {
                         label="Город"
                         name={`layouts.${layoutIndex}.city`}
                         className={styles.formItem}
+                        required
                     >
                         <AutoComplete
                             name={`layouts.${layoutIndex}.city`}
@@ -177,6 +178,10 @@ const NewLayoutForm = (props) => {
                         label="Адрес"
                         name={`layouts.${layoutIndex}.building.addressOption`}
                         className={styles.formItem}
+                        required
+                        hasFeedback
+                        validateStatus={errors?.layouts?.find((layout, index) => index === layoutIndex)?.building?.addressOption && 'error'}
+                        help={errors?.layouts?.find((layout, index) => index === layoutIndex)?.building?.addressOption}
                     >
                         <Cascader
                             name={`layouts.${layoutIndex}.building.addressOption`}
@@ -199,20 +204,20 @@ const NewLayoutForm = (props) => {
                             onClick={getAddresses}
                         />
                     </Form.Item>
-                    <Form.Item name={`layouts.${layoutIndex}.building`}>
-                        <div className={styles.orNewBuildingContainer}>
-                            <span>или</span>
-                            <NewBuildingFormContainer
-                                layoutIndex={layoutIndex}
-                                cityIsSelected={cityIsSelected}
-                                setAutoCompletedAddress={setAutoCompletedAddress}
-                            />
-                        </div>
-                    </Form.Item>
+                    <div className={styles.orNewBuildingContainer}>
+                        <span>или</span>
+                        <NewBuildingFormContainer
+                            layoutIndex={layoutIndex}
+                            cityIsSelected={cityIsSelected}
+                            setAutoCompletedAddress={setAutoCompletedAddress}
+                        />
+                    </div>
                 </Space>
                 <Form.Item
                     label="Описание планировки"
                     name={`layouts.${layoutIndex}.description`}
+                    required
+                    hasFeedback
                 >
                     <Input.TextArea
                         name={`layouts.${layoutIndex}.description`}

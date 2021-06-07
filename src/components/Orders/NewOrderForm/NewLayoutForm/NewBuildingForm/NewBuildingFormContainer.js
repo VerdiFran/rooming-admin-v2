@@ -5,6 +5,7 @@ import {addAddress, getAddressesByCityName} from '../../../../../redux/reducers/
 import {getCities, getComplexesOptions, getStreets} from '../../../../../utils/selectors/selectors'
 import {compose} from 'redux'
 import {connect as formikConnect, useFormik} from 'formik'
+import * as yup from 'yup'
 
 const mapStateToProps = (state) => ({
     cities: getCities(state),
@@ -25,14 +26,23 @@ const NewBuildingFormContainer = (props) => {
         setAutoCompletedAddress
     } = props
 
+    const buildingSchema = yup.object().shape({
+        city: yup.string().required('Это поле обязательно для заполнения.'),
+        street: yup.string().required('Это поле обязательно для заполнения.'),
+        house: yup.string().required('Это поле обязательно для заполнения.'),
+        buildingDescription: yup.string().required('Это поле обязательно для заполнения.')
+    })
+
     const buildingFormik = useFormik({
         initialValues: {
+            buildingDescription: '',
             city: '',
             street: '',
             house: '',
             complexId: null,
             complexName: ''
-        }
+        },
+        validationSchema: buildingSchema
     })
 
     const [cityComplexes, setCityComplexes] = useState([])
@@ -77,6 +87,7 @@ const NewBuildingFormContainer = (props) => {
         layoutIndex={layoutIndex}
         getAddresses={getAddressesByCityName}
         handleSubmit={handleSubmit}
+        formik={formik}
     />
 }
 
